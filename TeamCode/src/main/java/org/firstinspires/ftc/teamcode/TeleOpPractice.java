@@ -169,25 +169,56 @@ public class TeleOpPractice extends OpMode {
 //            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 //        }
 
-        if (gamepad2.right_trigger > 0) {
+        /* if (gamepad2.right_trigger > 0) {
             armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             armMotor.setPower(0.3);
             ((DcMotorEx) armMotor).setVelocity(gamepad2.right_trigger + -100);
             Release_Position = armMotor.getCurrentPosition();
-        } else if (gamepad2.dpad_right) {
+        } else if (gamepad2.dpad_right) { */
+        if (gamepad2.dpad_up) {
             armMotor.setTargetPosition(arm_mid_position);
             armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             armMotor.setPower(0.3);
 //            if (armMotor.getCurrentPosition() > 200) {
 //                wrist.setPosition(0.5);
-        } else if (gamepad2.dpad_left) {
+        } else if (gamepad2.dpad_down) {
             armMotor.setTargetPosition(arm_down_position);
             armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             armMotor.setPower(0.3);
 //            if (armMotor.getCurrentPosition() > 200) {
 //                wrist.setPosition(0.5);
+        }//:)
+
+        if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
+            extensionMotor.setPower(1);
+            ((DcMotorEx) extensionMotor).setVelocity(1500);
+        } else if (gamepad2.right_bumper == false && gamepad2.left_bumper == false) {
+            extensionMotor.setPower(0);
         }
-    }
+        if (gamepad2.left_bumper == true && gamepad2.right_bumper == false && extensionMotor.getCurrentPosition() > -50) {
+            extensionMotor.setPower(-0.75);
+        } else if (gamepad2.left_bumper == false && gamepad2.right_bumper == false) {
+            extensionMotor.setPower(0);
+        }
+
+        if (gamepad2.circle == true && gamepad2.square == false) {
+            claw.setPosition(1);
+        }
+
+        if (gamepad2.circle == false && gamepad2.square == true){
+            claw.setPosition(.45);
+        }
+
+        if (gamepad2.cross == true && gamepad2.triangle == false){
+            wrist.setPosition(0.5);
+        }
+
+        if (gamepad2.cross == false && gamepad2.triangle == true){
+            wrist.setPosition(1);
+        }
+
+        }
+
 
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {

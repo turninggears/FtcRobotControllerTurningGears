@@ -42,11 +42,13 @@ public class TeleOpDecodeV1 extends OpMode {
     IMU imu;
 
     float theta;
-    int arm_down_position;
-    int Release_Position;
-    int arm_mid_position;
-    int arm_up_position;
-    int Arm_Pickup_Position;
+
+    /* this section is to create variables to use throughout program*/
+//    int arm_down_position;
+//    int Release_Position;
+//    int arm_mid_position;
+//    int arm_up_position;
+//    int Arm_Pickup_Position;
     int drivemode;
     double Slow_Speed;
     double Med_Speed;
@@ -60,31 +62,27 @@ public class TeleOpDecodeV1 extends OpMode {
 
     @Override
     public void init() {
+        //this assigns the motors for drive chassis based on name in control hub
         frontLeftDrive = hardwareMap.get(DcMotor.class, "FL Drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "FR Drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
+        //this matches names of other motors in control hub to names created in beginning of this code
         armMotor = hardwareMap.get(DcMotor.class, "ArmMotor");
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
+        extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
+        //this matches names of servos like motors above
         wrist = hardwareMap.get(Servo.class, "wrist");
         claw = hardwareMap.get(Servo.class, "claw");
-        extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        // We set the left motors in reverse which is needed for drive trains where the left
-        // motors are opposite to the right ones.
+        // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
-        // wires, you should remove these
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+       /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;
         arm_mid_position = 655;
         arm_up_position = 940;
@@ -93,6 +91,8 @@ public class TeleOpDecodeV1 extends OpMode {
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        */
 
         controlHubServoController.pwmEnable();
 
@@ -109,44 +109,29 @@ public class TeleOpDecodeV1 extends OpMode {
     }
 
     @Override
+    //this is the code that runs once you press play put game play code in this section
     public void loop() {
+       //update this and reactivate them if you want message to display on driver station
         telemetry.addLine("Press A to reset Yaw");
         telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addLine("The left joystick sets the robot direction");
-        telemetry.addLine("Moving the right joystick left and right turns the robot");
+//        telemetry.addLine("The left joystick sets the robot direction");
+//        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
         // If you press the A button, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
         if (gamepad1.a) {
             imu.resetYaw();
         }
-        // If you press the left bumper, you get a drive from the point of view of the robot
-        // (much like driving an RC vehicle)
-//        if (gamepad1.left_bumper) {
-//            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-//        } else {
-//            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-//        }
 
-        /* if (gamepad2.right_trigger > 0) {
-            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            armMotor.setPower(0.3);
-            ((DcMotorEx) armMotor).setVelocity(gamepad2.right_trigger + -100);
-            Release_Position = armMotor.getCurrentPosition();
-        } else if (gamepad2.dpad_right) { */
-        if (gamepad2.dpad_up) {
-            armMotor.setTargetPosition(arm_mid_position);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(0.3);
-//            if (armMotor.getCurrentPosition() > 200) {
-//                wrist.setPosition(0.5);
-        } else if (gamepad2.dpad_down) {
-            armMotor.setTargetPosition(arm_down_position);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(0.3);
-//            if (armMotor.getCurrentPosition() > 200) {
-//                wrist.setPosition(0.5);
-        }//:)
+        //this is start of drive code
+
+//         If you press the left bumper, you get a drive from the point of view of the robot
+//         (much like driving an RC vehicle)
+        if (gamepad1.left_bumper) {
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
 
         if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
             extensionMotor.setPower(1);
@@ -226,4 +211,30 @@ public class TeleOpDecodeV1 extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
         telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
+    //end of drive code
+
+    //start of code for manipulator (gamepad2)
+
+    //sample of arm controls from last season to use to start coding
+        /* if (gamepad2.right_trigger > 0) {
+            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            armMotor.setPower(0.3);
+            ((DcMotorEx) armMotor).setVelocity(gamepad2.right_trigger + -100);
+            Release_Position = armMotor.getCurrentPosition();
+        } else if (gamepad2.dpad_right) {
+        if (gamepad2.dpad_up) {
+            armMotor.setTargetPosition(arm_mid_position);
+            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            armMotor.setPower(0.3);
+//            if (armMotor.getCurrentPosition() > 200) {
+//                wrist.setPosition(0.5);
+        } else if (gamepad2.dpad_down) {
+            armMotor.setTargetPosition(arm_down_position);
+            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            armMotor.setPower(0.3);
+//            if (armMotor.getCurrentPosition() > 200) {
+//                wrist.setPosition(0.5);
+        }*/
+    //End of Manipulator Code
+
 }

@@ -8,9 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
-
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -18,19 +17,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
-@TeleOp(name = "teleop practice", group = "Robot")
+@TeleOp(name = "TeleOpDecodeV1", group = "Robot")
 @Config
 
-public class TeleOpPractice extends OpMode {
+public class TeleOpDecodeV1 extends OpMode {
 
     public static double maxSpeed = 1.0;  // make this slower for outreaches
-    // This declares the four motors needed
+    // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
 
-    DcMotor armMotor;
+    //this is declaring any other motors needed for robot
+   // DcMotor armMotor;
 
     DcMotor extensionMotor;
 

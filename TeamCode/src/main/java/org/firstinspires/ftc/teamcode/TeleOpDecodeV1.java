@@ -68,7 +68,6 @@ public class TeleOpDecodeV1 extends OpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
         //this matches names of other motors in control hub to names created in beginning of this code
-        armMotor = hardwareMap.get(DcMotor.class, "ArmMotor");
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
         extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
         //this matches names of servos like motors above

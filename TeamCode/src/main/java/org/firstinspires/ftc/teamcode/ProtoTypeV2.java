@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+
 public class ProtoTypeV2 extends OpMode {
    private DcMotor motor1;
    private DcMotor motor2;
@@ -15,7 +16,8 @@ public class ProtoTypeV2 extends OpMode {
 
         motor1=hardwareMap.get(DcMotor.class, "motor1");
         motor2=hardwareMap.get(DcMotor.class, "motor2");
-
+        motor1.setDirection(DcMotorSimple.Direction.FORWARD);
+        motor2.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
 
@@ -25,9 +27,9 @@ public class ProtoTypeV2 extends OpMode {
         if (gamepad1.square){
             motor1.setPower(1.0);
             motor2.setPower(1.0);
-                    }
+        }
 
-        else if (gamepad1.circle){
+        else if (gamepad1.circle) {
             motor1.setPower(-1.0);
             motor2.setPower(-1.0);
         }

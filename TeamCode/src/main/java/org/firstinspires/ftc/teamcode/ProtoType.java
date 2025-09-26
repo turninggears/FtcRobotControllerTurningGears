@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @TeleOp(name = "Proto Type", group = "Robot")
     @Config
@@ -12,14 +13,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
     public class ProtoType extends OpMode {
 
         // This declares the motors needed
-        DcMotor motor1;
+        DcMotor launcherMotor;
         DcMotor motor2;
 
 
         @Override
         public void init() {
-            motor1 = hardwareMap.get(DcMotor.class, "motor1");
-            motor2 = hardwareMap.get(DcMotor.class, "motor2");
+            launcherMotor = hardwareMap.get(DcMotor.class, "launcherMotor");
+//            motor2 = hardwareMap.get(DcMotor.class, "motor2");
 
 
          /* motor1.setDirection(DcMotor.Direction.REVERSE);
@@ -38,12 +39,19 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
             if (gamepad1.circle) {
-                motor1.setDirection(DcMotorSimple.Direction.FORWARD);
-                motor2.setDirection(DcMotorSimple.Direction.FORWARD);
+                launcherMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                motor2.setDirection(DcMotorSimple.Direction.FORWARD);
             }
             if (gamepad1.square) {
-                motor1.setDirection(DcMotorSimple.Direction.REVERSE);
-                motor2.setDirection(DcMotorSimple.Direction.REVERSE);
+                launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                motor2.setDirection(DcMotorSimple.Direction.REVERSE);
+            }
+
+            if (gamepad2.left_bumper) {
+                launcherMotor.setPower(1);
+                ((DcMotorEx) launcherMotor).setVelocity(1440);
+            } else {
+                launcherMotor.setPower(0);
             }
 
         }

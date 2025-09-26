@@ -69,7 +69,6 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
     TelemetryMenu.MenuElement menuAbsParams = new TelemetryMenu.MenuElement("Abs. Encoder Pulse Width Params", false);
     TelemetryMenu.IntegerOption[] optionsAbsParamsMax = new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
     TelemetryMenu.IntegerOption[] optionsAbsParamsMin = new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
-    TelemetryMenu.BooleanOption[] optionsAbsParamsWrapTracking = new TelemetryMenu.BooleanOption[OctoQuad.NUM_ENCODERS];
 
     TelemetryMenu.OptionElement optionProgramToFlash;
     TelemetryMenu.OptionElement optionSendToRAM;
@@ -162,16 +161,9 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
                     OctoQuad.MIN_PULSE_WIDTH_US,
                     OctoQuad.MAX_PULSE_WIDTH_US,
                     params.min_length_us);
-
-            optionsAbsParamsWrapTracking[i] = new TelemetryMenu.BooleanOption(
-                    String.format("Chan %d wrap tracking enabled", i),
-                    octoquad.getSingleChannelPulseWidthTracksWrap(i),
-                    "yes",
-                    "no");
         }
         menuAbsParams.addChildren(optionsAbsParamsMin);
         menuAbsParams.addChildren(optionsAbsParamsMax);
-        menuAbsParams.addChildren(optionsAbsParamsWrapTracking);
 
         optionProgramToFlash = new TelemetryMenu.OptionElement()
         {
@@ -274,7 +266,6 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             params.min_length_us = optionsAbsParamsMin[i].getValue();
 
             octoquad.setSingleChannelPulseWidthParams(i, params);
-            octoquad.setSingleChannelPulseWidthTracksWrap(i, optionsAbsParamsWrapTracking[i].val);
         }
 
         octoquad.setI2cRecoveryMode((OctoQuad.I2cRecoveryMode) optionI2cResetMode.getValue());

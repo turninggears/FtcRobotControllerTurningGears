@@ -27,7 +27,7 @@ public class ProtoTypeV2 extends OpMode {
     public void init() {
         motor1 = hardwareMap.get(DcMotorEx.class, "motor1"); // Use DcMotorEx
         motor2 = hardwareMap.get(DcMotorEx.class, "motor2"); // Use DcMotorEx
-        motor1.setDirection(DcMotorSimple.Direction.FORWARD);
+        motor1.setDirection(DcMotorSimple.Direction.REVERSE);
         motor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Optionally, set motor modes (e.g., run with encoders)

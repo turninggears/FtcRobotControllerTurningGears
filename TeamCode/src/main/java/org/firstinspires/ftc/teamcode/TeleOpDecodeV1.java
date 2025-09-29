@@ -32,7 +32,7 @@ public class TeleOpDecodeV1 extends OpMode {
     //this is declaring any other motors needed for robot
    // DcMotor armMotor;
 
-    DcMotor extensionMotor;
+//    DcMotor extensionMotor;
 
     Servo wrist, claw;
 
@@ -68,11 +68,11 @@ public class TeleOpDecodeV1 extends OpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
         //this matches names of other motors in control hub to names created in beginning of this code
-        controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
-        extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
+//        controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
+//        extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
         //this matches names of servos like motors above
-        wrist = hardwareMap.get(Servo.class, "wrist");
-        claw = hardwareMap.get(Servo.class, "claw");
+//        wrist = hardwareMap.get(Servo.class, "wrist");
+//        claw = hardwareMap.get(Servo.class, "claw");
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -93,7 +93,7 @@ public class TeleOpDecodeV1 extends OpMode {
 
         */
 
-        controlHubServoController.pwmEnable();
+//        controlHubServoController.pwmEnable();
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
@@ -132,33 +132,33 @@ public class TeleOpDecodeV1 extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-        if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
-            extensionMotor.setPower(1);
-            ((DcMotorEx) extensionMotor).setVelocity(1500);
-        } else if (gamepad2.right_bumper == false && gamepad2.left_bumper == false) {
-            extensionMotor.setPower(0);
-        }
-        if (gamepad2.left_bumper == true && gamepad2.right_bumper == false && extensionMotor.getCurrentPosition() > -50) {
-            extensionMotor.setPower(-0.75);
-        } else if (gamepad2.left_bumper == false && gamepad2.right_bumper == false) {
-            extensionMotor.setPower(0);
-        }
+//        if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
+////            extensionMotor.setPower(1);
+////            ((DcMotorEx) extensionMotor).setVelocity(1500);
+//        } else if (gamepad2.right_bumper == false && gamepad2.left_bumper == false) {
+//            extensionMotor.setPower(0);
+//        }
+//        if (gamepad2.left_bumper == true && gamepad2.right_bumper == false && extensionMotor.getCurrentPosition() > -50) {
+//            extensionMotor.setPower(-0.75);
+//        } else if (gamepad2.left_bumper == false && gamepad2.right_bumper == false) {
+//            extensionMotor.setPower(0);
+//        }
 
-        if (gamepad2.circle == true && gamepad2.square == false) {
-            claw.setPosition(1);
-        }
-
-        if (gamepad2.circle == false && gamepad2.square == true){
-            claw.setPosition(.45);
-        }
-
-        if (gamepad2.cross == true && gamepad2.triangle == false){
-            wrist.setPosition(0.5);
-        }
-
-        if (gamepad2.cross == false && gamepad2.triangle == true){
-            wrist.setPosition(1);
-        }
+//        if (gamepad2.circle == true && gamepad2.square == false) {
+//            claw.setPosition(1);
+//        }
+//
+//        if (gamepad2.circle == false && gamepad2.square == true){
+//            claw.setPosition(.45);
+//        }
+//
+//        if (gamepad2.cross == true && gamepad2.triangle == false){
+//            wrist.setPosition(0.5);
+//        }
+//
+//        if (gamepad2.cross == false && gamepad2.triangle == true){
+//            wrist.setPosition(1);
+//        }
 
         }
 

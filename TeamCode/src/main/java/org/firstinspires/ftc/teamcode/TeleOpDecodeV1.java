@@ -68,19 +68,19 @@ public class TeleOpDecodeV1 extends OpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
         //this matches names of other motors in control hub to names created in beginning of this code
-//        controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
-//        extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
+        controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
+        // extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
         //this matches names of servos like motors above
-//        wrist = hardwareMap.get(Servo.class, "wrist");
-//        claw = hardwareMap.get(Servo.class, "claw");
+        // wrist = hardwareMap.get(Servo.class, "wrist");
+        // claw = hardwareMap.get(Servo.class, "claw");
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
        /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;
         arm_mid_position = 655;
@@ -133,8 +133,8 @@ public class TeleOpDecodeV1 extends OpMode {
         }
 
 //        if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
-////            extensionMotor.setPower(1);
-////            ((DcMotorEx) extensionMotor).setVelocity(1500);
+//            extensionMotor.setPower(1);
+//            ((DcMotorEx) extensionMotor).setVelocity(1500);
 //        } else if (gamepad2.right_bumper == false && gamepad2.left_bumper == false) {
 //            extensionMotor.setPower(0);
 //        }
@@ -143,7 +143,7 @@ public class TeleOpDecodeV1 extends OpMode {
 //        } else if (gamepad2.left_bumper == false && gamepad2.right_bumper == false) {
 //            extensionMotor.setPower(0);
 //        }
-
+//
 //        if (gamepad2.circle == true && gamepad2.square == false) {
 //            claw.setPosition(1);
 //        }

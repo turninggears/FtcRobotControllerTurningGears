@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
@@ -28,6 +29,12 @@ public class TeleOpDecodeIMU extends OpMode {
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
+
+    DcMotor intakeMotor;
+
+    DcMotor launcherMotor;
+
+    DcMotor turretMotor;
 
     //this is declaring any other motors needed for robot
    // DcMotor armMotor;
@@ -67,6 +74,10 @@ public class TeleOpDecodeIMU extends OpMode {
         frontRightDrive = hardwareMap.get(DcMotor.class, "FR Drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
+        launcherMotor = hardwareMap.get(DcMotor.class,"launcher motor");
+        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
         // extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
@@ -81,6 +92,10 @@ public class TeleOpDecodeIMU extends OpMode {
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
         frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
        /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;
         arm_mid_position = 655;
@@ -131,6 +146,55 @@ public class TeleOpDecodeIMU extends OpMode {
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
+
+        if (gamepad2.left_trigger > 0) {
+            intakeMotor.setPower(1);
+        } else {
+            intakeMotor.setPower(0);
+        }
+
+        double launcherPower = 0;
+
+        if (gamepad2.square) {
+            launcherPower = 0;
+        }
+
+        if (gamepad2.triangle) {
+            launcherPower += 0.02;
+        }
+
+        if (gamepad2.cross) {
+            launcherPower -= 0.02;
+        }
+
+        if (gamepad2.circle && launcherPower == 0) {
+            launcherPower = 0.25;
+        } else if (gamepad2.circle && launcherPower > 0) {
+            launcherPower = 0;
+        }
+
+        if (launcherPower > 1.0) {
+            launcherPower = 1.0;
+        }
+
+        launcherMotor.setPower(Math.abs(launcherPower));
+
+        if (gamepad2.dpad_left) {
+            turretMotor.setPower(1);
+        } else if (gamepad2.dpad_right) {
+            turretMotor.setPower(-1);
+        } else {
+            turretMotor.setPower(0);
+        }
+
+
+    //  if (gamepad2.right_trigger > 0) {
+    //      launcherMotor.setPower(1);
+    //  } else {
+    //      launcherMotor.setPower(0);
+    //  }
+
+
 
 //        if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
 //            extensionMotor.setPower(1);

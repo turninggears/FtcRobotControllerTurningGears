@@ -155,22 +155,20 @@ public class TeleOpDecodeIMU extends OpMode {
 
         double launcherPower = 0;
 
-        if (gamepad2.square) {
+        if (gamepad2.squareWasPressed()) {
             launcherPower = 0;
         }
 
-        if (gamepad2.triangle) {
+        if (gamepad2.triangleWasPressed()) {
             launcherPower += 0.02;
         }
 
-        if (gamepad2.cross) {
+        if (gamepad2.crossWasPressed()) {
             launcherPower -= 0.02;
         }
 
-        if (gamepad2.circle && launcherPower == 0) {
+        if (gamepad2.circleWasPressed() && launcherPower == 0) {
             launcherPower = 0.25;
-        } else if (gamepad2.circle && launcherPower > 0) {
-            launcherPower = 0;
         }
 
         if (launcherPower > 1.0) {

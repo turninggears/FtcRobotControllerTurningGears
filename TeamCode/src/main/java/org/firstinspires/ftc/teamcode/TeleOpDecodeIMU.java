@@ -45,6 +45,8 @@ public class TeleOpDecodeIMU extends OpMode {
 
     ServoController controlHubServoController;
 
+    double launcherPower = 0;
+
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
@@ -153,8 +155,6 @@ public class TeleOpDecodeIMU extends OpMode {
             intakeMotor.setPower(0);
         }
 
-        double launcherPower = 0;
-
         if (gamepad2.squareWasPressed()) {
             launcherPower = 0;
         }
@@ -168,12 +168,14 @@ public class TeleOpDecodeIMU extends OpMode {
         }
 
         if (gamepad2.circleWasPressed() && launcherPower == 0) {
-            launcherPower = 0.25;
+            launcherPower = 0.30;
         }
 
         if (launcherPower > 1.0) {
             launcherPower = 1.0;
         }
+
+        telemetry.addData("launcher power: ", launcherPower);
 
         launcherMotor.setPower(Math.abs(launcherPower));
 

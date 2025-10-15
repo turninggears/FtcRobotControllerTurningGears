@@ -90,10 +90,10 @@ public class TeleOpDecodeIMU extends OpMode {
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -115,9 +115,9 @@ public class TeleOpDecodeIMU extends OpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -128,14 +128,14 @@ public class TeleOpDecodeIMU extends OpMode {
     //this is the code that runs once you press play put game play code in this section
     public void loop() {
        //update this and reactivate them if you want message to display on driver station
-        telemetry.addLine("Press A to reset Yaw");
+        telemetry.addLine("Press cross (X) to reset Yaw");
         telemetry.addLine("Hold left bumper to drive in robot relative");
 //        telemetry.addLine("The left joystick sets the robot direction");
 //        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
         // If you press the A button, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
-        if (gamepad1.a) {
+        if (gamepad1.cross) {
             imu.resetYaw();
         }
 
@@ -149,10 +149,26 @@ public class TeleOpDecodeIMU extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-        if (gamepad2.left_trigger > 0) {
-            intakeMotor.setPower(1);
+//        if (gamepad1.square) {
+//            frontLeftDrive.setPower(1);
+//        } else if (gamepad1.triangle) {
+//            frontRightDrive.setPower(1);
+//        } else if (gamepad1.cross) {
+//            backLeftDrive.setPower(1);
+//        } else if (gamepad1.circle) {
+//            backRightDrive.setPower(1);
+//        }
+
+        telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
+        telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
+        telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
+        telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
+
+
+        if (gamepad2.left_bumper) {
+            intakeMotor.setPower(-1);
         } else {
-            intakeMotor.setPower(0);
+            intakeMotor.setPower(1);
         }
 
         if (gamepad2.squareWasPressed()) {

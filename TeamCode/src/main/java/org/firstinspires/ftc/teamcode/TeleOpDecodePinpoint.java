@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 @TeleOp(name = "TeleOpDecodePinpoint", group = "Robot")
 @Config
 
-public class TeleOpDecodePinpoint extends OpMode {
+public class    TeleOpDecodePinpoint extends OpMode {
 
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     // This declares the four drive chassis motors needed

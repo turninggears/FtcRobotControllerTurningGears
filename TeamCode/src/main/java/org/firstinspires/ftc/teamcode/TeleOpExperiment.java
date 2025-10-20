@@ -56,6 +56,7 @@ public class TeleOpExperiment extends OpMode{
 
     ServoController controlHubServoController;
 
+    Servo launchTrigger;
     double launcherPower = 0;
 
     // This declares the IMU needed to get the current direction the robot is facing
@@ -92,7 +93,7 @@ public class TeleOpExperiment extends OpMode{
         //launcherServo = hardwareMap.get(Servo.class, "launcher servo");
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
-
+        launchTrigger = hardwareMap.get(Servo.class, "launch trigger");
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
@@ -104,7 +105,7 @@ public class TeleOpExperiment extends OpMode{
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
@@ -125,7 +126,7 @@ public class TeleOpExperiment extends OpMode{
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
-                GoBildaPinpointDriver.EncoderDirection.REVERSED//Y pod direction
+                GoBildaPinpointDriver.EncoderDirection.FORWARD//Y pod direction
         );
         pinpoint.setOffsets(-120,79, DistanceUnit.MM);
 
@@ -144,7 +145,7 @@ public class TeleOpExperiment extends OpMode{
 
 
         //not sur eif this is already added or needs to be but this converts radians to degrees
-        //double robotHeadingDeg = Math.toDegrees(robotHeading);
+        double robotHeadingDeg = Math.toDegrees(robotHeading);
 
         telemetry.addData("Pose (mm)", "x=%.1f, y=%1f)", robotXmm, robotYmm);
         telemetry.addData("Heading (deg)", Math.toDegrees(robotHeading));
@@ -207,26 +208,12 @@ public class TeleOpExperiment extends OpMode{
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-//        if (gamepad1.square) {
-//            frontLeftDrive.setPower(1);
-//        } else if (gamepad1.triangle) {
-//            frontRightDrive.setPower(1);
-//        } else if (gamepad1.cross) {
-//            backLeftDrive.setPower(1);
-//        } else if (gamepad1.circle) {
-//            backRightDrive.setPower(1);
-//        }
-
-        telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
-        telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
-        telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
-        telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
-
-
         if (gamepad2.left_bumper) {
             intakeMotor.setPower(-1);
-        } else {
+        } if (gamepad2.right_bumper) {
             intakeMotor.setPower(1);
+        } if (gamepad2.dpad_down) {
+            intakeMotor.setPower(0);
         }
 
         if (gamepad2.squareWasPressed()) {
@@ -253,6 +240,14 @@ public class TeleOpExperiment extends OpMode{
 
         launcherMotor.setPower(Math.abs(launcherPower));
 
+        //This is code to move launch trigger
+        if (gamepad2.dpad_up){
+            launchTrigger.setPosition(.5);
+        } else {
+            launchTrigger.setPosition(.30);
+        }
+
+        //This is manual turret angle movement code
         if (gamepad2.dpad_left) {
             turretMotor.setPower(1);
         } else if (gamepad2.dpad_right) {
@@ -260,44 +255,6 @@ public class TeleOpExperiment extends OpMode{
         } else {
             turretMotor.setPower(0);
         }
-
-
-        //  if (gamepad2.right_trigger > 0) {
-        //      launcherMotor.setPower(1);
-        //  } else {
-        //      launcherMotor.setPower(0);
-        //  }
-
-
-
-//        if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
-//            extensionMotor.setPower(1);
-//            ((DcMotorEx) extensionMotor).setVelocity(1500);
-//        } else if (gamepad2.right_bumper == false && gamepad2.left_bumper == false) {
-//            extensionMotor.setPower(0);
-//        }
-//        if (gamepad2.left_bumper == true && gamepad2.right_bumper == false && extensionMotor.getCurrentPosition() > -50) {
-//            extensionMotor.setPower(-0.75);
-//        } else if (gamepad2.left_bumper == false && gamepad2.right_bumper == false) {
-//            extensionMotor.setPower(0);
-//        }
-//
-//        if (gamepad2.circle == true && gamepad2.square == false) {
-//            claw.setPosition(1);
-//        }
-//
-//        if (gamepad2.circle == false && gamepad2.square == true){
-//            claw.setPosition(.45);
-//        }
-//
-//        if (gamepad2.cross == true && gamepad2.triangle == false){
-//            wrist.setPosition(0.5);
-//        }
-//
-//        if (gamepad2.cross == false && gamepad2.triangle == true){
-//            wrist.setPosition(1);
-//        }
-
     }
 
 

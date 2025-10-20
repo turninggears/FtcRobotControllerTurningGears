@@ -36,12 +36,7 @@ public class TeleOpDecodeIMU extends OpMode {
 
     DcMotor turretMotor;
 
-    //this is declaring any other motors needed for robot
-   // DcMotor armMotor;
-
-//    DcMotor extensionMotor;
-
-    Servo wrist, claw;
+    Servo   launchTrigger;
 
     ServoController controlHubServoController;
 
@@ -52,12 +47,6 @@ public class TeleOpDecodeIMU extends OpMode {
 
     float theta;
 
-    /* this section is to create variables to use throughout program*/
-//    int arm_down_position;
-//    int Release_Position;
-//    int arm_mid_position;
-//    int arm_up_position;
-//    int Arm_Pickup_Position;
     int drivemode;
     double Slow_Speed;
     double Med_Speed;
@@ -82,10 +71,8 @@ public class TeleOpDecodeIMU extends OpMode {
 
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
-        // extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
-        //this matches names of servos like motors above
-        // wrist = hardwareMap.get(Servo.class, "wrist");
-        // claw = hardwareMap.get(Servo.class, "claw");
+        launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
+
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -149,28 +136,29 @@ public class TeleOpDecodeIMU extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-//        if (gamepad1.square) {
-//            frontLeftDrive.setPower(1);
-//        } else if (gamepad1.triangle) {
-//            frontRightDrive.setPower(1);
-//        } else if (gamepad1.cross) {
-//            backLeftDrive.setPower(1);
-//        } else if (gamepad1.circle) {
-//            backRightDrive.setPower(1);
-//        }
-
         telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
         telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
         telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
+//end of first drive code
 
-
+        //intake control code
         if (gamepad2.left_bumper) {
             intakeMotor.setPower(-1);
-        } else {
+        } if (gamepad2.right_bumper){
             intakeMotor.setPower(1);
+        } if (gamepad2.dpad_down){
+            intakeMotor.setPower((0));
         }
 
+        //Launch trigger control
+        if (gamepad2.dpad_up) {
+            launchTrigger.setPosition(.5);
+        } else {
+            launchTrigger.setPosition(0.0);
+        }
+
+        //launcher manual control code
         if (gamepad2.squareWasPressed()) {
             launcherPower = 0;
         }
@@ -195,6 +183,7 @@ public class TeleOpDecodeIMU extends OpMode {
 
         launcherMotor.setPower(Math.abs(launcherPower));
 
+        //this is code to manually move turret
         if (gamepad2.dpad_left) {
             turretMotor.setPower(1);
         } else if (gamepad2.dpad_right) {
@@ -202,44 +191,6 @@ public class TeleOpDecodeIMU extends OpMode {
         } else {
             turretMotor.setPower(0);
         }
-
-
-    //  if (gamepad2.right_trigger > 0) {
-    //      launcherMotor.setPower(1);
-    //  } else {
-    //      launcherMotor.setPower(0);
-    //  }
-
-
-
-//        if (gamepad2.right_bumper == true && gamepad2.left_bumper == false) {
-//            extensionMotor.setPower(1);
-//            ((DcMotorEx) extensionMotor).setVelocity(1500);
-//        } else if (gamepad2.right_bumper == false && gamepad2.left_bumper == false) {
-//            extensionMotor.setPower(0);
-//        }
-//        if (gamepad2.left_bumper == true && gamepad2.right_bumper == false && extensionMotor.getCurrentPosition() > -50) {
-//            extensionMotor.setPower(-0.75);
-//        } else if (gamepad2.left_bumper == false && gamepad2.right_bumper == false) {
-//            extensionMotor.setPower(0);
-//        }
-//
-//        if (gamepad2.circle == true && gamepad2.square == false) {
-//            claw.setPosition(1);
-//        }
-//
-//        if (gamepad2.circle == false && gamepad2.square == true){
-//            claw.setPosition(.45);
-//        }
-//
-//        if (gamepad2.cross == true && gamepad2.triangle == false){
-//            wrist.setPosition(0.5);
-//        }
-//
-//        if (gamepad2.cross == false && gamepad2.triangle == true){
-//            wrist.setPosition(1);
-//        }
-
         }
 
 

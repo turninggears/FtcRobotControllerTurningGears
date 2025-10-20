@@ -3,6 +3,8 @@
 ## Control Hub Connectivity
 Sometimes the PC and Control Hub can lose connectivity. Try each step in order; stop if connectivity is restored. Otherwise, proceed to the next step.
 
+This guide uses Windows Terminal, **not** `cmd`.
+
 ### Wired ADB (USB)
 1. Unplug the USB cable from the computer, then plug it back in.
 2. Open the Rev Hardware Client.

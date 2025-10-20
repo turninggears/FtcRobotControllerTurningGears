@@ -52,7 +52,7 @@ public class TeleOpExperiment extends OpMode{
 
     DcMotor turretMotor;
 
-    Servo launcherServo;
+    //Servo launcherServo;
 
     ServoController controlHubServoController;
 
@@ -89,13 +89,9 @@ public class TeleOpExperiment extends OpMode{
         intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
         launcherMotor = hardwareMap.get(DcMotor.class,"launcher motor");
         turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
-        launcherServo = hardwareMap.get(Servo.class, "launcher servo");
+        //launcherServo = hardwareMap.get(Servo.class, "launcher servo");
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
-        // extensionMotor=hardwareMap.get(DcMotor.class,"extensionMotor");
-        //this matches names of servos like motors above
-        // wrist = hardwareMap.get(Servo.class, "wrist");
-        // claw = hardwareMap.get(Servo.class, "claw");
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -108,19 +104,7 @@ public class TeleOpExperiment extends OpMode{
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-       /* this section is an example of creating pre set arm/motor position using encoder
-        arm_down_position = 1;
-        arm_mid_position = 655;
-        arm_up_position = 940;
-        Arm_Pickup_Position = 330;
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        */
-
-//        controlHubServoController.pwmEnable();
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
@@ -140,8 +124,8 @@ public class TeleOpExperiment extends OpMode{
 
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
-                GoBildaPinpointDriver.EncoderDirection.FORWARD, //X pod direction
-                GoBildaPinpointDriver.EncoderDirection.FORWARD //Y pod direction
+                GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
+                GoBildaPinpointDriver.EncoderDirection.REVERSED//Y pod direction
         );
         pinpoint.setOffsets(-120,79, DistanceUnit.MM);
 

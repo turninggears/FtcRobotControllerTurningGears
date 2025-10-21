@@ -85,7 +85,7 @@ public class TeleOpDecodeIMU extends OpMode {
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;
         arm_mid_position = 655;
@@ -154,7 +154,7 @@ public class TeleOpDecodeIMU extends OpMode {
 
         //Launch trigger control
         if (gamepad2.dpad_up) {
-            launchTrigger.setPosition(.5);
+            launchTrigger.setPosition(.9);
         } else {
             launchTrigger.setPosition(0.30);
         }

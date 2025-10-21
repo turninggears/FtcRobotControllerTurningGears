@@ -127,7 +127,7 @@ public class TeleOpExperiment extends OpMode{
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
-                GoBildaPinpointDriver.EncoderDirection.FORWARD//Y pod direction
+                GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
         pinpoint.setOffsets(-120,79, DistanceUnit.MM);
 
@@ -146,7 +146,10 @@ public class TeleOpExperiment extends OpMode{
 
 
         //not sur eif this is already added or needs to be but this converts radians to degrees
-        double robotHeadingDeg = Math.toDegrees(robotHeading);
+        /* NOTE: this is not needed, since the double robotHeading is initialized to the pinpoint
+         * instance variable AngleUnit.DEGREES.
+         */
+//        double robotHeadingDeg = Math.toDegrees(robotHeading);
 
         telemetry.addData("Pose (mm)", "x=%.1f, y=%1f)", robotXmm, robotYmm);
         telemetry.addData("Heading (deg)", Math.toDegrees(robotHeading));
@@ -193,10 +196,11 @@ public class TeleOpExperiment extends OpMode{
 //        telemetry.addLine("The left joystick sets the robot direction");
 //        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
-        // If you press the A button, then you reset the Yaw to be zero from the way
-        // the robot is currently pointing
+        /* If you press the cross (X) button, then you reset the heading to be 0 degrees;
+         * this is equivalent to the resetYaw method from the IMU class.
+         */
         if (gamepad1.cross) {
-            imu.resetYaw();
+            pinpoint.setHeading(0, AngleUnit.DEGREES);
         }
 
         //this is start of drive code
@@ -266,8 +270,11 @@ public class TeleOpExperiment extends OpMode{
         double r = Math.hypot(right, forward);
 
         // Second, rotate angle by the angle the robot is pointing
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+//        theta = AngleUnit.normalizeRadians(theta -
+//                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+        // Changed to get the angle from the pinpoint instead of the internal IMU.
+        theta = AngleUnit.normalizeRadians(theta - pinpoint.getHeading(AngleUnit.RADIANS));
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);
@@ -304,6 +311,8 @@ public class TeleOpExperiment extends OpMode{
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
         backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+
+        // shouldn't this be just maxSpeed * maxPower?
         telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
     //end of drive code

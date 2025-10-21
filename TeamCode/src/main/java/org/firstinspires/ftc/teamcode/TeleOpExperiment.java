@@ -155,6 +155,10 @@ public class TeleOpExperiment extends OpMode{
         telemetry.addData("Heading (deg)", Math.toDegrees(robotHeading));
 
         //begin auto turret aim code
+
+        /* The target coordinates are constant, since they don't move; are they set relative to a
+         * corner of the field, or to the start position of the robot?
+         */
         double dx = TARGET_X_MM - robotXmm;
         double dy = TARGET_Y_mm - robotYmm;
 
@@ -182,7 +186,7 @@ public class TeleOpExperiment extends OpMode{
         //this is the more advanced way to run turret to position
         int current = turretMotor.getCurrentPosition();
         int error = ticksFromZero - current;
-        double power = TURRET_KP * (error/ 1000.0); //scale error so KP isn't tiny
+        double power = TURRET_KP * (error / 1000.0); //scale error so KP isn't tiny
         power = Math.max(-0.6, Math.min(0.6, power)); //clamp
         turretMotor.setPower(power);
 
@@ -191,7 +195,7 @@ public class TeleOpExperiment extends OpMode{
         //end of turret auto angle code.
 
         //update this and reactivate them if you want message to display on driver station
-        telemetry.addLine("Press cross (X) to reset Yaw");
+        telemetry.addLine("Press cross (X) to reset heading");
         telemetry.addLine("Hold left bumper to drive in robot relative");
 //        telemetry.addLine("The left joystick sets the robot direction");
 //        telemetry.addLine("Moving the right joystick left and right turns the robot");

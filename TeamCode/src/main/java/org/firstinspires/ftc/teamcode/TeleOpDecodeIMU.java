@@ -141,7 +141,7 @@ public class TeleOpDecodeIMU extends OpMode {
         telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
         telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
         telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
-//end of first drive code
+//end of first drive code--
 
         //intake control code
         if (gamepad2.left_bumper) {
@@ -186,9 +186,9 @@ public class TeleOpDecodeIMU extends OpMode {
 
         //this is code to manually move turret
         if (gamepad2.dpad_left) {
-            turretMotor.setPower(1);
+            turretMotor.setPower(-.3);
         } else if (gamepad2.dpad_right) {
-            turretMotor.setPower(-1);
+            turretMotor.setPower(.3);
         } else {
             turretMotor.setPower(0);
         }

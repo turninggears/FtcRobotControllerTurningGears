@@ -21,6 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 @TeleOp(name = "TeleOp Experiment", group = "Robot")
 @Config
 
@@ -129,7 +131,10 @@ public class TeleOpExperiment extends OpMode{
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
-        pinpoint.setOffsets(-120,79, DistanceUnit.MM);
+        pinpoint.setOffsets(-145,-88, DistanceUnit.MM);
+
+        Pose2D pose = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, AngleUnit.normalizeDegrees(0));
+        pinpoint.setPosition(pose);
 
     }
 

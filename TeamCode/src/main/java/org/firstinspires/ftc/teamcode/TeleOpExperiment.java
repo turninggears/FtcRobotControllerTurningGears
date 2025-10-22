@@ -245,7 +245,7 @@ public class TeleOpExperiment extends OpMode{
         if (gamepad2.dpad_up){
             launchTrigger.setPosition(.5);
         } else {
-            launchTrigger.setPosition(.30);
+            launchTrigger.setPosition(.40);
         }
 
         //This is manual turret angle movement code

@@ -142,7 +142,7 @@ public class TeleOpDecodeIMU extends OpMode {
         telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
         telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
 //end of first drive code
-
+        telemetry.addData("Turret Velocity", turretMotor.getPower());
         //intake control code
         if (gamepad2.left_bumper) {
             intakeMotor.setPower(-1);
@@ -156,7 +156,7 @@ public class TeleOpDecodeIMU extends OpMode {
         if (gamepad2.dpad_up) {
             launchTrigger.setPosition(.9);
         } else {
-            launchTrigger.setPosition(0.30);
+            launchTrigger.setPosition(0.40);
         }
 
         //launcher manual control code

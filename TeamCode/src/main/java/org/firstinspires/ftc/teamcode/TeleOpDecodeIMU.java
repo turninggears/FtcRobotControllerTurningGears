@@ -32,7 +32,7 @@ public class TeleOpDecodeIMU extends OpMode {
 
     DcMotor intakeMotor;
 
-    DcMotor launcherMotor;
+    DcMotorEx launcherMotor;
 
     DcMotor turretMotor;
 
@@ -66,7 +66,7 @@ public class TeleOpDecodeIMU extends OpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
-        launcherMotor = hardwareMap.get(DcMotor.class,"launcher motor");
+        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
         turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
 
         //this matches names of other motors in control hub to names created in beginning of this code
@@ -116,6 +116,7 @@ public class TeleOpDecodeIMU extends OpMode {
     //this is the code that runs once you press play put game play code in this section
     public void loop() {
        //update this and reactivate them if you want message to display on driver station
+
         telemetry.addLine("Press cross (X) to reset Yaw");
         telemetry.addLine("Hold left bumper to drive in robot relative");
 //        telemetry.addLine("The left joystick sets the robot direction");
@@ -181,8 +182,8 @@ public class TeleOpDecodeIMU extends OpMode {
         }
 
         telemetry.addData("launcher power: ", launcherPower);
-
         launcherMotor.setPower(Math.abs(launcherPower));
+        telemetry.addData("launcher power: ", launcherMotor.getVelocity());
 
         //this is code to manually move turret
         if (gamepad2.dpad_left) {

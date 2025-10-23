@@ -50,7 +50,7 @@ public class TeleOpExperiment extends OpMode{
     //this declares the other motors for the robot
     DcMotor intakeMotor;
 
-    DcMotor launcherMotor;
+    DcMotorEx launcherMotor;
 
     DcMotor turretMotor;
 
@@ -90,7 +90,7 @@ public class TeleOpExperiment extends OpMode{
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
        //this assigns the motors and servos for intake, launch, and turret
         intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
-        launcherMotor = hardwareMap.get(DcMotor.class,"launcher motor");
+        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
         turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
         //launcherServo = hardwareMap.get(Servo.class, "launcher servo");
         //this matches names of other motors in control hub to names created in beginning of this code
@@ -202,6 +202,7 @@ public class TeleOpExperiment extends OpMode{
         //update this and reactivate them if you want message to display on driver station
         telemetry.addLine("Press cross (X) to reset heading");
         telemetry.addLine("Hold left bumper to drive in robot relative");
+        telemetry.addData("Launcher Velocity", launcherMotor.getVelocity());
 //        telemetry.addLine("The left joystick sets the robot direction");
 //        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
@@ -251,14 +252,14 @@ public class TeleOpExperiment extends OpMode{
         }
 
         telemetry.addData("launcher power: ", launcherPower);
-
+        telemetry.addData("launcher power: ", launcherMotor.getVelocity());
         launcherMotor.setPower(Math.abs(launcherPower));
 
         //This is code to move launch trigger
         if (gamepad2.dpad_up){
             launchTrigger.setPosition(.5);
         } else {
-            launchTrigger.setPosition(.30);
+            launchTrigger.setPosition(.40);
         }
 
         //This is manual turret angle movement code

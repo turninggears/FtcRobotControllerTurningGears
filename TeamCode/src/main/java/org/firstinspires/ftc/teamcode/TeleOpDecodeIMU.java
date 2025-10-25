@@ -84,7 +84,13 @@ public class TeleOpDecodeIMU extends OpMode {
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+       //if turret doesn't work get rid of these lines
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //if turret doesn't work get rif of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;

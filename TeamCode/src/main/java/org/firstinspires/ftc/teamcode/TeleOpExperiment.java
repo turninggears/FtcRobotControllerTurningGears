@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -30,8 +31,10 @@ public class TeleOpExperiment extends OpMode{
 
     GoBildaPinpointDriver pinpoint;
 
-    public static double TARGET_X_MM = 152.4; // +X is toward the audience
-    public static double TARGET_Y_mm = 3505.2; // +Y is toward the blue alliance
+    // Blue goal
+
+    public static double TARGET_X_MM = 152.4; // +X is toward the Red Alliance
+    public static double TARGET_Y_mm = 3505.2; // +Y is toward the goals
 
     // --- Turret control constants ---
 // You must set these for YOUR turret. See step 4 explanations below.
@@ -53,6 +56,8 @@ public class TeleOpExperiment extends OpMode{
     DcMotorEx launcherMotor;
 
     DcMotor turretMotor;
+
+    VoltageSensor voltageSensor;
 
     //Servo launcherServo;
 
@@ -80,6 +85,17 @@ public class TeleOpExperiment extends OpMode{
     Orientation angles;
     Acceleration gravity;
 
+    // Robot center point in mm
+    double ROBOT_CENTER_X = 207.5;
+
+    double ROBOT_CENTER_Y = 207.5;
+
+    // Start position on the grid in mm
+
+    double startPosX = 2342;
+
+    double startPosY = 0;
+
 
     @Override
     public void init() {
@@ -98,7 +114,7 @@ public class TeleOpExperiment extends OpMode{
         launchTrigger = hardwareMap.get(Servo.class, "launch trigger");
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        // We need to test once chasis is done to make sure this is still correct direction for motors.
+        // We need to test once chassis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -133,7 +149,11 @@ public class TeleOpExperiment extends OpMode{
         );
         pinpoint.setOffsets(-145,-88, DistanceUnit.MM);
 
-        Pose2D pose = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, AngleUnit.normalizeDegrees(0));
+        double currentVoltage = voltageSensor.getVoltage();
+
+
+
+        Pose2D pose = new Pose2D(DistanceUnit.MM, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 0);
         pinpoint.setPosition(pose);
 
     }
@@ -147,7 +167,8 @@ public class TeleOpExperiment extends OpMode{
         //reads pose: x(mm), Y (MM), Heading (radians,unnormalized)
         double robotXmm = pinpoint.getPosX(DistanceUnit.MM);
         double robotYmm = pinpoint.getPosY(DistanceUnit.MM);
-        double  robotHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+        double  unNormalizedHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+        double robotHeading = AngleUnit.normalizeDegrees(unNormalizedHeading);
 
 
         //not sur eif this is already added or needs to be but this converts radians to degrees
@@ -168,9 +189,15 @@ public class TeleOpExperiment extends OpMode{
         double dy = TARGET_Y_mm - robotYmm;
 
         //angle from robot to target in field coordinates
-        double targetAngleField = Math.atan2(dy, dx); //radians
+        double targetAngleField = Math.toDegrees(Math.atan2(dy, dx)); // radians converted to degrees
 
-        double turretAngleNeeded = targetAngleField - robotHeading;
+        double turretAngleNeeded = 0;
+
+        if (robotHeading < targetAngleField) {
+            turretAngleNeeded = targetAngleField - robotHeading;
+        } else if (robotHeading > targetAngleField) {
+            turretAngleNeeded = robotHeading - targetAngleField;
+        }
         //normalize to [-PI, +PI] so we choose the shortest turn
         turretAngleNeeded = Math.atan2(Math.sin(turretAngleNeeded), Math.cos(turretAngleNeeded));
 

@@ -76,7 +76,7 @@ public class AutoBot extends LinearOpMode {
                 .lineToX(47.5)
                 .waitSeconds(3);
 
-        Action trajectoryActionCloseOut = trajectory.endTrajectory().fresh()
+        Action end = trajectory.endTrajectory().fresh()
                 // strafe to Autonomous end position
                 .strafeTo(new Vector2d(48, 12))
                 .build();
@@ -101,7 +101,7 @@ public class AutoBot extends LinearOpMode {
                 new SequentialAction(
                         position,
                         launcher.launch(),
-                        trajectoryActionCloseOut
+                        end
                 )
         );
     }

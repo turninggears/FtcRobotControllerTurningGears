@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -21,6 +22,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 @TeleOp(name = "TeleOp Experiment", group = "Robot")
 @Config
 
@@ -28,8 +31,10 @@ public class TeleOpExperiment extends OpMode{
 
     GoBildaPinpointDriver pinpoint;
 
-    public static double TARGET_X_MM = 152.4; // +X is toward the audience
-    public static double TARGET_Y_mm = 3505.2; // +Y is toward the blue alliance
+    // Blue goal
+
+    public static double TARGET_X_MM = 152.4; // +X is toward the Red Alliance
+    public static double TARGET_Y_mm = 3505.2; // +Y is toward the goals
 
     // --- Turret control constants ---
 // You must set these for YOUR turret. See step 4 explanations below.
@@ -48,9 +53,11 @@ public class TeleOpExperiment extends OpMode{
     //this declares the other motors for the robot
     DcMotor intakeMotor;
 
-    DcMotor launcherMotor;
+    DcMotorEx launcherMotor;
 
     DcMotor turretMotor;
+
+    VoltageSensor voltageSensor;
 
     //Servo launcherServo;
 
@@ -78,6 +85,17 @@ public class TeleOpExperiment extends OpMode{
     Orientation angles;
     Acceleration gravity;
 
+    // Robot center point in mm
+    double ROBOT_CENTER_X = 207.5;
+
+    double ROBOT_CENTER_Y = 207.5;
+
+    // Start position on the grid in mm
+
+    double startPosX = 2342;
+
+    double startPosY = 0;
+
 
     @Override
     public void init() {
@@ -88,7 +106,7 @@ public class TeleOpExperiment extends OpMode{
         backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
        //this assigns the motors and servos for intake, launch, and turret
         intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
-        launcherMotor = hardwareMap.get(DcMotor.class,"launcher motor");
+        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
         turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
         //launcherServo = hardwareMap.get(Servo.class, "launcher servo");
         //this matches names of other motors in control hub to names created in beginning of this code
@@ -96,7 +114,7 @@ public class TeleOpExperiment extends OpMode{
         launchTrigger = hardwareMap.get(Servo.class, "launch trigger");
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        // We need to test once chasis is done to make sure this is still correct direction for motors.
+        // We need to test once chassis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -127,9 +145,16 @@ public class TeleOpExperiment extends OpMode{
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
-                GoBildaPinpointDriver.EncoderDirection.FORWARD//Y pod direction
+                GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
-        pinpoint.setOffsets(-120,79, DistanceUnit.MM);
+        pinpoint.setOffsets(-145,-88, DistanceUnit.MM);
+
+        double currentVoltage = voltageSensor.getVoltage();
+
+
+
+        Pose2D pose = new Pose2D(DistanceUnit.MM, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 0);
+        pinpoint.setPosition(pose);
 
     }
 
@@ -142,23 +167,37 @@ public class TeleOpExperiment extends OpMode{
         //reads pose: x(mm), Y (MM), Heading (radians,unnormalized)
         double robotXmm = pinpoint.getPosX(DistanceUnit.MM);
         double robotYmm = pinpoint.getPosY(DistanceUnit.MM);
-        double  robotHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+        double  unNormalizedHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+        double robotHeading = AngleUnit.normalizeDegrees(unNormalizedHeading);
 
 
         //not sur eif this is already added or needs to be but this converts radians to degrees
-        double robotHeadingDeg = Math.toDegrees(robotHeading);
+        /* NOTE: this is not needed, since the double robotHeading is initialized to the pinpoint
+         * instance variable AngleUnit.DEGREES.
+         */
+//        double robotHeadingDeg = Math.toDegrees(robotHeading);
 
         telemetry.addData("Pose (mm)", "x=%.1f, y=%1f)", robotXmm, robotYmm);
         telemetry.addData("Heading (deg)", Math.toDegrees(robotHeading));
 
         //begin auto turret aim code
+
+        /* The target coordinates are constant, since they don't move; are they set relative to a
+         * corner of the field, or to the start position of the robot?
+         */
         double dx = TARGET_X_MM - robotXmm;
         double dy = TARGET_Y_mm - robotYmm;
 
         //angle from robot to target in field coordinates
-        double targetAngleField = Math.atan2(dy, dx); //radians
+        double targetAngleField = Math.toDegrees(Math.atan2(dy, dx)); // radians converted to degrees
 
-        double turretAngleNeeded = targetAngleField - robotHeading;
+        double turretAngleNeeded = 0;
+
+        if (robotHeading < targetAngleField) {
+            turretAngleNeeded = targetAngleField - robotHeading;
+        } else if (robotHeading > targetAngleField) {
+            turretAngleNeeded = robotHeading - targetAngleField;
+        }
         //normalize to [-PI, +PI] so we choose the shortest turn
         turretAngleNeeded = Math.atan2(Math.sin(turretAngleNeeded), Math.cos(turretAngleNeeded));
 
@@ -179,7 +218,7 @@ public class TeleOpExperiment extends OpMode{
         //this is the more advanced way to run turret to position
         int current = turretMotor.getCurrentPosition();
         int error = ticksFromZero - current;
-        double power = TURRET_KP * (error/ 1000.0); //scale error so KP isn't tiny
+        double power = TURRET_KP * (error / 1000.0); //scale error so KP isn't tiny
         power = Math.max(-0.6, Math.min(0.6, power)); //clamp
         turretMotor.setPower(power);
 
@@ -188,15 +227,17 @@ public class TeleOpExperiment extends OpMode{
         //end of turret auto angle code.
 
         //update this and reactivate them if you want message to display on driver station
-        telemetry.addLine("Press cross (X) to reset Yaw");
+        telemetry.addLine("Press cross (X) to reset heading");
         telemetry.addLine("Hold left bumper to drive in robot relative");
+        telemetry.addData("Launcher Velocity", launcherMotor.getVelocity());
 //        telemetry.addLine("The left joystick sets the robot direction");
 //        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
-        // If you press the A button, then you reset the Yaw to be zero from the way
-        // the robot is currently pointing
+        /* If you press the cross (X) button, then you reset the heading to be 0 degrees;
+         * this is equivalent to the resetYaw method from the IMU class.
+         */
         if (gamepad1.cross) {
-            imu.resetYaw();
+            pinpoint.setHeading(0, AngleUnit.DEGREES);
         }
 
         //this is start of drive code
@@ -238,7 +279,7 @@ public class TeleOpExperiment extends OpMode{
         }
 
         telemetry.addData("launcher power: ", launcherPower);
-
+        telemetry.addData("launcher power: ", launcherMotor.getVelocity());
         launcherMotor.setPower(Math.abs(launcherPower));
 
         //This is code to move launch trigger
@@ -266,8 +307,11 @@ public class TeleOpExperiment extends OpMode{
         double r = Math.hypot(right, forward);
 
         // Second, rotate angle by the angle the robot is pointing
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+//        theta = AngleUnit.normalizeRadians(theta -
+//                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+        // Changed to get the angle from the pinpoint instead of the internal IMU.
+        theta = AngleUnit.normalizeRadians(theta - pinpoint.getHeading(AngleUnit.RADIANS));
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);
@@ -304,6 +348,8 @@ public class TeleOpExperiment extends OpMode{
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
         backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+
+        // shouldn't this be just maxSpeed * maxPower?
         telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
     //end of drive code

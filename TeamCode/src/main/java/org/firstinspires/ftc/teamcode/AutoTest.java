@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
+
 import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -7,87 +9,67 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 @Config
-@Autonomous(name = "AutoBot", group = "Autonomous")
-public class AutoBot extends LinearOpMode {
-
-
-    public static class Pause implements Action {
-
-        public static Pause pause(double seconds) {
-            return new Pause(seconds);
-        }
-        double seconds;
-        long startTime = -1;
-        public Pause(double seconds) {
-            this.seconds = seconds;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (startTime < 0) {
-                startTime = System.currentTimeMillis();
-            }
-            return System.currentTimeMillis() > startTime + (seconds * 1000);
-        }
-
-
-    }
+@Autonomous(name = "AutoTest", group = "Autonomous")
+public class AutoTest extends LinearOpMode {
 
     public class Launcher {
-        private DcMotorEx launcherMotor;
+        private final DcMotorEx launcherMotor;
 
-        public Launcher (HardwareMap hardwareMap) {
+        public Launcher(HardwareMap hardwareMap) {
             launcherMotor = hardwareMap.get(DcMotorEx.class, "launcher motor");
             launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+            launcherMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         }
 
+        /**
+         * Launch action RUNS for a fixed time and then ENDS properly.
+         */
         public class Launch implements Action {
-            double launchSpeed;
-            public Launch(double speed) {
-                this.launchSpeed = speed;
-            }
-
             private boolean initialized = false;
+            private final ElapsedTime timer = new ElapsedTime();
+            private static final double RUN_TIME_SEC = 1.5; // how long launcher runs
+            private static final double POWER = 1.0;        // launcher power
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                // TODO: Launcher run logic goes here
-
                 if (!initialized) {
-                    // TODO: launcher initialization logic
+                    launcherMotor.setPower(POWER);
+                    timer.reset();
                     initialized = true;
-                    launcherMotor.setPower(launchSpeed);
                 }
 
+                packet.put("Launcher Power", launcherMotor.getPower());
+                packet.put("Launcher Time (s)", timer.seconds());
 
-
-                packet.put("Launcher power: ", launchSpeed);
-
-                return true;
+                if (timer.seconds() < RUN_TIME_SEC) {
+                    return true; // keep running launcher
+                } else {
+                    launcherMotor.setPower(0.0);
+                    return false; // END action so sequence can continue
+                }
             }
         }
 
-        public Action launch(double speed) {
-            return new Launch(speed);
+        public Action launch() {
+            return new Launch();
         }
-
     }
+
     @Override
     public void runOpMode() {
-        // change this to our actual starting position
         Pose2d initialPose = new Pose2d(50, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Launcher launcher = new Launcher(hardwareMap);
@@ -104,34 +86,24 @@ public class AutoBot extends LinearOpMode {
                 .lineToX(47.5)
                 .waitSeconds(3);
 
-
         Action end = trajectory.endTrajectory().fresh()
-                // strafe to Autonomous end position
                 .strafeTo(new Vector2d(48, 12))
                 .build();
 
         Action position = trajectory.build();
 
-        // actions that need to happen on init; for instance, a claw tightening.
-        // Actions.runBlocking(claw.closeClaw());
-
-
-
         while (!isStopRequested() && !opModeIsActive()) {
-            // any logic while the robot is running but OpMode ius not yet active
+            // idle loop while waiting for start
         }
 
-        // any logic that we want to run once before the OpMode starts
         waitForStart();
-
         if (isStopRequested()) return;
 
         Actions.runBlocking(
                 new SequentialAction(
-                        position,
-                        launcher.launch(0.5),
-                        Pause.pause(2.0),
-                        end
+                        position,          // path 1
+                        launcher.launch(), // fixed launcher action
+                        end                // final path
                 )
         );
     }

@@ -106,8 +106,8 @@ public class AutoBot extends LinearOpMode {
         double startPosXin = (startPosX / 25.4) + ROBOT_CENTER_X_IN;
         double startPoxYin = (startPosY / 25.4) + ROBOT_CENTER_Y_IN;
         Rotation2d initialHeading = new Rotation2d(Math.toRadians(0), Math.toRadians(90));
-        Pose2d initialPose = new Pose2d(startPosXin, startPoxYin, Math.toRadians(90));
-        Pose2d endPose = new Pose2d((startPosXin - 24), (startPoxYin + 24), Math.toRadians(180));
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
+        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Launcher launcher = new Launcher(hardwareMap);
 
@@ -115,16 +115,17 @@ public class AutoBot extends LinearOpMode {
 //                .setTangent(0)
 //                .lineToX(33);
 //                .splineToLinearHeading(endPose, 0);
+                .setTangent(Math.toRadians(90))
                 .lineToYSplineHeading(33, Math.toRadians(0))
                 .waitSeconds(2)
-                .setTangent(Math.toRadians(90))
-                .lineToY(48)
-                .setTangent(Math.toRadians(0))
-                .lineToX(32)
-                .strafeTo(new Vector2d(44.5, 30))
-                .turn(Math.toRadians(180))
-                .lineToX(47.5)
-                .waitSeconds(3);
+//                .setTangent(Math.toRadians(90))
+//                .lineToY(48)
+                .setTangent(Math.toRadians(180))
+                .lineToX(32);
+//                .strafeTo(new Vector2d(44.5, 30))
+//                .turn(Math.toRadians(180))
+//                .lineToX(47.5)
+//                .waitSeconds(3);
 
 
         Action end = trajectory.endTrajectory().fresh()

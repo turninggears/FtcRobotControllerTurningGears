@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -87,12 +88,33 @@ public class AutoBot extends LinearOpMode {
     }
     @Override
     public void runOpMode() {
-        // change this to our actual starting position
-        Pose2d initialPose = new Pose2d(50, 0, Math.toRadians(0));
+        /* measurements done in millimeters but RoadRunner uses inches;
+           easiest to measure in mm and then convert to inches (mm/25.4)
+         */
+        double ROBOT_CENTER_X = 207.5;
+
+        double ROBOT_CENTER_Y = 207.5;
+
+        // Start position on the grid in mm
+
+        double startPosX = 1927;
+
+        double startPosY = 0;
+
+        double ROBOT_CENTER_X_IN = ROBOT_CENTER_X / 25.4;
+        double ROBOT_CENTER_Y_IN = ROBOT_CENTER_Y / 25.4;
+        double startPosXin = (startPosX / 25.4) + ROBOT_CENTER_X_IN;
+        double startPoxYin = (startPosY / 25.4) + ROBOT_CENTER_Y_IN;
+        Rotation2d initialHeading = new Rotation2d(Math.toRadians(0), Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(startPosXin, startPoxYin, Math.toRadians(90));
+        Pose2d endPose = new Pose2d((startPosXin - 24), (startPoxYin + 24), Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Launcher launcher = new Launcher(hardwareMap);
 
         TrajectoryActionBuilder trajectory = drive.actionBuilder(initialPose)
+//                .setTangent(0)
+//                .lineToX(33);
+//                .splineToLinearHeading(endPose, 0);
                 .lineToYSplineHeading(33, Math.toRadians(0))
                 .waitSeconds(2)
                 .setTangent(Math.toRadians(90))
@@ -124,14 +146,13 @@ public class AutoBot extends LinearOpMode {
         // any logic that we want to run once before the OpMode starts
         waitForStart();
 
-        if (isStopRequested()) return;
+//        if (isStopRequested()) return;
 
         Actions.runBlocking(
                 new SequentialAction(
-                        position,
-                        launcher.launch(0.5),
-                        Pause.pause(2.0),
-                        end
+                        position
+//                        Pause.pause(2.0),
+//                        launcher.launch(0.5)
                 )
         );
     }

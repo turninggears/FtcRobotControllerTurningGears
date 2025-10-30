@@ -116,6 +116,8 @@ public class TeleOpDecodeIMU extends OpMode {
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        imu.resetYaw();
     }
 
     @Override

@@ -165,7 +165,7 @@ public class TeleOpDecodeIMU extends OpMode {
         if (gamepad2.dpad_up) {
             launchTrigger.setPosition(.9);
         } else {
-            launchTrigger.setPosition(0.30);
+            launchTrigger.setPosition(0.35);
         }
 
         //launcher manual control code

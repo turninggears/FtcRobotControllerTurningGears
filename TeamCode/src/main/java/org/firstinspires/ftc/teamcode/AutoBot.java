@@ -97,7 +97,7 @@ public class AutoBot extends LinearOpMode {
 
         // Start position on the grid in mm
 
-        double startPosX = 1927;
+        double startPosX = 1414.3;
 
         double startPosY = 0;
 

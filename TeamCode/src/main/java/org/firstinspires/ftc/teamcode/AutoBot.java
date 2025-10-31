@@ -103,41 +103,24 @@ public class AutoBot extends LinearOpMode {
 
         double ROBOT_CENTER_X_IN = ROBOT_CENTER_X / 25.4;
         double ROBOT_CENTER_Y_IN = ROBOT_CENTER_Y / 25.4;
-        double startPosXin = (startPosX / 25.4) + ROBOT_CENTER_X_IN;
-        double startPoxYin = (startPosY / 25.4) + ROBOT_CENTER_Y_IN;
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+        double start_pos_x_in = startPosX / 25.4;
+        double start_pos_y_in = startPosY / 25.4;
+        Pose2d startPose = new Pose2d(64, 3.86, Math.toRadians(90));
         Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
 
         TrajectoryActionBuilder trajectory = drive.actionBuilder(startPose)
-//                .setTangent(0)
-//                .lineToX(33);
-//                .splineToLinearHeading(endPose, 0);
-                .setTangent(Math.toRadians(90))
-                .lineToYLinearHeading(6, Math.toRadians(0))
+                .setTangent(0)
+                .lineToX(36)
                 .waitSeconds(2)
-//                .setTangent(Math.toRadians(90))
-//                .lineToY(48)
-                .setTangent(Math.toRadians(180))
-                .lineToXLinearHeading(-6, Math.toRadians(0));
-//                .strafeTo(new Vector2d(44.5, 30))
-//                .turn(Math.toRadians(180))
-//                .lineToX(47.5)
-//                .waitSeconds(3);
-
-
-        Action end = trajectory.endTrajectory().fresh()
-                // strafe to Autonomous end position
-                .strafeTo(new Vector2d(48, 12))
-                .build();
+                .setTangent(Math.toRadians(90))
+                .lineToY(60)
+                .lineToY(3.86);
 
         Action position = trajectory.build();
 
-        // actions that need to happen on init; for instance, a claw tightening.
-        // Actions.runBlocking(claw.closeClaw());
-
-
+        // actions that need to happen on init
 
         while (!isStopRequested() && !opModeIsActive()) {
             // any logic while the robot is running but OpMode ius not yet active
@@ -148,12 +131,6 @@ public class AutoBot extends LinearOpMode {
 
 //        if (isStopRequested()) return;
 
-        Actions.runBlocking(
-                new SequentialAction(
-                        position
-//                        Pause.pause(2.0),
-//                        launcher.launch(0.5)
-                )
-        );
+        Actions.runBlocking(new SequentialAction(position));
     }
 }

@@ -155,12 +155,20 @@ public class TeleOpDecodeIMU extends OpMode {
 //end of first drive code--
 
         //intake control code
+        if (gamepad2.rightBumperWasPressed()) {
+            if(intakeMotor.getPower()!=0){
+                intakeMotor.setPower(0);
+            } else {
+                intakeMotor.setPower(1);
+            }
+        }
+
         if (gamepad2.left_bumper) {
-            intakeMotor.setPower(-1);
-        } if (gamepad2.right_bumper){
-            intakeMotor.setPower(1);
-        } if (gamepad2.dpad_down){
-            intakeMotor.setPower((0));
+            if(intakeMotor.getPower()!=0){
+                intakeMotor.setPower(-1);
+            } else {
+                intakeMotor.setPower(1);
+            }
         }
 
         //Launch trigger control
@@ -178,15 +186,15 @@ public class TeleOpDecodeIMU extends OpMode {
         }
 
         if (gamepad2.triangleWasPressed()) {
-            launcherPower += 0.02;
+            launcherPower += 0.01;
         }
 
         if (gamepad2.crossWasPressed()) {
-            launcherPower -= 0.02;
+            launcherPower -= 0.01;
         }
 
         if (gamepad2.circleWasPressed() && launcherPower == 0) {
-            launcherPower = 0.30;
+            launcherPower = 0.40;
         }
 
         if (launcherPower > 1.0) {

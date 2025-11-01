@@ -133,15 +133,12 @@ public class TeleOpDecodeIMU extends OpMode {
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
 
-        telemetry.addLine("Press cross (X) to reset Yaw");
-        telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
-        telemetry.addData("Launcher RPM", rpm);
-//        telemetry.addLine("The left joystick sets the robot direction");
-//        telemetry.addLine("Moving the right joystick left and right turns the robot");
+        //This gives ticks of the turret motor's rotation.
+        double turretPosition = turretMotor.getCurrentPosition();
+        //This converts the turretMotorPosition to an angle to the bot in degrees.
+        double turretAngle = (turretPosition % 1080)/3;
 
-        // If you press the A button, then you reset the Yaw to be zero from the way
-        // the robot is currently pointing
+        // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
         if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
             imu.resetYaw();
         }
@@ -156,7 +153,6 @@ public class TeleOpDecodeIMU extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-        telemetry.update();
 
        // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
@@ -209,22 +205,11 @@ public class TeleOpDecodeIMU extends OpMode {
             launcherPower -= 0.01;
         }
 
-        //if (gamepad2.crossWasPressed()) {
-        //    launcherPower -= 0.01;
-        //}
-
-        //if (gamepad2.circleWasPressed() && launcherPower == 0) {
-        //    launcherPower = 0.40;
-        //}
-
         if (launcherPower > 1.0) {
             launcherPower = 1.0;
         }
 
-
-        telemetry.addData("launcher velocity: ", launcherPower);
         launcherMotor.setPower(Math.abs(launcherPower));
-        telemetry.addData("launcher power: ", launcherMotor.getVelocity());
 
 
         if (gamepad2.left_trigger > 0) {
@@ -235,7 +220,15 @@ public class TeleOpDecodeIMU extends OpMode {
             turretMotor.setPower(0);
         }
 
-        }
+        telemetry.addData("launcher velocity: ", launcherPower);
+        telemetry.addData("launcher power: ", launcherMotor.getVelocity());
+        telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
+        telemetry.addData("Launcher RPM", rpm);
+
+        telemetry.addData("turretMotor Position: ", turretPosition);
+        telemetry.addData("turret Angle: ", turretAngle);
+        telemetry.update();
+    }
 
 
     // This routine drives the robot field relative

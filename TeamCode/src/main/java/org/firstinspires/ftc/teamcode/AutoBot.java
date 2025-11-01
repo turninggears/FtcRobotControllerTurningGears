@@ -11,7 +11,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -110,27 +109,31 @@ public class AutoBot extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
 
-        TrajectoryActionBuilder trajectory = drive.actionBuilder(startPose)
-                .setTangent(0)
+        TrajectoryActionBuilder traj = drive.actionBuilder(startPose)
+                .setTangent(Math.toRadians(0))
                 .lineToX(36)
                 .waitSeconds(2)
                 .setTangent(Math.toRadians(90))
                 .lineToY(60)
                 .lineToY(3.86);
 
-        Action position = trajectory.build();
+        Action position = traj.build();
 
         // actions that need to happen on init
 
-        while (!isStopRequested() && !opModeIsActive()) {
-            // any logic while the robot is running but OpMode ius not yet active
-        }
+//        while (!isStopRequested() && !opModeIsActive()) {
+//            // any logic while the robot is running but OpMode ius not yet active
+//        }
 
         // any logic that we want to run once before the OpMode starts
         waitForStart();
 
 //        if (isStopRequested()) return;
 
-        Actions.runBlocking(new SequentialAction(position));
+        Actions.runBlocking(
+                new SequentialAction(
+                        position
+                )
+        );
     }
 }

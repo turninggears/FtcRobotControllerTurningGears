@@ -90,7 +90,7 @@ public class AutoBot extends LinearOpMode {
         /* measurements done in millimeters but RoadRunner uses inches;
            easiest to measure in mm and then convert to inches (mm/25.4)
          */
-        double ROBOT_CENTER_X = 207.5;
+        /*double ROBOT_CENTER_X = 207.5;
 
         double ROBOT_CENTER_Y = 207.5;
 
@@ -103,21 +103,23 @@ public class AutoBot extends LinearOpMode {
         double ROBOT_CENTER_X_IN = ROBOT_CENTER_X / 25.4;
         double ROBOT_CENTER_Y_IN = ROBOT_CENTER_Y / 25.4;
         double start_pos_x_in = startPosX / 25.4;
-        double start_pos_y_in = startPosY / 25.4;
-        Pose2d startPose = new Pose2d(64, 3.86, Math.toRadians(90));
-        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
+        double start_pos_y_in = startPosY / 25.4;*/
+        Pose2d startPose = new Pose2d(64, 4, Math.toRadians(90));
+//        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        Launcher launcher = new Launcher(hardwareMap);
+        Vector2d vector = new Vector2d(36, 4);
+//        Launcher launcher = new Launcher(hardwareMap);
 
-        TrajectoryActionBuilder traj = drive.actionBuilder(startPose)
+        Action trajectory = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .lineToX(36)
+                .strafeTo(vector)
                 .waitSeconds(2)
                 .setTangent(Math.toRadians(90))
                 .lineToY(60)
-                .lineToY(3.86);
+                .lineToY(4)
+                .build();
 
-        Action position = traj.build();
+//        Action position = traj.build();
 
         // actions that need to happen on init
 
@@ -132,7 +134,7 @@ public class AutoBot extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        position
+                        trajectory
                 )
         );
     }

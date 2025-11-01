@@ -137,7 +137,6 @@ public class TeleOpDecodeIMU extends OpMode {
         telemetry.addLine("Hold left bumper to drive in robot relative");
         telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
         telemetry.addData("Launcher RPM", rpm);
-        telemetry.update();
 //        telemetry.addLine("The left joystick sets the robot direction");
 //        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
@@ -156,6 +155,8 @@ public class TeleOpDecodeIMU extends OpMode {
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
+
+        telemetry.update();
 
        // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
@@ -187,8 +188,8 @@ public class TeleOpDecodeIMU extends OpMode {
             launchTrigger.setPosition(.9);
             artifactStopper.setPosition(0);
         } else {
-            launchTrigger.setPosition(0.65);
-            artifactStopper.setPosition(.3);
+            launchTrigger.setPosition(0.3);
+            artifactStopper.setPosition(.45);
         }
 
         //launcher manual control code

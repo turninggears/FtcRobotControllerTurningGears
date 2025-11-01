@@ -116,7 +116,7 @@ public class AutoBot extends LinearOpMode {
                 .waitSeconds(2)
                 .setTangent(Math.toRadians(90))
                 .lineToY(50)
-                .lineToY(15.84)
+                .strafeTo(new Vector2d(54.38, 15.84))
                 .build();
 
 //        Action position = traj.build();

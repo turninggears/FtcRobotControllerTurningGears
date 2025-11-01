@@ -104,18 +104,18 @@ public class AutoBot extends LinearOpMode {
         double ROBOT_CENTER_Y_IN = ROBOT_CENTER_Y / 25.4;
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
-        Pose2d startPose = new Pose2d(64, 4, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(64, 15.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        Vector2d vector = new Vector2d(36, 4);
+        Vector2d vector = new Vector2d(36, 15.84);
 //        Launcher launcher = new Launcher(hardwareMap);
 
-        Action trajectory = drive.actionBuilder(startPose)
+        Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
                 .strafeTo(vector)
                 .waitSeconds(2)
                 .setTangent(Math.toRadians(90))
-                .lineToY(60)
+                .lineToY(50)
                 .lineToY(4)
                 .build();
 
@@ -134,7 +134,7 @@ public class AutoBot extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        trajectory
+                        firstRow
                 )
         );
     }

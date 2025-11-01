@@ -164,12 +164,14 @@ public class TeleOpDecodeIMU extends OpMode {
         }
 
         if (gamepad2.left_bumper) {
-            if(intakeMotor.getPower()!=0){
+            if (intakeMotor.getPower() != 0) {
                 intakeMotor.setPower(-1);
             } else {
                 intakeMotor.setPower(1);
             }
-        }
+        } else if(intakeMotor.getPower()!=0){
+            intakeMotor.setPower(1);
+            }
 
         //Launch trigger control
         if (gamepad2.dpad_up) {

@@ -38,6 +38,8 @@ public class TeleOpDecodeIMU extends OpMode {
 
     Servo   launchTrigger;
 
+    Servo   artifactStopper;
+
     ServoController controlHubServoController;
 
     double launcherPower = 0;
@@ -72,7 +74,7 @@ public class TeleOpDecodeIMU extends OpMode {
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
         launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
-
+        artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -146,10 +148,10 @@ public class TeleOpDecodeIMU extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-        telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
-        telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
-        telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
-        telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
+       // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
+        // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
+        // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
+        // telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
 //end of first drive code--
 
         //intake control code
@@ -164,8 +166,10 @@ public class TeleOpDecodeIMU extends OpMode {
         //Launch trigger control
         if (gamepad2.dpad_up) {
             launchTrigger.setPosition(.9);
+            artifactStopper.setPosition(0);
         } else {
             launchTrigger.setPosition(0.35);
+            artifactStopper.setPosition(.3);
         }
 
         //launcher manual control code
@@ -195,9 +199,9 @@ public class TeleOpDecodeIMU extends OpMode {
 
         //this is code to manually move turret
         if (gamepad2.dpad_left) {
-            turretMotor.setPower(-.3);
+            turretMotor.setPower(-.25);
         } else if (gamepad2.dpad_right) {
-            turretMotor.setPower(.3);
+            turretMotor.setPower(.25);
         } else {
             turretMotor.setPower(0);
         }

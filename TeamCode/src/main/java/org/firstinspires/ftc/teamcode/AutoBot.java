@@ -11,7 +11,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -91,58 +90,42 @@ public class AutoBot extends LinearOpMode {
         /* measurements done in millimeters but RoadRunner uses inches;
            easiest to measure in mm and then convert to inches (mm/25.4)
          */
-        double ROBOT_CENTER_X = 207.5;
+        /*double ROBOT_CENTER_X = 207.5;
 
         double ROBOT_CENTER_Y = 207.5;
 
         // Start position on the grid in mm
 
-        double startPosX = 1927;
+        double startPosX = 1414.3;
 
         double startPosY = 0;
 
         double ROBOT_CENTER_X_IN = ROBOT_CENTER_X / 25.4;
         double ROBOT_CENTER_Y_IN = ROBOT_CENTER_Y / 25.4;
-        double startPosXin = (startPosX / 25.4) + ROBOT_CENTER_X_IN;
-        double startPoxYin = (startPosY / 25.4) + ROBOT_CENTER_Y_IN;
-        Rotation2d initialHeading = new Rotation2d(Math.toRadians(0), Math.toRadians(90));
-        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
-        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        Launcher launcher = new Launcher(hardwareMap);
+        double start_pos_x_in = startPosX / 25.4;
+        double start_pos_y_in = startPosY / 25.4;*/
+        Pose2d startPose = new Pose2d(64, 4, Math.toRadians(90));
+//        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        Vector2d vector = new Vector2d(36, 4);
+//        Launcher launcher = new Launcher(hardwareMap);
 
-        TrajectoryActionBuilder trajectory = drive.actionBuilder(initialPose)
-//                .setTangent(0)
-//                .lineToX(33);
-//                .splineToLinearHeading(endPose, 0);
-                .setTangent(Math.toRadians(90))
-                .lineToYSplineHeading(33, Math.toRadians(0))
+        Action trajectory = drive.actionBuilder(startPose)
+                .setTangent(Math.toRadians(0))
+                .strafeTo(vector)
                 .waitSeconds(2)
-//                .setTangent(Math.toRadians(90))
-//                .lineToY(48)
-                .setTangent(Math.toRadians(180))
-                .lineToX(32);
-//                .strafeTo(new Vector2d(44.5, 30))
-//                .turn(Math.toRadians(180))
-//                .lineToX(47.5)
-//                .waitSeconds(3);
-
-
-        Action end = trajectory.endTrajectory().fresh()
-                // strafe to Autonomous end position
-                .strafeTo(new Vector2d(48, 12))
+                .setTangent(Math.toRadians(90))
+                .lineToY(60)
+                .lineToY(4)
                 .build();
 
-        Action position = trajectory.build();
+//        Action position = traj.build();
 
-        // actions that need to happen on init; for instance, a claw tightening.
-        // Actions.runBlocking(claw.closeClaw());
+        // actions that need to happen on init
 
-
-
-        while (!isStopRequested() && !opModeIsActive()) {
-            // any logic while the robot is running but OpMode ius not yet active
-        }
+//        while (!isStopRequested() && !opModeIsActive()) {
+//            // any logic while the robot is running but OpMode ius not yet active
+//        }
 
         // any logic that we want to run once before the OpMode starts
         waitForStart();
@@ -151,9 +134,7 @@ public class AutoBot extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        position
-//                        Pause.pause(2.0),
-//                        launcher.launch(0.5)
+                        trajectory
                 )
         );
     }

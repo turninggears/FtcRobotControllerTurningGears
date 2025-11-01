@@ -86,6 +86,7 @@ public class TeleOpDecodeIMU extends OpMode {
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
        //if turret doesn't work get rid of these lines
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -105,6 +106,8 @@ public class TeleOpDecodeIMU extends OpMode {
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         */
+
+
 
 //        controlHubServoController.pwmEnable();
 
@@ -126,9 +129,15 @@ public class TeleOpDecodeIMU extends OpMode {
     //this is the code that runs once you press play put game play code in this section
     public void loop() {
        //update this and reactivate them if you want message to display on driver station
+        double TICKS_PER_REV = 537.7;
+        double ticksPerSecond = launcherMotor.getVelocity();
+        double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
 
         telemetry.addLine("Press cross (X) to reset Yaw");
         telemetry.addLine("Hold left bumper to drive in robot relative");
+        telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
+        telemetry.addData("Launcher RPM", rpm);
+        telemetry.update();
 //        telemetry.addLine("The left joystick sets the robot direction");
 //        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
@@ -178,7 +187,7 @@ public class TeleOpDecodeIMU extends OpMode {
             launchTrigger.setPosition(.9);
             artifactStopper.setPosition(0);
         } else {
-            launchTrigger.setPosition(0.35);
+            launchTrigger.setPosition(0.65);
             artifactStopper.setPosition(.3);
         }
 
@@ -203,7 +212,8 @@ public class TeleOpDecodeIMU extends OpMode {
             launcherPower = 1.0;
         }
 
-        telemetry.addData("launcher power: ", launcherPower);
+
+        telemetry.addData("launcher velocity: ", launcherPower);
         launcherMotor.setPower(Math.abs(launcherPower));
         telemetry.addData("launcher power: ", launcherMotor.getVelocity());
 

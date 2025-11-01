@@ -142,7 +142,7 @@ public class TeleOpDecodeIMU extends OpMode {
 
         // If you press the A button, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
-        if (gamepad1.cross) {
+        if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
             imu.resetYaw();
         }
 
@@ -184,7 +184,7 @@ public class TeleOpDecodeIMU extends OpMode {
             }
 
         //Launch trigger control
-        if (gamepad2.dpad_up) {
+        if (gamepad2.cross) {
             launchTrigger.setPosition(.9);
             artifactStopper.setPosition(0);
         } else {
@@ -193,21 +193,29 @@ public class TeleOpDecodeIMU extends OpMode {
         }
 
         //launcher manual control code
-        if (gamepad2.squareWasPressed()) {
-            launcherPower = 0;
+        if (gamepad2.circleWasPressed()) {
+            if(launcherPower > 0) {
+                launcherPower = 0;
+            } else {
+                launcherPower = 0.40;
+            }
         }
 
-        if (gamepad2.triangleWasPressed()) {
+        if (gamepad2.dpadUpWasPressed()) {
             launcherPower += 0.01;
         }
 
-        if (gamepad2.crossWasPressed()) {
+        if (gamepad2.dpadDownWasPressed()) {
             launcherPower -= 0.01;
         }
 
-        if (gamepad2.circleWasPressed() && launcherPower == 0) {
-            launcherPower = 0.40;
-        }
+        //if (gamepad2.crossWasPressed()) {
+        //    launcherPower -= 0.01;
+        //}
+
+        //if (gamepad2.circleWasPressed() && launcherPower == 0) {
+        //    launcherPower = 0.40;
+        //}
 
         if (launcherPower > 1.0) {
             launcherPower = 1.0;
@@ -218,14 +226,15 @@ public class TeleOpDecodeIMU extends OpMode {
         launcherMotor.setPower(Math.abs(launcherPower));
         telemetry.addData("launcher power: ", launcherMotor.getVelocity());
 
-        //this is code to manually move turret
-        if (gamepad2.dpad_left) {
-            turretMotor.setPower(-.25);
-        } else if (gamepad2.dpad_right) {
-            turretMotor.setPower(.25);
+
+        if (gamepad2.left_trigger > 0) {
+            turretMotor.setPower(-.30 * gamepad2.left_trigger);
+        } else if (gamepad2.right_trigger > 0) {
+            turretMotor.setPower(.30 * gamepad2.right_trigger);
         } else {
             turretMotor.setPower(0);
         }
+
         }
 
 

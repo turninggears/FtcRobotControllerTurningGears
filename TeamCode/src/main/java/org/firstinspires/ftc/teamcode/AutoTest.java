@@ -38,12 +38,12 @@ public class AutoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // 1. hardware map
-        launcherMotor   = hardwareMap.get(DcMotorEx.class, "launcherMotor");
+        launcherMotor   = hardwareMap.get(DcMotorEx.class, "launcher motor");
         turretMotor     = hardwareMap.get(DcMotorEx.class, "turretMotor");
-        intakeMotor     = hardwareMap.get(DcMotorEx.class, "IntakeMotor");
+        intakeMotor     = hardwareMap.get(DcMotorEx.class, "intakemotor");
 
-        launchTrigger   = hardwareMap.get(Servo.class, "launchTrigger");
-        artifactStopper = hardwareMap.get(Servo.class, "artifactStopper");
+        launchTrigger   = hardwareMap.get(Servo.class, "launch trigger");
+        artifactStopper = hardwareMap.get(Servo.class, "artifact stopper");
 
         // 2. drive + pose
         // change this line if your drive has a different constructor
@@ -53,7 +53,7 @@ public class AutoTest extends LinearOpMode {
         // drive.setPose(START_POSE);
 
         // 3. motor setup
-        launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -174,6 +174,7 @@ public class AutoTest extends LinearOpMode {
                 launchSeq,
 
                 // final move to (64, 15.84, 90) = end of code
+
                 finalBackToStart
         );
 

@@ -119,6 +119,7 @@ public class AutoBot extends LinearOpMode {
                 .strafeTo(new Vector2d(54.38, 15.84))
                 .build();
 
+
 //        Action position = traj.build();
 
         // actions that need to happen on init

@@ -104,6 +104,7 @@ public class AutoBotTEST2 extends LinearOpMode {
         double ROBOT_CENTER_Y_IN = ROBOT_CENTER_Y / 25.4;
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
+
         Pose2d startPose = new Pose2d(64, 15.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);

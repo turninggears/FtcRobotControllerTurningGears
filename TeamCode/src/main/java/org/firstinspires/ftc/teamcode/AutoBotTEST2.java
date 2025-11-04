@@ -4,32 +4,24 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
 @Autonomous(name = "AutoBotTEST2", group = "Autonomous")
 public class AutoBotTEST2 extends LinearOpMode {
 
-    // Road Runner drive
-    private MecanumDrive drive;
-
-    // Motors
-    private DcMotorEx launcherMotor;
-    private DcMotorEx turretMotor;
-    private DcMotorEx intakeMotor;
-
-    // Servos
-    private Servo launchTrigger;
-    private Servo artifactStopper;
 
     public static class Pause implements Action {
 
@@ -94,20 +86,7 @@ public class AutoBotTEST2 extends LinearOpMode {
 
     }
     @Override
-
-
     public void runOpMode() {
-
-        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turretMotor.setTargetPosition(0);
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turretMotor.setPower(0.4);
-
-        // 4. init servo positions
-        launchTrigger.setPosition(0.3);
-        artifactStopper.setPosition(0.45);
-
         /* measurements done in millimeters but RoadRunner uses inches;
            easiest to measure in mm and then convert to inches (mm/25.4)
          */
@@ -133,11 +112,27 @@ public class AutoBotTEST2 extends LinearOpMode {
 
         Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(vector)
-                .waitSeconds(2)
+                .strafeTo(new Vector2d(37, 28.00)) //first row start
+                //.waitSeconds(1)
                 .setTangent(Math.toRadians(90))
-                .lineToY(50)
-                .strafeTo(new Vector2d(54.38, 15.84))
+                //.waitSeconds(1)
+                .lineToY(46)  //first row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84)) //launch spot
+                .waitSeconds(1)
+                .strafeTo(new Vector2d(15.00, 28.00)) //second row spot
+                .waitSeconds(0.1)
+                .lineToY(46) //second row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
+                .waitSeconds(1)
+                .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
+                .waitSeconds(1)
+                .lineToY(46) //third row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
+                .waitSeconds(1)
+                .strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
 
 

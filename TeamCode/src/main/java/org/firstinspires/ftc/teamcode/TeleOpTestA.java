@@ -193,8 +193,17 @@ public class TeleOpTestA extends OpMode {
         }
 
         //launcher manual control code
+        if (gamepad2.triangleWasPressed()) {
+            launcherVelocity = 800;
+        } else if (gamepad2.squareWasPressed()) {
+            launcherVelocity = 700;
+        } else if (gamepad2.circleWasPressed()) {
+            launcherVelocity = 0;
+        }
+
+
         if (gamepad2.circleWasPressed()) {
-            if(launcherMotor.getVelocity() > 0) {
+            if(launcherVelocity > 0) {
                 launcherVelocity = 0;
             } else {
                 launcherVelocity = 900;
@@ -202,18 +211,19 @@ public class TeleOpTestA extends OpMode {
         }
 
         if (gamepad2.dpadUpWasPressed()) {
-            launcherVelocity += 100;
+            launcherVelocity += 25;
         }
 
         if (gamepad2.dpadDownWasPressed()) {
-            launcherVelocity -= 100;
+            launcherVelocity -= 25;
         }
 
-        if (launcherVelocity > 1.0) {
-            launcherVelocity = 1.0;
+        if (launcherVelocity > 1200) {
+            launcherVelocity = 1200;
         }
 
-        launcherMotor.setPower(Math.abs(launcherPower));
+        //launcherMotor.setPower(Math.abs(launcherPower));
+        launcherMotor.setVelocity(launcherVelocity);
 
 
         if (gamepad2.left_trigger > 0) {

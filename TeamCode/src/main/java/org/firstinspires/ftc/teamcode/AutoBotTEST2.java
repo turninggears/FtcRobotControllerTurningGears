@@ -74,8 +74,9 @@ public class AutoBotTEST2 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 int turretTargetPosition = 940;
-                turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turretMotor.setTargetPosition(turretTargetPosition);
+
 
                 return false;
             }

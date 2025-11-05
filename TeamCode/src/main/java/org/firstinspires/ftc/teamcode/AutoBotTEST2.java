@@ -38,7 +38,7 @@ public class AutoBotTEST2 extends LinearOpMode {
             if (startTime < 0) {
                 startTime = System.currentTimeMillis();
             }
-            return System.currentTimeMillis() > startTime + (seconds * 1000);
+            return System.currentTimeMillis() < startTime + (seconds * 1000);
         }
 
 
@@ -67,13 +67,16 @@ public class AutoBotTEST2 extends LinearOpMode {
             intakeMotor.setDirection(DcMotor.Direction.REVERSE);
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                turretMotor.setTargetPosition(940);
+                int turretTargetPosition = 940;
+                turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
                 return false;
             }
         }
@@ -85,8 +88,10 @@ public class AutoBotTEST2 extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                launcherMotor.setPower(0.5);
-                intakeMotor.setPower(1);
+                double launcherPower = 0.5;
+                double intakePower = 1;
+                launcherMotor.setPower(launcherPower);
+                intakeMotor.setPower(intakePower);
                 return false;
             }
         }
@@ -100,10 +105,12 @@ public class AutoBotTEST2 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 // TODO: Launcher run logic goes here
-                launchTrigger.setPosition(.9);
-                artifactStopper.setPosition(0);
+                double launchTriggerPosition = 0.9;
+                double artifactStopperPosition = 0;
+                launchTrigger.setPosition(launchTriggerPosition);
+                artifactStopper.setPosition(artifactStopperPosition);
 
-                return false;
+                return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
             }
         }
 
@@ -114,10 +121,12 @@ public class AutoBotTEST2 extends LinearOpMode {
         public class Reset implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                launchTrigger.setPosition(0.3);
-                artifactStopper.setPosition(.45);
+                double launchTriggerPosition = 0.3;
+                double artifactStopperPosition = 0.45;
+                launchTrigger.setPosition(launchTriggerPosition);
+                artifactStopper.setPosition(artifactStopperPosition);
 
-                return false;
+                return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
             }
         }
 
@@ -151,6 +160,7 @@ public class AutoBotTEST2 extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d vector = new Vector2d(36, 15.84);
+        Pause pause = new Pause(0.5);
 
         Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
@@ -207,15 +217,15 @@ public class AutoBotTEST2 extends LinearOpMode {
                         launcher.InitializeTurret(),
                         firstRow,
                         launcher.FireArtifact(),
-                        Pause(),
+                        Pause.pause(0.5),
                         launcher.ResetLauncher(),
                         secondRow,
                         launcher.FireArtifact(),
-                        Pause(),
+                        Pause.pause(0.5),
                         launcher.ResetLauncher(),
                         thirdRow,
                         launcher.FireArtifact(),
-                        Pause(),
+                        Pause.pause(0.5),
                         launcher.ResetLauncher()
                 )
         );

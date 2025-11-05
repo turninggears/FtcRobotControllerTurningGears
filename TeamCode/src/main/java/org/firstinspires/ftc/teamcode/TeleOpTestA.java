@@ -18,10 +18,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
-@TeleOp(name = "TeleOpDecodeIMU", group = "Robot")
+@TeleOp(name = "TeleOpTestA", group = "Robot")
 @Config
 
-public class TeleOpDecodeIMU extends OpMode {
+public class TeleOpTestA extends OpMode {
 
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     // This declares the four drive chassis motors needed
@@ -43,6 +43,8 @@ public class TeleOpDecodeIMU extends OpMode {
     ServoController controlHubServoController;
 
     double launcherPower = 0;
+
+    double launcherVelocity = 900;
 
 
     // This declares the IMU needed to get the current direction the robot is facing
@@ -89,7 +91,7 @@ public class TeleOpDecodeIMU extends OpMode {
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-       //if turret doesn't work get rid of these lines
+        //if turret doesn't work get rid of these lines
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if turret doesn't work get rif of previous two lines
@@ -129,7 +131,7 @@ public class TeleOpDecodeIMU extends OpMode {
     @Override
     //this is the code that runs once you press play put game play code in this section
     public void loop() {
-       //update this and reactivate them if you want message to display on driver station
+        //update this and reactivate them if you want message to display on driver station
         double TICKS_PER_REV = 537.7;
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
@@ -156,7 +158,7 @@ public class TeleOpDecodeIMU extends OpMode {
         }
 
 
-       // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
+        // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
         // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
         // telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
@@ -179,7 +181,7 @@ public class TeleOpDecodeIMU extends OpMode {
             }
         } else if(intakeMotor.getPower()!=0){
             intakeMotor.setPower(1);
-            }
+        }
 
         //Launch trigger control
         if (gamepad2.cross) {
@@ -192,23 +194,23 @@ public class TeleOpDecodeIMU extends OpMode {
 
         //launcher manual control code
         if (gamepad2.circleWasPressed()) {
-            if(launcherPower > 0) {
-                launcherPower = 0;
+            if(launcherMotor.getVelocity() > 0) {
+                launcherVelocity = 0;
             } else {
-                launcherPower = 0.40;
+                launcherVelocity = 900;
             }
         }
 
         if (gamepad2.dpadUpWasPressed()) {
-            launcherPower += 0.01;
+            launcherVelocity += 100;
         }
 
         if (gamepad2.dpadDownWasPressed()) {
-            launcherPower -= 0.01;
+            launcherVelocity -= 100;
         }
 
-        if (launcherPower > 1.0) {
-            launcherPower = 1.0;
+        if (launcherVelocity > 1.0) {
+            launcherVelocity = 1.0;
         }
 
         launcherMotor.setPower(Math.abs(launcherPower));

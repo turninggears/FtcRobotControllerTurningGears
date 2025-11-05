@@ -19,8 +19,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "AutoBotTEST2", group = "Autonomous")
-public class AutoBotTEST2 extends LinearOpMode {
+@Autonomous(name = "RedAutoB", group = "Autonomous")
+public class RedAutoB extends LinearOpMode {
 
     public static class Pause implements Action {
 

@@ -220,8 +220,8 @@ public class TeleOpDecodeIMU extends OpMode {
             turretMotor.setPower(0);
         }
 
-        telemetry.addData("launcher velocity: ", launcherPower);
-        telemetry.addData("launcher power: ", launcherMotor.getVelocity());
+        telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
+        telemetry.addData("launcher power: ", launcherPower);
         telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
         telemetry.addData("Launcher RPM", rpm);
 

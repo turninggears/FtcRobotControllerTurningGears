@@ -22,7 +22,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous(name = "AutoBotTEST2", group = "Autonomous")
 public class AutoBotTEST2 extends LinearOpMode {
 
-
     public static class Pause implements Action {
 
         public static Pause pause(double seconds) {
@@ -45,43 +44,85 @@ public class AutoBotTEST2 extends LinearOpMode {
 
     }
 
-    public class Launcher {
+    public Action Pause() {
+        return new Pause(0.5);
+    }
+
+    public static class Launcher {
+        private Servo launchTrigger;
+        private Servo artifactStopper;
         private DcMotorEx launcherMotor;
+        private DcMotorEx intakeMotor;
+        private DcMotor turretMotor;
+
 
         public Launcher (HardwareMap hardwareMap) {
+            launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
+            artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
+            turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
             launcherMotor = hardwareMap.get(DcMotorEx.class, "launcher motor");
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakemotor");
             launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+            turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
 
+        public class SetTurretPosition implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                turretMotor.setTargetPosition(940);
+                turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                return false;
+            }
+        }
+
+        public Action InitializeTurret() {
+            return new SetTurretPosition();
+        }
+
+        public class PowerUpLauncher implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                launcherMotor.setPower(0.5);
+                intakeMotor.setPower(1);
+                return false;
+            }
+        }
+
+        public Action InitializeLauncher() {
+            return new PowerUpLauncher();
         }
 
         public class Launch implements Action {
-            double launchSpeed;
-            public Launch(double speed) {
-                this.launchSpeed = speed;
-            }
-
-            private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 // TODO: Launcher run logic goes here
+                launchTrigger.setPosition(.9);
+                artifactStopper.setPosition(0);
 
-                if (!initialized) {
-                    // TODO: launcher initialization logic
-                    initialized = true;
-                    launcherMotor.setPower(launchSpeed);
-                }
-
-
-
-                packet.put("Launcher power: ", launchSpeed);
-
-                return true;
+                return false;
             }
         }
 
-        public Action launch(double speed) {
-            return new Launch(speed);
+        public Action FireArtifact() {
+            return new Launch();
+        }
+
+        public class Reset implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                launchTrigger.setPosition(0.3);
+                artifactStopper.setPosition(.45);
+
+                return false;
+            }
+        }
+
+        public Action ResetLauncher() {
+            return new Reset();
         }
 
     }
@@ -108,8 +149,8 @@ public class AutoBotTEST2 extends LinearOpMode {
         Pose2d startPose = new Pose2d(64, 15.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        Launcher launcher = new Launcher(hardwareMap);
         Vector2d vector = new Vector2d(36, 15.84);
-//        Launcher launcher = new Launcher(hardwareMap);
 
         Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
@@ -121,12 +162,18 @@ public class AutoBotTEST2 extends LinearOpMode {
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(54.38, 15.84)) //launch spot
                 .waitSeconds(1)
+                .build();
+
+        Action secondRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(15.00, 28.00)) //second row spot
                 .waitSeconds(0.1)
                 .lineToY(46) //second row intake
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
                 .waitSeconds(1)
+                .build();
+
+        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
                 .waitSeconds(1)
                 .lineToY(46) //third row intake
@@ -135,6 +182,8 @@ public class AutoBotTEST2 extends LinearOpMode {
                 .waitSeconds(1)
                 .strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
+
+
 
 
 //        Action position = traj.build();
@@ -150,9 +199,24 @@ public class AutoBotTEST2 extends LinearOpMode {
 
 //        if (isStopRequested()) return;
 
+
+
         Actions.runBlocking(
                 new SequentialAction(
-                        firstRow
+                        launcher.InitializeLauncher(),
+                        launcher.InitializeTurret(),
+                        firstRow,
+                        launcher.FireArtifact(),
+                        Pause(),
+                        launcher.ResetLauncher(),
+                        secondRow,
+                        launcher.FireArtifact(),
+                        Pause(),
+                        launcher.ResetLauncher(),
+                        thirdRow,
+                        launcher.FireArtifact(),
+                        Pause(),
+                        launcher.ResetLauncher()
                 )
         );
     }

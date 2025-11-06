@@ -156,6 +156,15 @@ public class TeleOpTestA extends OpMode {
         }
 
         //this is start of drive code
+        // --- dynamic drive speed ---
+        maxSpeed = gamepad1.right_bumper ? 0.5 : 1.0;
+
+// --- drive control ---
+        if (gamepad1.left_bumper) {
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
 
 //         If you press the left bumper, you get a drive from the point of view of the robot
 //         (much like driving an RC vehicle)
@@ -210,14 +219,6 @@ public class TeleOpTestA extends OpMode {
         }
 
 
-       //if (gamepad2.circleWasPressed()) {
-         //   if(launcherVelocity > 0) {
-           //     launcherVelocity = 0;
-            //} else {
-              //  launcherVelocity = 900;
-            //}
-        //}/*
-
         if (gamepad2.dpadUpWasPressed()) {
             launcherVelocity += 25;
         }
@@ -243,12 +244,12 @@ public class TeleOpTestA extends OpMode {
         }
 
         telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
-        telemetry.addData("launcher power: ", launcherPower);
-        telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
-        telemetry.addData("Launcher RPM", rpm);
+        //telemetry.addData("launcher power: ", launcherPower);
+       // telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
+        //telemetry.addData("Launcher RPM", rpm);
 
-        telemetry.addData("turretMotor Position: ", turretPosition);
-        telemetry.addData("turret Angle: ", turretAngle);
+        //telemetry.addData("turretMotor Position: ", turretPosition);
+        //telemetry.addData("turret Angle: ", turretAngle);
         telemetry.update();
     }
 
@@ -280,7 +281,7 @@ public class TeleOpTestA extends OpMode {
         double backRightPower = forward + right - rotate;
         double backLeftPower = forward - right + rotate;
 
-        double maxPower = 1.0;
+        double maxPower = 1;
 
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
@@ -300,30 +301,6 @@ public class TeleOpTestA extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
         telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
-    //end of drive code
 
-    //start of code for manipulator (gamepad2)
-
-    //sample of arm controls from last season to use to start coding
-        /* if (gamepad2.right_trigger > 0) {
-            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            armMotor.setPower(0.3);
-            ((DcMotorEx) armMotor).setVelocity(gamepad2.right_trigger + -100);
-            Release_Position = armMotor.getCurrentPosition();
-        } else if (gamepad2.dpad_right) {
-        if (gamepad2.dpad_up) {
-            armMotor.setTargetPosition(arm_mid_position);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(0.3);
-//            if (armMotor.getCurrentPosition() > 200) {
-//                wrist.setPosition(0.5);
-        } else if (gamepad2.dpad_down) {
-            armMotor.setTargetPosition(arm_down_position);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(0.3);
-//            if (armMotor.getCurrentPosition() > 200) {
-//                wrist.setPosition(0.5);
-        }*/
-    //End of Manipulator Code
 
 }

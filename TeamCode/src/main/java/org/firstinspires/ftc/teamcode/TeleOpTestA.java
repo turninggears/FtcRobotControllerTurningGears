@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 
@@ -90,7 +91,14 @@ public class TeleOpTestA extends OpMode {
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        launcherMotor.setPIDFCoefficients(
+                DcMotor.RunMode.RUN_USING_ENCODER,
+                new PIDFCoefficients(
+                        70,
+                        1.5,
+                        3,
+                        0)
+        );
         //if turret doesn't work get rid of these lines
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -184,7 +192,7 @@ public class TeleOpTestA extends OpMode {
         }
 
         //Launch trigger control
-        if (gamepad2.cross) {
+        if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 40) {
             launchTrigger.setPosition(.9);
             artifactStopper.setPosition(0);
         } else {
@@ -194,21 +202,21 @@ public class TeleOpTestA extends OpMode {
 
         //launcher manual control code
         if (gamepad2.triangleWasPressed()) {
-            launcherVelocity = 800;
+            launcherVelocity = 880;
         } else if (gamepad2.squareWasPressed()) {
-            launcherVelocity = 700;
+            launcherVelocity = 780;
         } else if (gamepad2.circleWasPressed()) {
-            launcherVelocity = 0;
+            launcherVelocity = 960;
         }
 
 
-        if (gamepad2.circleWasPressed()) {
-            if(launcherVelocity > 0) {
-                launcherVelocity = 0;
-            } else {
-                launcherVelocity = 900;
-            }
-        }
+       //if (gamepad2.circleWasPressed()) {
+         //   if(launcherVelocity > 0) {
+           //     launcherVelocity = 0;
+            //} else {
+              //  launcherVelocity = 900;
+            //}
+        //}/*
 
         if (gamepad2.dpadUpWasPressed()) {
             launcherVelocity += 25;

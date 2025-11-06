@@ -46,6 +46,7 @@ public class TeleOpTestA extends OpMode {
     double launcherPower = 0;
 
     double launcherVelocity = 900;
+    int intakeMotorMode = 0;
 
 
     // This declares the IMU needed to get the current direction the robot is facing
@@ -182,6 +183,10 @@ public class TeleOpTestA extends OpMode {
 //end of first drive code--
 
         //intake control code
+        if (intakeMotorMode == 0) {
+                intakeMotor.setPower(1);
+                intakeMotorMode = 1;
+        }
         if (gamepad2.rightBumperWasPressed()) {
             if(intakeMotor.getPower()!=0){
                 intakeMotor.setPower(0);
@@ -213,7 +218,7 @@ public class TeleOpTestA extends OpMode {
         if (gamepad2.triangleWasPressed()) {
             launcherVelocity = 880;
         } else if (gamepad2.squareWasPressed()) {
-            launcherVelocity = 780;
+            launcherVelocity = 0;
         } else if (gamepad2.circleWasPressed()) {
             launcherVelocity = 960;
         }

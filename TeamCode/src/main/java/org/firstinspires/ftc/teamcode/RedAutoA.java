@@ -17,6 +17,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -70,15 +71,23 @@ public class RedAutoA extends LinearOpMode {
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            launcherMotor.setPIDFCoefficients(
+                    DcMotor.RunMode.RUN_USING_ENCODER,
+                    new PIDFCoefficients(
+                            70,
+                            1.5,
+                            3,
+                            0)
+            );
         }
 
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 865;
+                int turretTargetPosition = 875;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(.45);
+                turretMotor.setPower(.55);
 
 
                 return false;
@@ -92,7 +101,7 @@ public class RedAutoA extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(940);
+                this(960);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -101,7 +110,7 @@ public class RedAutoA extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 940;
+                double launcherVelocity = 960;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);

@@ -188,12 +188,10 @@ public class RedAutoB extends LinearOpMode {
         Vector2d vector = new Vector2d(-36, 15.84);
         Pause pause = new Pause(0.5);
 
-        Action firstLaunchPosition = drive.actionBuilder(startPose)//we need to determine this position
+        Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(-8, 15.84))//launch spot
                 .build();
-        Action launchPosition = drive.actionBuilder( new Pose2d(-8.0,28,Math.toRadians(90)
-
 
         Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))

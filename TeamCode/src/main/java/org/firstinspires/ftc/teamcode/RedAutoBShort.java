@@ -11,7 +11,6 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -23,9 +22,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "BlueAutoB", group = "Autonomous")
-@Disabled
-class BlueAutoB extends LinearOpMode {
+@Autonomous(name = "RedAutoBShort", group = "Autonomous")
+public class RedAutoBShort extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -86,7 +84,7 @@ class BlueAutoB extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 135;
+                int turretTargetPosition = 938;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -183,39 +181,39 @@ class BlueAutoB extends LinearOpMode {
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
 
-        Pose2d startPose = new Pose2d(-64, -15.84, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(-64, 15.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-        Vector2d vector = new Vector2d(-36, -15.84);
+        Vector2d vector = new Vector2d(-36, 15.84);
         Pause pause = new Pause(0.5);
 
         Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(-14, -15.84))//launch spot
+                .strafeTo(new Vector2d(-14, 15.84))//launch spot
                 .build();
 
 
-        Action secondRow = drive.actionBuilder(new Pose2d(-14, -15.84, Math.toRadians(270)))
-                .strafeTo(new Vector2d(14.00, -28.00)) //second row spot
-               // .waitSeconds(0.1)
-                .lineToY(-56) //second row intake
+        Action secondRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
+                .strafeTo(new Vector2d(-38.00, 28.00)) //second row spot
+                //.waitSeconds(0.1)
+                .lineToY(56) //second row intake
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(-14, -15.84))  //launch spot launch position will be seperat action
+                .strafeTo(new Vector2d(-14.0, 15.84))  //launch spot launch position will be seperat action
                 .waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(-14, -15.84, Math.toRadians(270)))
-                .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
+        Action thirdRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
+                .strafeTo(new Vector2d(-14.00, 30.00)) //third row spot
                 //.waitSeconds(1)
-                .lineToY(-46) //third row intake
+                .lineToY(46) //third row intake
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(-14, -15.84))  //launch spot - launch position will be seperat action
+                .strafeTo(new Vector2d(-14, 15.84))  //launch spot - launch position will be seperat action
                 .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(-14,-15.84,Math.toRadians(270)))// need to update to new end location
-                .strafeTo(new Vector2d(-10, -46))//this is a guess based on third row position
+        Action endSpot = drive.actionBuilder(new Pose2d(-14,15.84,Math.toRadians(90)))// need to update to new end location
+                .strafeTo(new Vector2d(-14, 30))//this is a guess based on third row position
                 .build();
 
 
@@ -271,23 +269,24 @@ class BlueAutoB extends LinearOpMode {
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        secondRow,
-                        launchPosition,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.5),
-                        launcher.ResetLauncher(),
+                        thirdRow,
+                        //secondRow,
+                        //launchPosition,
+                        //launcher.FireArtifact(),//first artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),
+                        //launcher.FireArtifact(),//second artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),
+                        //launcher.FireArtifact(),//third artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),//should be able to remove this line eventually
+                        //launcher.FireArtifact(),
+                        //Pause.pause(0.5),
+                        //launcher.ResetLauncher(),
                         endSpot
                 )
         );

@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -23,7 +24,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
 @Autonomous(name = "RedAutoB", group = "Autonomous")
-public class RedAutoB extends LinearOpMode {
+@Disabled
+class RedAutoB extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -110,11 +112,11 @@ public class RedAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 780;
+                double launcherVelocity = 800;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 700;
+                return launcherMotor.getVelocity() < 750;
             }
         }
 
@@ -195,12 +197,12 @@ public class RedAutoB extends LinearOpMode {
 
 
         Action secondRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(14.00, 28.00)) //second row spot
+                .strafeTo(new Vector2d(10.00, 28.00)) //second row spot
                 //.waitSeconds(0.1)
                 .lineToY(56) //second row intake
                 //.waitSeconds(1)
-                //.strafeTo(new Vector2d(54.38, 15.84))  //launch spot launch position will be seperat action
-                //.waitSeconds(.25)
+                .strafeTo(new Vector2d(-14.0, 15.84))  //launch spot launch position will be seperat action
+                .waitSeconds(.25)
                 .build();
 
         Action thirdRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
@@ -208,12 +210,12 @@ public class RedAutoB extends LinearOpMode {
                 //.waitSeconds(1)
                 .lineToY(46) //third row intake
                 //.waitSeconds(1)
-                // .strafeTo(new Vector2d(54.38, 15.84))  //launch spot - launch position will be seperat action
-                //.waitSeconds(.25)
+                .strafeTo(new Vector2d(-14, 15.84))  //launch spot - launch position will be seperat action
+                .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
         Action endSpot = drive.actionBuilder(new Pose2d(-14,15.84,Math.toRadians(90)))// need to update to new end location
-                .strafeTo(new Vector2d(-10, 46))//this is a guess based on third row position
+                .strafeTo(new Vector2d(-14, 30))//this is a guess based on third row position
                 .build();
 
 
@@ -254,39 +256,39 @@ public class RedAutoB extends LinearOpMode {
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        thirdRow
-                        //launchPosition,
-                        //launcher.FireArtifact(),//first artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//second artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//third artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),//should be able to remove this line eventually
-                        //launcher.InitializeLauncher(),
-                        //secondRow,
-                        //launchPosition,
-                        //launcher.FireArtifact(),//first artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//second artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//third artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),//should be able to remove this line eventually
-                        //launcher.FireArtifact(),
-                        //Pause.pause(0.5),
-                        //launcher.ResetLauncher(),
-                        //endSpot
+                        thirdRow,
+                        launchPosition,
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),//should be able to remove this line eventually
+                        launcher.InitializeLauncher(),
+                        secondRow,
+                        launchPosition,
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),//should be able to remove this line eventually
+                        launcher.FireArtifact(),
+                        Pause.pause(0.5),
+                        launcher.ResetLauncher(),
+                        endSpot
                 )
         );
     }

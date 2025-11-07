@@ -80,7 +80,7 @@ public class BlueAutoA extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 195;
+                int turretTargetPosition = 187;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -193,7 +193,7 @@ public class BlueAutoA extends LinearOpMode {
 
         Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(35, -28.00)) //first row start - y was 28.00
+                .strafeTo(new Vector2d(37, -28.00)) //first row start - y was 28.00
                 //.waitSeconds(1)
                 .setTangent(Math.toRadians(90))
                 //.waitSeconds(1)
@@ -222,7 +222,7 @@ public class BlueAutoA extends LinearOpMode {
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
         Action endSpot = drive.actionBuilder(new Pose2d(54.38,-15.84,Math.toRadians(270)))
-                .strafeTo(new Vector2d(64.0, -33.5))
+                .strafeTo(new Vector2d(54.38, -33.5))
                 .build();
 
 

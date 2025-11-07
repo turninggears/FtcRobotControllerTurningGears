@@ -226,7 +226,7 @@ public class RedAutoA extends LinearOpMode {
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
         Action endSpot = drive.actionBuilder(new Pose2d(54.38,15.84,Math.toRadians(90)))
-                .strafeTo(new Vector2d(64.0, 33.5))
+                .strafeTo(new Vector2d(54.380, 33.5))
                 .build();
 
 

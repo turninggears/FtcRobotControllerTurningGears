@@ -84,7 +84,7 @@ public class RedAutoB extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 925;
+                int turretTargetPosition = 938;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -110,11 +110,11 @@ public class RedAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 860;
+                double launcherVelocity = 780;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 800;
+                return launcherMotor.getVelocity() < 700;
             }
         }
 
@@ -190,41 +190,30 @@ public class RedAutoB extends LinearOpMode {
 
         Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(-8, 15.84))//launch spot
+                .strafeTo(new Vector2d(-14, 15.84))//launch spot
                 .build();
 
-        Action firstRow = drive.actionBuilder(startPose)
-                .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(37, 28.00)) //first row start
-                //.waitSeconds(1)
-                .setTangent(Math.toRadians(90))
-                //.waitSeconds(1)
-                .lineToY(56)  //first row intake
-                //.waitSeconds(1)
-                //.strafeTo(new Vector2d(54.38, 15.84)) //launch spot - launch position will be seperate action
-                //.waitSeconds(.25)//might be able to lower or remove this
-                .build();
 
-        Action secondRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
+        Action secondRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(14.00, 28.00)) //second row spot
-                .waitSeconds(0.1)
+                //.waitSeconds(0.1)
                 .lineToY(56) //second row intake
                 //.waitSeconds(1)
                 //.strafeTo(new Vector2d(54.38, 15.84))  //launch spot launch position will be seperat action
                 //.waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
-                .waitSeconds(1)
+        Action thirdRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
+                .strafeTo(new Vector2d(-14.00, 30.00)) //third row spot
+                //.waitSeconds(1)
                 .lineToY(46) //third row intake
                 //.waitSeconds(1)
-               // .strafeTo(new Vector2d(54.38, 15.84))  //launch spot - launch position will be seperat action
+                // .strafeTo(new Vector2d(54.38, 15.84))  //launch spot - launch position will be seperat action
                 //.waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(54.38,15.84,Math.toRadians(90)))// need to update to new end location
-                .strafeTo(new Vector2d(-8, 46))//this is a guess based on third row position
+        Action endSpot = drive.actionBuilder(new Pose2d(-14,15.84,Math.toRadians(90)))// need to update to new end location
+                .strafeTo(new Vector2d(-10, 46))//this is a guess based on third row position
                 .build();
 
 
@@ -248,9 +237,9 @@ public class RedAutoB extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         launcher.ResetLauncher(),
-                        launchPosition,
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
+                        launchPosition,
                         Pause.pause(.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
@@ -265,39 +254,39 @@ public class RedAutoB extends LinearOpMode {
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        thirdRow,
-                        launchPosition,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(),
-                        secondRow,
-                        launchPosition,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.5),
-                        launcher.ResetLauncher(),
-                        endSpot
+                        thirdRow
+                        //launchPosition,
+                        //launcher.FireArtifact(),//first artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),
+                        //launcher.FireArtifact(),//second artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),
+                        //launcher.FireArtifact(),//third artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),//should be able to remove this line eventually
+                        //launcher.InitializeLauncher(),
+                        //secondRow,
+                        //launchPosition,
+                        //launcher.FireArtifact(),//first artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),
+                        //launcher.FireArtifact(),//second artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),
+                        //launcher.FireArtifact(),//third artifact
+                        //Pause.pause(0.25),
+                        //launcher.ResetLauncher(),
+                        //Pause.pause(.5),//should be able to remove this line eventually
+                        //launcher.FireArtifact(),
+                        //Pause.pause(0.5),
+                        //launcher.ResetLauncher(),
+                        //endSpot
                 )
         );
     }

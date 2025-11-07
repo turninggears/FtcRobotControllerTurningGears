@@ -1,31 +1,25 @@
 package org.firstinspires.ftc.teamcode;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "AutoBotTEST2", group = "Autonomous")
-@Disabled
-public class AutoBotTEST2 extends LinearOpMode {
+@Autonomous(name = "RedAutoAShort", group = "Autonomous")
+public class RedAutoAShort extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -86,7 +80,7 @@ public class AutoBotTEST2 extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 875;
+                int turretTargetPosition = 875;//try -205 to see if it works
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -282,23 +276,6 @@ public class AutoBotTEST2 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(),
-                        secondRow,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.5),
-                        launcher.ResetLauncher(),
                         endSpot
                 )
         );

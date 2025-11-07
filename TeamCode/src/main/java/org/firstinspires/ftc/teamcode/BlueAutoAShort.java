@@ -1,31 +1,25 @@
 package org.firstinspires.ftc.teamcode;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "AutoBotTEST2", group = "Autonomous")
-@Disabled
-public class AutoBotTEST2 extends LinearOpMode {
+@Autonomous(name = "BlueAutoAShort", group = "Autonomous")
+public class BlueAutoAShort extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -86,7 +80,7 @@ public class AutoBotTEST2 extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 875;
+                int turretTargetPosition = 205;//is 875 in red version
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -184,7 +178,7 @@ public class AutoBotTEST2 extends LinearOpMode {
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
 
-        Pose2d startPose = new Pose2d(64, 15.84, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(64, -15.84, Math.toRadians(270));//y was 15.84 and radian was 90
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
@@ -193,42 +187,42 @@ public class AutoBotTEST2 extends LinearOpMode {
 
         Action firstLaunchPosition = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(54.38, 15.84))//launch spot
+                .strafeTo(new Vector2d(54.38, -15.84))//launch spot//y was 15.84
                 .build();
 
 
         Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(37, 28.00)) //first row start
+                .strafeTo(new Vector2d(37, -28.00)) //first row start - y was 28.00
                 //.waitSeconds(1)
                 .setTangent(Math.toRadians(90))
                 //.waitSeconds(1)
-                .lineToY(56)  //first row intake
+                .lineToY(-56)  //first row intake - y was -56
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(54.38, 15.84)) //launch spot
+                .strafeTo(new Vector2d(54.38, -15.84)) //launch spot - y was 15.84
                 .waitSeconds(.25)//might be able to lower or remove this
                 .build();
 
-        Action secondRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(14.00, 28.00)) //second row spot
+        Action secondRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))//y was 15.84 and raian was 90
+                .strafeTo(new Vector2d(14.00, -28.00)) //second row spot - y was 28.0
                 .waitSeconds(0.1)
-                .lineToY(56) //second row intake
+                .lineToY(-56) //second row intake - y was 56
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
+                .strafeTo(new Vector2d(54.38, -15.84))  //launch spot - y was
                 .waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
+        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))
+                .strafeTo(new Vector2d(-8.00, -28.00)) //third row spot
                 .waitSeconds(1)
-                .lineToY(46) //third row intake
+                .lineToY(-46) //third row intake
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
+                .strafeTo(new Vector2d(54.38, -15.84))  //launch spot
                 .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(54.38,15.84,Math.toRadians(90)))
-                .strafeTo(new Vector2d(64.0, 33.5))
+        Action endSpot = drive.actionBuilder(new Pose2d(54.38,-15.84,Math.toRadians(270)))
+                .strafeTo(new Vector2d(64.0, -33.5))
                 .build();
 
 
@@ -280,24 +274,6 @@ public class AutoBotTEST2 extends LinearOpMode {
                         Pause.pause(.5),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(),
-                        secondRow,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.5),
                         launcher.ResetLauncher(),
                         endSpot
                 )

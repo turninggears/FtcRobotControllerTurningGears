@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -23,6 +24,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
 @Autonomous(name = "AutoBotTEST2", group = "Autonomous")
+@Disabled
 public class AutoBotTEST2 extends LinearOpMode {
 
     public static class Pause implements Action {

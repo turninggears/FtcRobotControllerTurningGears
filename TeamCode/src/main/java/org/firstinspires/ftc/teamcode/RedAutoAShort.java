@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
-@Autonomous(name = "RedAutoA", group = "Autonomous")
+@Autonomous(name = "RedAutoAShort", group = "Autonomous")
 public class RedAutoAShort extends LinearOpMode {
 
     public static class Pause implements Action {

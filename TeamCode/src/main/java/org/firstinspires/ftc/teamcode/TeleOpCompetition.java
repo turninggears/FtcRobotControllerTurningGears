@@ -19,10 +19,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
-@TeleOp(name = "TeleOpTestA", group = "Robot")
+@TeleOp(name = "TeleOpCompetition", group = "Robot")
 @Config
 
-public class TeleOpTestA extends OpMode {
+public class TeleOpCompetition extends OpMode {
 
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     // This declares the four drive chassis motors needed

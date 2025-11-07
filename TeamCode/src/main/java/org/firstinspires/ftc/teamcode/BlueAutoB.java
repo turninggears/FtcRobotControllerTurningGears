@@ -80,7 +80,7 @@ public class BlueAutoB extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 925;
+                int turretTargetPosition = 205;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -186,7 +186,7 @@ public class BlueAutoB extends LinearOpMode {
 
         Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(-8, -15.84))//launch spot
+                .strafeTo(new Vector2d(-11, -15.84))//launch spot
                 .build();
 
 
@@ -211,8 +211,8 @@ public class BlueAutoB extends LinearOpMode {
                 //.waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(-8, -15.84, Math.toRadians(270)))
-                .strafeTo(new Vector2d(-8.00, -28.00)) //third row spot
+        Action thirdRow = drive.actionBuilder(new Pose2d(-11, -15.84, Math.toRadians(270)))
+                .strafeTo(new Vector2d(-11.00, -28.00)) //third row spot
                 .waitSeconds(1)
                 .lineToY(-46) //third row intake
                 //.waitSeconds(1)
@@ -245,9 +245,9 @@ public class BlueAutoB extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         launcher.ResetLauncher(),
-                        launchPosition,
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
+                        launchPosition,
                         Pause.pause(.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),

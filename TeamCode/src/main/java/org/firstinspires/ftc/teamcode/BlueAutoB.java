@@ -192,7 +192,7 @@ public class BlueAutoB extends LinearOpMode {
 
         Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(37, 28.00)) //first row start
+                .strafeTo(new Vector2d(37, -28.00)) //first row start
                 //.waitSeconds(1)
                 .setTangent(Math.toRadians(90))
                 //.waitSeconds(1)
@@ -202,8 +202,8 @@ public class BlueAutoB extends LinearOpMode {
                 //.waitSeconds(.25)//might be able to lower or remove this
                 .build();
 
-        Action secondRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))
-                .strafeTo(new Vector2d(14.00, 28.00)) //second row spot
+        Action secondRow = drive.actionBuilder(new Pose2d(-8, -15.84, Math.toRadians(270)))
+                .strafeTo(new Vector2d(14.00, -28.00)) //second row spot
                 .waitSeconds(0.1)
                 .lineToY(-56) //second row intake
                 //.waitSeconds(1)
@@ -211,8 +211,8 @@ public class BlueAutoB extends LinearOpMode {
                 //.waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))
-                .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
+        Action thirdRow = drive.actionBuilder(new Pose2d(-8, -15.84, Math.toRadians(270)))
+                .strafeTo(new Vector2d(-8.00, -28.00)) //third row spot
                 .waitSeconds(1)
                 .lineToY(-46) //third row intake
                 //.waitSeconds(1)
@@ -220,7 +220,7 @@ public class BlueAutoB extends LinearOpMode {
                 //.waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(54.38,-15.84,Math.toRadians(270)))// need to update to new end location
+        Action endSpot = drive.actionBuilder(new Pose2d(-8,-15.84,Math.toRadians(270)))// need to update to new end location
                 .strafeTo(new Vector2d(-8, -46))//this is a guess based on third row position
                 .build();
 

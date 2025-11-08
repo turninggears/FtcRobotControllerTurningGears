@@ -181,7 +181,7 @@ public class RedAutoBShort extends LinearOpMode {
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
 
-        Pose2d startPose = new Pose2d(-64, 15.84, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-64, 39.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
@@ -206,7 +206,7 @@ public class RedAutoBShort extends LinearOpMode {
         Action thirdRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(-14.00, 30.00)) //third row spot
                 //.waitSeconds(1)
-                .lineToY(46) //third row intake
+                .lineToY(52) //third row intake
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(-14, 15.84))  //launch spot - launch position will be seperat action
                 .waitSeconds(.25)

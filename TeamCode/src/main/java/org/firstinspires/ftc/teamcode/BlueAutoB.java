@@ -1,29 +1,25 @@
 package org.firstinspires.ftc.teamcode;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "BlueAutoBShort", group = "Autonomous")
-public class BlueAutoBShort extends LinearOpMode {
+@Autonomous(name = "BlueAutoB", group = "Autonomous")
+public class BlueAutoB extends LinearOpMode {
 
     public static class Pause implements Action {
 

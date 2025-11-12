@@ -178,7 +178,7 @@ public class TeleOpExperiment extends OpMode{
          */
 //        double robotHeadingDeg = Math.toDegrees(robotHeading);
 
-        telemetry.addData("Pose (mm)", "x=%.1f, y=%1f)", robotXmm, robotYmm);
+        telemetry.addData("Pose (mm)", "x=%.1f, y=%.1f)", robotXmm, robotYmm);
         telemetry.addData("Heading (deg)", Math.toDegrees(robotHeading));
 
         //begin auto turret aim code

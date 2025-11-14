@@ -168,7 +168,7 @@ public class TeleOpAutoAim extends OpMode {
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
-        pinpoint.setOffsets(-5.709,3.465, DistanceUnit.INCH);
+        pinpoint.setOffsets(5.709,3.465, DistanceUnit.INCH);
         Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);
         pinpoint.setPosition(pose);
 

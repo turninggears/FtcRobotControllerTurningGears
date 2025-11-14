@@ -1,0 +1,387 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+
+@TeleOp(name = "TeleOpAutoAim", group = "Robot")
+@Config
+
+public class TeleOpAutoAim extends OpMode {
+    GoBildaPinpointDriver pinpoint;
+
+    public static double maxSpeed = 1.0;  // make this slower for outreaches
+    // This declares the four drive chassis motors needed
+    DcMotor frontLeftDrive;
+    DcMotor frontRightDrive;
+    DcMotor backLeftDrive;
+    DcMotor backRightDrive;
+
+    DcMotor intakeMotor;
+
+    DcMotorEx launcherMotor;
+
+    DcMotor turretMotor;
+
+    Servo   launchTrigger;
+
+    Servo   artifactStopper;
+
+    ServoController controlHubServoController;
+
+    double launcherPower = 0;
+
+    double launcherVelocity = 900;
+    int intakeMotorMode = 0;
+
+    double TICKS_PER_REV = 537.7;
+
+    // This declares the IMU needed to get the current direction the robot is facing
+    // TODO: change this to use the Pinpoint for localization
+    IMU imu;
+
+    // TODO: add AutoAim variable declarations here
+
+    String alliance = "red";
+    int xGoal = -65;
+    int yGoal = 0;
+
+    double dTurret = 3.0;
+    double ROBOT_CENTER_X = 207.5;
+
+    double ROBOT_CENTER_Y = 207.5;
+
+    double startPosX = 1621.3;
+
+    double startPosY = 0;
+
+
+    float theta;
+
+    int drivemode;
+    double Slow_Speed;
+    double Med_Speed;
+    double High_Speed;
+    double Motor_Speed;
+    float vertical;
+    double pivot;
+    float horizontal;
+    Orientation angles;
+    Acceleration gravity;
+
+    @Override
+    public void init() {
+        //this assigns the motors for drive chassis based on name in control hub
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "FL Drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "FR Drive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
+        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
+        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+
+        //this matches names of other motors in control hub to names created in beginning of this code
+        controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
+        launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
+        artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
+
+        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        // We need to test once chasis is done to make sure this is still correct direction for motors.
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launcherMotor.setPIDFCoefficients(
+                DcMotor.RunMode.RUN_USING_ENCODER,
+                new PIDFCoefficients(
+                        70,
+                        1.5,
+                        3,
+                        0)
+        );
+        //if turret doesn't work get rid of these lines
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //if turret doesn't work get rif of previous two lines
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       /* this section is an example of creating pre set arm/motor position using encoder
+        arm_down_position = 1;
+        arm_mid_position = 655;
+        arm_up_position = 940;
+        Arm_Pickup_Position = 330;
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        */
+
+
+
+//        controlHubServoController.pwmEnable();
+
+        /*imu = hardwareMap.get(IMU.class, "imu");
+        // This needs to be changed to match the orientation on your robot
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
+
+        RevHubOrientationOnRobot orientationOnRobot = new
+                RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        imu.resetYaw();*/
+
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
+        pinpoint.resetPosAndIMU();
+
+        //configure pinpoint pods
+        pinpoint.setEncoderDirections(
+                GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
+                GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
+        );
+        pinpoint.setOffsets(-145,-88, DistanceUnit.MM);
+        Pose2D pose = new Pose2D(DistanceUnit.MM, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 0);
+        pinpoint.setPosition(pose);
+
+        if (alliance.equals("red")) {
+            yGoal = 65;
+        } else if (alliance.equals("blue")) {
+            yGoal = -65;
+        } else {
+            yGoal = 0;
+        }
+    }
+
+    @Override
+    //this is the code that runs once you press play put game play code in this section
+    public void loop() {
+        //update this and reactivate them if you want message to display on driver station
+        double ticksPerSecond = launcherMotor.getVelocity();
+        double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
+
+
+        //This gives ticks of the turret motor's rotation.
+        double turretPosition = turretMotor.getCurrentPosition();
+        //This converts the turretMotorPosition to an angle to the bot in degrees.
+        double turretAngle = (turretPosition % 1080)/3;
+
+        double xBot = pinpoint.getPosX(DistanceUnit.MM);
+        double yBot = pinpoint.getPosY(DistanceUnit.MM);
+
+        double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES);
+
+        double xTurret = xBot - dTurret * Math.cos(Math.toRadians(angleBotDeg));
+        double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg));
+
+        double dx = xGoal - xTurret;
+        double dy = yGoal - yTurret;
+
+        double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
+
+        double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle
+
+        double angleTurretCurr = turretMotor.getCurrentPosition() / 3; //current turret position in degrees (degrees=ticks/3)
+
+        double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
+
+        double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
+
+        turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
+
+        double dGoal = Math.hypot(dx, dy);  //distance from goal, needed for auto-launch power
+
+        telemetry.addData("Bot X: ", xBot);
+        telemetry.addData("Bot Y: ", yBot);
+        telemetry.addData("Turret X: ", xTurret);
+        telemetry.addData("Turret Y: ", yTurret);
+        telemetry.addData("Angle from X", angleGoalDeg);
+        telemetry.addData("Angle from bot", turret_unwrapped);
+        telemetry.addData("Distance: ", dGoal);
+
+
+        // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
+        if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
+            imu.resetYaw();
+        }
+
+        //this is start of drive code
+        // --- dynamic drive speed ---
+        maxSpeed = gamepad1.right_bumper ? 0.5 : 1.0;
+
+// --- drive control ---
+        if (gamepad1.left_bumper) {
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+
+//         If you press the left bumper, you get a drive from the point of view of the robot
+//         (much like driving an RC vehicle)
+        if (gamepad1.left_bumper) {
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+
+
+        // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
+        // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
+        // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
+        // telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
+//end of first drive code--
+
+        //intake control code
+        if (intakeMotorMode == 0) {
+                intakeMotor.setPower(1);
+                intakeMotorMode = 1;
+        }
+        if (gamepad2.rightBumperWasPressed()) {
+            if(intakeMotor.getPower()!=0){
+                intakeMotor.setPower(0);
+            } else {
+                intakeMotor.setPower(1);
+            }
+        }
+
+        if (gamepad2.left_bumper) {
+            if (intakeMotor.getPower() != 0) {
+                intakeMotor.setPower(-1);
+            } else {
+                intakeMotor.setPower(1);
+            }
+        } else if(intakeMotor.getPower()!=0){
+            intakeMotor.setPower(1);
+        }
+
+        //Launch trigger control
+        if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 40) {
+            launchTrigger.setPosition(.9);
+            artifactStopper.setPosition(0);
+        } else {
+            launchTrigger.setPosition(0.3);
+            artifactStopper.setPosition(.45);
+        }
+
+        //launcher manual control code
+        if (gamepad2.triangleWasPressed()) {
+            launcherVelocity = 880;
+        } else if (gamepad2.squareWasPressed()) {
+            launcherVelocity = 0;
+        } else if (gamepad2.circleWasPressed()) {
+            launcherVelocity = 960;
+        }
+
+
+        if (gamepad2.dpadUpWasPressed()) {
+            launcherVelocity += 25;
+        }
+
+        if (gamepad2.dpadDownWasPressed()) {
+            launcherVelocity -= 25;
+        }
+
+        if (launcherVelocity > 1200) {
+            launcherVelocity = 1200;
+        }
+
+        //launcherMotor.setPower(Math.abs(launcherPower));
+        launcherMotor.setVelocity(launcherVelocity);
+
+
+        if (gamepad2.left_trigger > 0) {
+            turretMotor.setPower(-.30 * gamepad2.left_trigger);
+        } else if (gamepad2.right_trigger > 0) {
+            turretMotor.setPower(.30 * gamepad2.right_trigger);
+        } else {
+            turretMotor.setPower(0);
+        }
+
+        telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
+        //telemetry.addData("launcher power: ", launcherPower);
+       // telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
+        //telemetry.addData("Launcher RPM", rpm);
+
+        //telemetry.addData("turretMotor Position: ", turretPosition);
+        //telemetry.addData("turret Angle: ", turretAngle);
+        telemetry.update();
+    }
+
+
+    // This routine drives the robot field relative
+    private void driveFieldRelative(double forward, double right, double rotate) {
+        // First, convert direction being asked to drive to polar coordinates
+        double theta = Math.atan2(forward, right);
+        double r = Math.hypot(right, forward);
+
+        // Second, rotate angle by the angle the robot is pointing
+        theta = AngleUnit.normalizeRadians(theta -
+                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+        // Third, convert back to cartesian
+        double newForward = r * Math.sin(theta);
+        double newRight = r * Math.cos(theta);
+
+        // Finally, call the drive method with robot relative forward and right amounts
+        drive(newForward, newRight, rotate);
+    }
+
+    // Thanks to FTC16072 for sharing this code!!
+    public void drive(double forward, double right, double rotate) {
+        // This calculates the power needed for each wheel based on the amount of forward,
+        // strafe right, and rotate
+        double frontLeftPower = forward + right + rotate;
+        double frontRightPower = forward - right - rotate;
+        double backRightPower = forward + right - rotate;
+        double backLeftPower = forward - right + rotate;
+
+        double maxPower = 1;
+
+
+        // This is needed to make sure we don't pass > 1.0 to any wheel
+        // It allows us to keep all of the motors in proportion to what they should
+        // be and not get clipped
+        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+
+        // We multiply by maxSpeed so that it can be set lower for outreaches
+        // When a young child is driving the robot, we may not want to allow full
+        // speed.
+        frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
+        frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
+        backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
+        backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+        telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
+    }
+
+
+}

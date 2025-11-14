@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 
 @TeleOp(name = "TeleOpAutoAim", group = "Robot")
@@ -65,11 +66,11 @@ public class TeleOpAutoAim extends OpMode {
     int yGoal = 0;
 
     double dTurret = 3.0;
-    double ROBOT_CENTER_X = 207.5;
+    double ROBOT_CENTER_X = 8.169;
 
-    double ROBOT_CENTER_Y = 207.5;
+    double ROBOT_CENTER_Y = 8.169;
 
-    double startPosX = 1621.3;
+    double startPosX = 63.831;
 
     double startPosY = 0;
 
@@ -167,8 +168,8 @@ public class TeleOpAutoAim extends OpMode {
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
-        pinpoint.setOffsets(-145,-88, DistanceUnit.MM);
-        Pose2D pose = new Pose2D(DistanceUnit.MM, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 0);
+        pinpoint.setOffsets(-5.709,3.465, DistanceUnit.INCH);
+        Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);
         pinpoint.setPosition(pose);
 
         if (alliance.equals("red")) {
@@ -183,6 +184,7 @@ public class TeleOpAutoAim extends OpMode {
     @Override
     //this is the code that runs once you press play put game play code in this section
     public void loop() {
+        pinpoint.update();
         //update this and reactivate them if you want message to display on driver station
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
@@ -193,8 +195,8 @@ public class TeleOpAutoAim extends OpMode {
         //This converts the turretMotorPosition to an angle to the bot in degrees.
         double turretAngle = (turretPosition % 1080)/3;
 
-        double xBot = pinpoint.getPosX(DistanceUnit.MM);
-        double yBot = pinpoint.getPosY(DistanceUnit.MM);
+        double xBot = pinpoint.getPosX(DistanceUnit.INCH);
+        double yBot = pinpoint.getPosY(DistanceUnit.INCH);
 
         double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES);
 
@@ -208,11 +210,13 @@ public class TeleOpAutoAim extends OpMode {
 
         double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle
 
-        double angleTurretCurr = turretMotor.getCurrentPosition() / 3; //current turret position in degrees (degrees=ticks/3)
+        double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
 
         double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
 
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
+
+        turretMotor.setPower(0.5);
 
         turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
 
@@ -229,7 +233,7 @@ public class TeleOpAutoAim extends OpMode {
 
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
         if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
-            imu.resetYaw();
+            pinpoint.setHeading(0, AngleUnit.DEGREES);
         }
 
         //this is start of drive code
@@ -343,7 +347,7 @@ public class TeleOpAutoAim extends OpMode {
 
         // Second, rotate angle by the angle the robot is pointing
         theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+                pinpoint.getHeading(UnnormalizedAngleUnit.RADIANS));
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);

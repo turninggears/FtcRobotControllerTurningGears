@@ -84,10 +84,10 @@ public class RedAutoA extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 875;//try -205 to see if it works
+                int turretTargetPosition = 870; //it was 875
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(.55);
+                turretMotor.setPower(1);  //it was 0.55
 
 
                 return false;
@@ -110,7 +110,7 @@ public class RedAutoA extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 960;
+                double launcherVelocity = 910; //it was 960
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -253,7 +253,7 @@ public class RedAutoA extends LinearOpMode {
                         firstLaunchPosition,
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(1.0),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),

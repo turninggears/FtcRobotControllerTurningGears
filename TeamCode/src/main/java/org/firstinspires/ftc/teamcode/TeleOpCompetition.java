@@ -48,7 +48,7 @@ public class TeleOpCompetition extends OpMode {
     double launcherVelocity = 900;
     int intakeMotorMode = 0;
 
-
+    int launchCounter = 0;
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
@@ -206,7 +206,7 @@ public class TeleOpCompetition extends OpMode {
         }
 
         //Launch trigger control
-        if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 40) {
+        if (gamepad2.cross) { //&& Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 40
             launchTrigger.setPosition(.9);
             artifactStopper.setPosition(0);
         } else {

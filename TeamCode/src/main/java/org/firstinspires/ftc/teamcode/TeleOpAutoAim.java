@@ -14,14 +14,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
-
 
 @TeleOp(name = "TeleOpAutoAim", group = "Robot")
 @Config
@@ -35,24 +33,16 @@ public class TeleOpAutoAim extends OpMode {
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
-
     DcMotor intakeMotor;
-
     DcMotorEx launcherMotor;
-
     DcMotor turretMotor;
-
     Servo   launchTrigger;
-
     Servo   artifactStopper;
-
     ServoController controlHubServoController;
 
     double launcherPower = 0;
-
     double launcherVelocity = 900;
     int intakeMotorMode = 0;
-
     double TICKS_PER_REV = 537.7;
 
     // This declares the IMU needed to get the current direction the robot is facing
@@ -62,21 +52,16 @@ public class TeleOpAutoAim extends OpMode {
     // TODO: add AutoAim variable declarations here
 
     String alliance = "red";
+    boolean firstLoop = true;
     int xGoal = -65;
     int yGoal = 0;
-
     double dTurret = 3.0;
+    int adjustV = 0;
     double ROBOT_CENTER_X = 8.169;
-
     double ROBOT_CENTER_Y = 8.169;
-
     double startPosX = 63.831;
-
     double startPosY = 0;
-
-
     float theta;
-
     int drivemode;
     double Slow_Speed;
     double Med_Speed;
@@ -169,8 +154,17 @@ public class TeleOpAutoAim extends OpMode {
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
         pinpoint.setOffsets(5.709,3.465, DistanceUnit.INCH);
-        Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);
-        pinpoint.setPosition(pose);
+        //Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);
+        //pinpoint.setPosition(pose);
+        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
+        pinpoint.setPosX((ROBOT_CENTER_X + startPosX),DistanceUnit.INCH);
+        pinpoint.setPosY((ROBOT_CENTER_Y + startPosY),DistanceUnit.INCH);
+//        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
+        pinpoint.update();
+
+        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
 
         if (alliance.equals("red")) {
             yGoal = 65;
@@ -184,26 +178,33 @@ public class TeleOpAutoAim extends OpMode {
     @Override
     //this is the code that runs once you press play put game play code in this section
     public void loop() {
+
+        if(firstLoop){
+            pinpoint.setHeading(0.0, AngleUnit.DEGREES);
+            pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0,DistanceUnit.INCH);
+            pinpoint.setPosX((ROBOT_CENTER_Y + startPosY),DistanceUnit.INCH);
+            firstLoop=false;
+        }
+
         pinpoint.update();
         //update this and reactivate them if you want message to display on driver station
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
 
-
         //This gives ticks of the turret motor's rotation.
-        double turretPosition = turretMotor.getCurrentPosition();
+        //double turretPosition = turretMotor.getCurrentPosition();
         //This converts the turretMotorPosition to an angle to the bot in degrees.
-        double turretAngle = (turretPosition % 1080)/3;
+        //double turretAngle = (turretPosition % 1080)/3;
 
-        double xBot = pinpoint.getPosX(DistanceUnit.INCH);
-        double yBot = pinpoint.getPosY(DistanceUnit.INCH);
+        double xBot = pinpoint.getPosY(DistanceUnit.INCH)*-1.0;
+        double yBot = pinpoint.getPosX(DistanceUnit.INCH);
 
         double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES);
 
         double xTurret = xBot - dTurret * Math.cos(Math.toRadians(angleBotDeg));
         double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg));
 
-        double dx = xGoal - xTurret;
+        double dx = (xGoal - xTurret) *-1.0;
         double dy = yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
@@ -216,20 +217,38 @@ public class TeleOpAutoAim extends OpMode {
 
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
-        turretMotor.setPower(0.5);
+        //turretMotor.setPower(1.0);
+        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3));
+        turretMotor.setPower(1.0);
 
-        turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
+        //turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
 
         double dGoal = Math.hypot(dx, dy);  //distance from goal, needed for auto-launch power
 
-        telemetry.addData("Bot X: ", xBot);
-        telemetry.addData("Bot Y: ", yBot);
-        telemetry.addData("Turret X: ", xTurret);
-        telemetry.addData("Turret Y: ", yTurret);
-        telemetry.addData("Angle from X", angleGoalDeg);
-        telemetry.addData("Angle from bot", turret_unwrapped);
-        telemetry.addData("Distance: ", dGoal);
+        int minV = 860;
+        int maxV = 940;
+        int minD = 100;
+        int maxD = 138;
+        double DistRatio = (maxV-minV)/(maxD-minD);
 
+        launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;
+
+        telemetry.addData("xBot: ", xBot);
+      //telemetry.addData("x,y: ", xBot, yBot);
+        telemetry.addData("yBot: ", yBot);
+      //  telemetry.addData("xTurret: ", xTurret);
+      //  telemetry.addData("yTurret: ", yTurret);
+        telemetry.addData("dx: ", dx);
+        telemetry.addData("dy: ", dy);
+        telemetry.addData("angleGoalDeg: ", angleGoalDeg);
+        telemetry.addData("angleTurretDeg_raw: ", angleTurretDeg_raw);
+        telemetry.addData("angleBotDeg: ", angleBotDeg);
+        telemetry.addData("errorTurretDeg: ", errorTurretDeg);
+        telemetry.addData("turret_unwrapped: ", turret_unwrapped);
+        telemetry.addData("angleTurretCurr: ", angleTurretCurr);
+        telemetry.addData("dGoal: ", dGoal);
+        telemetry.addData("launcherVelocity: ", launcherVelocity);
 
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
         if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
@@ -305,11 +324,11 @@ public class TeleOpAutoAim extends OpMode {
 
 
         if (gamepad2.dpadUpWasPressed()) {
-            launcherVelocity += 25;
+            adjustV += 20;
         }
 
         if (gamepad2.dpadDownWasPressed()) {
-            launcherVelocity -= 25;
+            adjustV -= 20;
         }
 
         if (launcherVelocity > 1200) {
@@ -330,7 +349,7 @@ public class TeleOpAutoAim extends OpMode {
 
         telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
         //telemetry.addData("launcher power: ", launcherPower);
-       // telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
+        //telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
         //telemetry.addData("Launcher RPM", rpm);
 
         //telemetry.addData("turretMotor Position: ", turretPosition);
@@ -384,7 +403,7 @@ public class TeleOpAutoAim extends OpMode {
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
         backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
-        telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
+        //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
 
 

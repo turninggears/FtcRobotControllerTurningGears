@@ -218,8 +218,8 @@ public class TeleOpAutoAim extends OpMode {
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         //turretMotor.setPower(1.0);
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3));
+        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setPower(1.0);
 
         //turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
@@ -339,13 +339,13 @@ public class TeleOpAutoAim extends OpMode {
         launcherMotor.setVelocity(launcherVelocity);
 
 
-        if (gamepad2.left_trigger > 0) {
-            turretMotor.setPower(-.30 * gamepad2.left_trigger);
-        } else if (gamepad2.right_trigger > 0) {
-            turretMotor.setPower(.30 * gamepad2.right_trigger);
-        } else {
-            turretMotor.setPower(0);
-        }
+        //if (gamepad2.left_trigger > 0) {
+        //    turretMotor.setPower(-.30 * gamepad2.left_trigger);
+        //} else if (gamepad2.right_trigger > 0) {
+        //    turretMotor.setPower(.30 * gamepad2.right_trigger);
+        //} else {
+        //    turretMotor.setPower(0);
+        //}
 
         telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
         //telemetry.addData("launcher power: ", launcherPower);

@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -124,10 +123,7 @@ public class TeleOpAutoAimRR extends OpMode {
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         */
-
-
 
 //        controlHubServoController.pwmEnable();
 
@@ -137,11 +133,9 @@ public class TeleOpAutoAimRR extends OpMode {
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-
         imu.resetYaw();*/
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -208,13 +202,9 @@ public class TeleOpAutoAimRR extends OpMode {
         double dy = yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
-
         double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle
-
         double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
-
         double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
-
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         //turretMotor.setPower(1.0);
@@ -235,7 +225,6 @@ public class TeleOpAutoAimRR extends OpMode {
         launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;
 
         telemetry.addData("xBot: ", xBot);
-      //telemetry.addData("x,y: ", xBot, yBot);
         telemetry.addData("yBot: ", yBot);
       //  telemetry.addData("xTurret: ", xTurret);
       //  telemetry.addData("yTurret: ", yTurret);
@@ -259,27 +248,26 @@ public class TeleOpAutoAimRR extends OpMode {
         // --- dynamic drive speed ---
         maxSpeed = gamepad1.right_bumper ? 0.5 : 1.0;
 
-// --- drive control ---
+        // --- drive control ---
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-//         If you press the left bumper, you get a drive from the point of view of the robot
-//         (much like driving an RC vehicle)
+        //         If you press the left bumper, you get a drive from the point of view of the robot
+        //         (much like driving an RC vehicle)
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
-
 
         // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
         // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
         // telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
-//end of first drive code--
+        //end of first drive code--
 
         //intake control code
         if (intakeMotorMode == 0) {
@@ -322,7 +310,6 @@ public class TeleOpAutoAimRR extends OpMode {
             launcherVelocity = 960;
         }
 
-
         if (gamepad2.dpadUpWasPressed()) {
             adjustV += 20;
         }
@@ -338,7 +325,6 @@ public class TeleOpAutoAimRR extends OpMode {
         //launcherMotor.setPower(Math.abs(launcherPower));
         launcherMotor.setVelocity(launcherVelocity);
 
-
         //if (gamepad2.left_trigger > 0) {
         //    turretMotor.setPower(-.30 * gamepad2.left_trigger);
         //} else if (gamepad2.right_trigger > 0) {
@@ -351,12 +337,10 @@ public class TeleOpAutoAimRR extends OpMode {
         //telemetry.addData("launcher power: ", launcherPower);
         //telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
         //telemetry.addData("Launcher RPM", rpm);
-
         //telemetry.addData("turretMotor Position: ", turretPosition);
         //telemetry.addData("turret Angle: ", turretAngle);
         telemetry.update();
     }
-
 
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
@@ -387,7 +371,6 @@ public class TeleOpAutoAimRR extends OpMode {
 
         double maxPower = 1;
 
-
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
         // be and not get clipped
@@ -405,6 +388,4 @@ public class TeleOpAutoAimRR extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
         //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
-
-
 }

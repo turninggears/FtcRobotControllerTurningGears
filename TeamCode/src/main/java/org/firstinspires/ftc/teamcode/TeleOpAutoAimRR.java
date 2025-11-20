@@ -74,20 +74,20 @@ public class TeleOpAutoAimRR extends OpMode {
     @Override
     public void init() {
         //this assigns the motors for drive chassis based on name in control hub
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "FL Drive");
+        frontLeftDrive  = hardwareMap.get(DcMotor.class, "FL Drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "FR Drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
-        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
-        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+        backLeftDrive   = hardwareMap.get(DcMotor.class, "BL Drive");
+        backRightDrive  = hardwareMap.get(DcMotor.class, "BR Drive");
+        intakeMotor     = hardwareMap.get(DcMotor.class, "intakemotor");
+        launcherMotor   = hardwareMap.get(DcMotorEx.class,"launcher motor");
+        turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
 
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
         launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
         artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
 
-        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addLine("=== TeleOpAutoAimRR ===");
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
@@ -158,7 +158,7 @@ public class TeleOpAutoAimRR extends OpMode {
 
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData(" bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
 
         if (alliance.equals("red")) {
             yGoal = 65;

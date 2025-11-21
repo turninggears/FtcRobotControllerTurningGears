@@ -18,6 +18,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 @TeleOp(name = "TeleOpAutoAimRR", group = "Robot")
 @Config
@@ -71,6 +75,10 @@ public class TeleOpAutoAimRR extends OpMode {
     Orientation angles;
     Acceleration gravity;
 
+    NormalizedColorSensor colorSensor;
+    float colorGain = 2;
+    final float[] hsvValues = new float[3];
+
     @Override
     public void init() {
         //this assigns the motors for drive chassis based on name in control hub
@@ -112,6 +120,13 @@ public class TeleOpAutoAimRR extends OpMode {
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if turret doesn't work get rif of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensor).enableLight(true);
+        }
+
+
 
         //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        /* this section is an example of creating pre set arm/motor position using encoder
@@ -181,6 +196,8 @@ public class TeleOpAutoAimRR extends OpMode {
         }
 
         pinpoint.update();
+        colorSensor.setGain(colorGain);
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
         //update this and reactivate them if you want message to display on driver station
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
@@ -220,7 +237,7 @@ public class TeleOpAutoAimRR extends OpMode {
         int maxV = 940;
         int minD = 100;
         int maxD = 138;
-        double DistRatio = (maxV-minV)/(maxD-minD);
+        double DistRatio = (double)(maxV-minV)/(maxD-minD);
 
         launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;
 
@@ -339,6 +356,10 @@ public class TeleOpAutoAimRR extends OpMode {
         //telemetry.addData("Launcher RPM", rpm);
         //telemetry.addData("turretMotor Position: ", turretPosition);
         //telemetry.addData("turret Angle: ", turretAngle);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue);
         telemetry.update();
     }
 

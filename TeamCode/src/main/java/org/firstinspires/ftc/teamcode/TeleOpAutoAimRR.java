@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 public class TeleOpAutoAimRR extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
+    public static double TURN_SPEED = 0.5;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;
@@ -43,9 +44,11 @@ public class TeleOpAutoAimRR extends OpMode {
     int intakeMotorMode = 0;
     double TICKS_PER_REV = 537.7;
 
+    MecanumDrive drive;
+
     // This declares the IMU needed to get the current direction the robot is facing
     // TODO: change this to use the Pinpoint for localization
-    IMU imu;
+    //    IMU imu;
 
     // TODO: add AutoAim variable declarations here
 
@@ -138,6 +141,10 @@ public class TeleOpAutoAimRR extends OpMode {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();*/
 
+        Pose2d startingPose = new Pose2d(0, 0, 0);  // later: read from blackboard
+        drive = new MecanumDrive(hardwareMap, startingPose);
+
+/*
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
         pinpoint.resetPosAndIMU();
@@ -159,6 +166,7 @@ public class TeleOpAutoAimRR extends OpMode {
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
         telemetry.addData(" bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+*/
 
         if (alliance.equals("red")) {
             yGoal = 65;
@@ -244,11 +252,32 @@ public class TeleOpAutoAimRR extends OpMode {
             pinpoint.setHeading(0, AngleUnit.DEGREES);
         }
 
+
         //this is start of drive code
         // --- dynamic drive speed ---
-        maxSpeed = gamepad1.right_bumper ? 0.5 : 1.0;
+
+        //maxSpeed = gamepad1.right_bumper ? 0.5 : 1.0;
+        double driveMultiplier = gamepad1.left_stick_button ? 1.0 : maxSpeed;
 
         // --- drive control ---
+
+        PoseVelocity2d robotVelocity = drive.updatePoseEstimate();
+        writeRobotPoseTelemetry(drive.localizer.getPose(), robotVelocity);
+
+        double forward = -gamepad1.left_stick_y;
+        double strafe  =  gamepad1.left_stick_x;
+        double turn    = -gamepad1.right_stick_x * TURN_SPEED;
+
+//        driveSpeed = -gamepad1.left_stick_y * driveMultiplier;
+//        strafe = gamepad1.left_stick_x  * driveMultiplier;
+//        turn   = gamepad1.right_stick_x * TURN_SPEED;
+
+        telemetry.addData("AutoAim", "Manual: Drive %5.2f, Strafe %5.2f, Turn %5.2f ", driveSpeed, strafe, turn);
+
+        drive.setWeightedDrivePower(new Pose2d(forward, strafe, turn));
+        drive.update();
+
+        /*
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
@@ -262,6 +291,7 @@ public class TeleOpAutoAimRR extends OpMode {
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
+         */
 
         // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());

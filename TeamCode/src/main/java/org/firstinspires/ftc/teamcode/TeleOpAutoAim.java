@@ -73,6 +73,8 @@ public class TeleOpAutoAim extends OpMode {
     Orientation angles;
     Acceleration gravity;
 
+
+
     @Override
     public void init() {
         //this assigns the motors for drive chassis based on name in control hub
@@ -173,6 +175,9 @@ public class TeleOpAutoAim extends OpMode {
         } else {
             yGoal = 0;
         }
+
+
+
     }
 
     @Override

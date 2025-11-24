@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
+import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,15 +20,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
-@TeleOp(name = "TeleOpAutoAim", group = "Robot")
+@SuppressLint("DefaultLocale")
+@TeleOp(name = "TeleOpAutoAimRR", group = "Robot")
 @Config
 
-public class TeleOpAutoAim extends OpMode {
+public class TeleOpAutoAimRR extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
+    public static double TURN_SPEED = 0.5;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;
@@ -45,9 +52,11 @@ public class TeleOpAutoAim extends OpMode {
     int intakeMotorMode = 0;
     double TICKS_PER_REV = 537.7;
 
+    MecanumDrive drive;
+
     // This declares the IMU needed to get the current direction the robot is facing
     // TODO: change this to use the Pinpoint for localization
-    IMU imu;
+    //    IMU imu;
 
     // TODO: add AutoAim variable declarations here
 
@@ -73,25 +82,28 @@ public class TeleOpAutoAim extends OpMode {
     Orientation angles;
     Acceleration gravity;
 
-
+    NormalizedColorSensor colorSensor;
+    float colorGain = 2;
+    final float[] hsvValues = new float[3];
 
     @Override
     public void init() {
         //this assigns the motors for drive chassis based on name in control hub
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "FL Drive");
+        frontLeftDrive  = hardwareMap.get(DcMotor.class, "FL Drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "FR Drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
-        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
-        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+        backLeftDrive   = hardwareMap.get(DcMotor.class, "BL Drive");
+        backRightDrive  = hardwareMap.get(DcMotor.class, "BR Drive");
+        intakeMotor     = hardwareMap.get(DcMotor.class, "intakemotor");
+        launcherMotor   = hardwareMap.get(DcMotorEx.class,"launcher motor");
+        turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
 
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
         launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
         artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
 
-        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry.addLine("=== TeleOpAutoAimRR ===");
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -116,6 +128,13 @@ public class TeleOpAutoAim extends OpMode {
         //if turret doesn't work get rif of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensor).enableLight(true);
+        }
+
+
+
         //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;
@@ -126,10 +145,7 @@ public class TeleOpAutoAim extends OpMode {
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         */
-
-
 
 //        controlHubServoController.pwmEnable();
 
@@ -139,13 +155,15 @@ public class TeleOpAutoAim extends OpMode {
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-
         imu.resetYaw();*/
 
+        Pose2d startingPose = new Pose2d(0, 0, 0);  // later: read from blackboard
+        drive = new MecanumDrive(hardwareMap, startingPose);
+
+/*
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
         pinpoint.resetPosAndIMU();
@@ -166,7 +184,8 @@ public class TeleOpAutoAim extends OpMode {
 
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData(" bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+*/
 
         if (alliance.equals("red")) {
             yGoal = 65;
@@ -175,9 +194,6 @@ public class TeleOpAutoAim extends OpMode {
         } else {
             yGoal = 0;
         }
-
-
-
     }
 
     @Override
@@ -192,6 +208,8 @@ public class TeleOpAutoAim extends OpMode {
         }
 
         pinpoint.update();
+        colorSensor.setGain(colorGain);
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
         //update this and reactivate them if you want message to display on driver station
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
@@ -213,13 +231,9 @@ public class TeleOpAutoAim extends OpMode {
         double dy = yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
-
         double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle
-
         double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
-
         double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
-
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         //turretMotor.setPower(1.0);
@@ -235,12 +249,11 @@ public class TeleOpAutoAim extends OpMode {
         int maxV = 940;
         int minD = 100;
         int maxD = 138;
-        double DistRatio = (maxV-minV)/(maxD-minD);
+        double DistRatio = (double)(maxV-minV)/(maxD-minD);
 
         launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;
 
         telemetry.addData("xBot: ", xBot);
-      //telemetry.addData("x,y: ", xBot, yBot);
         telemetry.addData("yBot: ", yBot);
       //  telemetry.addData("xTurret: ", xTurret);
       //  telemetry.addData("yTurret: ", yTurret);
@@ -257,34 +270,53 @@ public class TeleOpAutoAim extends OpMode {
 
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
         if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
-            pinpoint.setHeading(0, AngleUnit.DEGREES);
+            //pinpoint.setHeading(0, AngleUnit.DEGREES);
+            //imu.resetYaw();
+            Pose2d currentPose = drive.localizer.getPose();
+            drive.localizer.setPose(new Pose2d(0, 0, 0.0));
         }
+
 
         //this is start of drive code
         // --- dynamic drive speed ---
-        maxSpeed = gamepad1.right_bumper ? 0.5 : 1.0;
 
-// --- drive control ---
+        //maxSpeed = gamepad1.right_bumper ? 0.5 : 1.0;
+        double driveMultiplier = gamepad1.left_stick_button ? 1.0 : maxSpeed;
+
+        // --- drive control ---
+
+        PoseVelocity2d robotVelocity = drive.updatePoseEstimate();
+        writeRobotPoseTelemetry(drive.localizer.getPose(), robotVelocity);
+
+        double driveSpeed = -gamepad1.left_stick_y * driveMultiplier;
+        double strafe  =  gamepad1.left_stick_x * driveMultiplier;
+        double turn    = -gamepad1.right_stick_x * TURN_SPEED;
+        telemetry.addData("AutoAim", "Manual: Drive %5.2f, Strafe %5.2f, Turn %5.2f ", driveSpeed, strafe, turn);
+
+        driveFieldRelative(driveSpeed, strafe, turn);
+
+
+        /*
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-//         If you press the left bumper, you get a drive from the point of view of the robot
-//         (much like driving an RC vehicle)
+        //         If you press the left bumper, you get a drive from the point of view of the robot
+        //         (much like driving an RC vehicle)
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
-
+         */
 
         // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
         // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
         // telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
-//end of first drive code--
+        //end of first drive code--
 
         //intake control code
         if (intakeMotorMode == 0) {
@@ -327,7 +359,6 @@ public class TeleOpAutoAim extends OpMode {
             launcherVelocity = 960;
         }
 
-
         if (gamepad2.dpadUpWasPressed()) {
             adjustV += 20;
         }
@@ -343,7 +374,6 @@ public class TeleOpAutoAim extends OpMode {
         //launcherMotor.setPower(Math.abs(launcherPower));
         launcherMotor.setVelocity(launcherVelocity);
 
-
         //if (gamepad2.left_trigger > 0) {
         //    turretMotor.setPower(-.30 * gamepad2.left_trigger);
         //} else if (gamepad2.right_trigger > 0) {
@@ -356,12 +386,33 @@ public class TeleOpAutoAim extends OpMode {
         //telemetry.addData("launcher power: ", launcherPower);
         //telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
         //telemetry.addData("Launcher RPM", rpm);
-
         //telemetry.addData("turretMotor Position: ", turretPosition);
         //telemetry.addData("turret Angle: ", turretAngle);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue);
         telemetry.update();
     }
 
+    private void writeRobotPoseTelemetry(Pose2d pose, PoseVelocity2d velocity) {
+        telemetry.addLine(
+                String.format(
+                        "Robot pose: (%2.1fin, %2.1fin, %3.1fdeg)",
+                        pose.position.x,
+                        pose.position.y,
+                        Math.toDegrees(pose.heading.toDouble())
+                )
+        );
+        telemetry.addLine(
+                String.format(
+                        "Robot Velocity: (%2.1fin/sec, %2.1fin/sec, %3.1fdeg/sec)",
+                        velocity.linearVel.x,
+                        velocity.linearVel.y,
+                        Math.toDegrees(velocity.angVel)
+                )
+        );
+    }
 
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
@@ -371,11 +422,20 @@ public class TeleOpAutoAim extends OpMode {
 
         // Second, rotate angle by the angle the robot is pointing
         theta = AngleUnit.normalizeRadians(theta -
-                pinpoint.getHeading(UnnormalizedAngleUnit.RADIANS));
+                        drive.localizer.getPose().heading.toDouble());
+        //        pinpoint.getHeading(UnnormalizedAngleUnit.RADIANS));
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
+        double newRight =   r * Math.cos(theta);
+
+        telemetry.addLine(String.format(
+                "Drive Field Relative: Theta: %3.1f, \n" +
+                        "Rotate: %2.1f, \n" +
+                        "Forward: %2.1f xformed to %2.1f, \n" +
+                        "Right: %2.1f xformed to %2.1f",
+                theta, rotate, forward, newForward, right, newRight
+        ));
 
         // Finally, call the drive method with robot relative forward and right amounts
         drive(newForward, newRight, rotate);
@@ -391,7 +451,6 @@ public class TeleOpAutoAim extends OpMode {
         double backLeftPower = forward - right + rotate;
 
         double maxPower = 1;
-
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
@@ -410,6 +469,4 @@ public class TeleOpAutoAim extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
         //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
-
-
 }

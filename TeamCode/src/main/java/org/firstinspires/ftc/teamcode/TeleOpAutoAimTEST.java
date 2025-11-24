@@ -285,7 +285,6 @@ public class TeleOpAutoAimTEST extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-
         // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
         // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());

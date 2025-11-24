@@ -87,7 +87,7 @@ public class RedAutoA extends LinearOpMode {
                 int turretTargetPosition = 870; //it was 875
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(1);  //it was 0.55
+                turretMotor.setPower(1);
 
 
                 return false;

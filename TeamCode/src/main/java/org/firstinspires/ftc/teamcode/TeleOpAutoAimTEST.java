@@ -147,7 +147,8 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
-        pinpoint.resetPosAndIMU();
+
+        // testing without this line..... pinpoint.resetPosAndIMU();
 
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
@@ -155,17 +156,17 @@ public class TeleOpAutoAimTEST extends OpMode {
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
         pinpoint.setOffsets(5.709,3.465, DistanceUnit.INCH);
-        //Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);
-        //pinpoint.setPosition(pose);
-        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
-        pinpoint.setPosX((ROBOT_CENTER_X + startPosX),DistanceUnit.INCH);
-        pinpoint.setPosY((ROBOT_CENTER_Y + startPosY),DistanceUnit.INCH);
-//        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
-        pinpoint.update();
+       //Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);//pinpoint.setPosition(pose);
 
-        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        if(pinpoint.getPosX(DistanceUnit.INCH)==0 && pinpoint.getPosY(DistanceUnit.INCH)==0) {
+            pinpoint.setHeading(0.0, AngleUnit.DEGREES);
+            pinpoint.setPosX((ROBOT_CENTER_X + startPosX), DistanceUnit.INCH);
+            pinpoint.setPosY((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
+        }
+
+
+        //        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
+        pinpoint.update();
 
         if (alliance.equals("red")) {
             yGoal = 65;
@@ -174,6 +175,13 @@ public class TeleOpAutoAimTEST extends OpMode {
         } else {
             yGoal = 0;
         }
+
+        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("alliance: ", alliance);
+
+
     }
 
     @Override
@@ -318,7 +326,14 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         //launcher manual control code
         if (gamepad2.triangleWasPressed()) {
-//            launcherVelocity = 880;
+            if(alliance == "red")
+              {alliance="blue";
+               yGoal = 65;}
+            else
+              {alliance="red";
+               yGoal = -65;
+              }
+
         } else if (gamepad2.squareWasPressed()) {
             launcherVelocity = 0;
         } else if (gamepad2.circleWasPressed()) {

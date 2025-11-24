@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
+import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -23,6 +26,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
+@SuppressLint("DefaultLocale")
 @TeleOp(name = "TeleOpAutoAimRR", group = "Robot")
 @Config
 
@@ -266,7 +270,10 @@ public class TeleOpAutoAimRR extends OpMode {
 
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
         if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
-            pinpoint.setHeading(0, AngleUnit.DEGREES);
+            //pinpoint.setHeading(0, AngleUnit.DEGREES);
+            //imu.resetYaw();
+            Pose2d currentPose = drive.localizer.getPose();
+            drive.localizer.setPose(new Pose2d(0, 0, 0.0));
         }
 
 
@@ -281,18 +288,13 @@ public class TeleOpAutoAimRR extends OpMode {
         PoseVelocity2d robotVelocity = drive.updatePoseEstimate();
         writeRobotPoseTelemetry(drive.localizer.getPose(), robotVelocity);
 
-        double forward = -gamepad1.left_stick_y;
-        double strafe  =  gamepad1.left_stick_x;
+        double driveSpeed = -gamepad1.left_stick_y * driveMultiplier;
+        double strafe  =  gamepad1.left_stick_x * driveMultiplier;
         double turn    = -gamepad1.right_stick_x * TURN_SPEED;
-
-//        driveSpeed = -gamepad1.left_stick_y * driveMultiplier;
-//        strafe = gamepad1.left_stick_x  * driveMultiplier;
-//        turn   = gamepad1.right_stick_x * TURN_SPEED;
-
         telemetry.addData("AutoAim", "Manual: Drive %5.2f, Strafe %5.2f, Turn %5.2f ", driveSpeed, strafe, turn);
 
-        drive.setWeightedDrivePower(new Pose2d(forward, strafe, turn));
-        drive.update();
+        driveFieldRelative(driveSpeed, strafe, turn);
+
 
         /*
         if (gamepad1.left_bumper) {
@@ -393,6 +395,25 @@ public class TeleOpAutoAimRR extends OpMode {
         telemetry.update();
     }
 
+    private void writeRobotPoseTelemetry(Pose2d pose, PoseVelocity2d velocity) {
+        telemetry.addLine(
+                String.format(
+                        "Robot pose: (%2.1fin, %2.1fin, %3.1fdeg)",
+                        pose.position.x,
+                        pose.position.y,
+                        Math.toDegrees(pose.heading.toDouble())
+                )
+        );
+        telemetry.addLine(
+                String.format(
+                        "Robot Velocity: (%2.1fin/sec, %2.1fin/sec, %3.1fdeg/sec)",
+                        velocity.linearVel.x,
+                        velocity.linearVel.y,
+                        Math.toDegrees(velocity.angVel)
+                )
+        );
+    }
+
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
         // First, convert direction being asked to drive to polar coordinates
@@ -401,11 +422,20 @@ public class TeleOpAutoAimRR extends OpMode {
 
         // Second, rotate angle by the angle the robot is pointing
         theta = AngleUnit.normalizeRadians(theta -
-                pinpoint.getHeading(UnnormalizedAngleUnit.RADIANS));
+                        drive.localizer.getPose().heading.toDouble());
+        //        pinpoint.getHeading(UnnormalizedAngleUnit.RADIANS));
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
+        double newRight =   r * Math.cos(theta);
+
+        telemetry.addLine(String.format(
+                "Drive Field Relative: Theta: %3.1f, \n" +
+                        "Rotate: %2.1f, \n" +
+                        "Forward: %2.1f xformed to %2.1f, \n" +
+                        "Right: %2.1f xformed to %2.1f",
+                theta, rotate, forward, newForward, right, newRight
+        ));
 
         // Finally, call the drive method with robot relative forward and right amounts
         drive(newForward, newRight, rotate);

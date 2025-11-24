@@ -13,12 +13,15 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 @TeleOp(name = "TeleOpAutoAimTEST", group = "Robot")
 @Config
@@ -39,10 +42,10 @@ public class TeleOpAutoAimTEST extends OpMode {
     Servo   artifactStopper;
     ServoController controlHubServoController;
 
-    double launcherPower = 0;
+    double launcherPower    = 0;
     double launcherVelocity = 900;
-    int intakeMotorMode = 0;
-    double TICKS_PER_REV = 537.7;
+    int intakeMotorMode     = 0;
+    double TICKS_PER_REV    = 537.7;
 
     // This declares the IMU needed to get the current direction the robot is facing
     // TODO: change this to use the Pinpoint for localization
@@ -52,11 +55,11 @@ public class TeleOpAutoAimTEST extends OpMode {
 
     String alliance = "red";
     boolean firstLoop = true;
-    int xGoal = -65;
-    int yGoal = 0;
+    int xGoal      = -65;
+    int yGoal      = 0;
     double dTurret = 3.0;
-    int adjustV = 0;
-    int adjustAim = 0;
+    int adjustV    = 0;
+    int adjustAim  = 0;
 
     double ROBOT_CENTER_X = 8.169;
     double ROBOT_CENTER_Y = 8.169;
@@ -74,23 +77,27 @@ public class TeleOpAutoAimTEST extends OpMode {
     Orientation angles;
     Acceleration gravity;
 
+    NormalizedColorSensor colorSensor;
+    float colorGain = 2;
+    final float[] hsvValues = new float[3];
+
     @Override
     public void init() {
         //this assigns the motors for drive chassis based on name in control hub
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "FL Drive");
+        frontLeftDrive  = hardwareMap.get(DcMotor.class, "FL Drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "FR Drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
-        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
-        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+        backLeftDrive   = hardwareMap.get(DcMotor.class, "BL Drive");
+        backRightDrive  = hardwareMap.get(DcMotor.class, "BR Drive");
+        intakeMotor     = hardwareMap.get(DcMotor.class, "intakemotor");
+        launcherMotor   = hardwareMap.get(DcMotorEx.class,"launcher motor");
+        turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
 
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
         launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
         artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
 
-        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -115,6 +122,11 @@ public class TeleOpAutoAimTEST extends OpMode {
         //if turret doesn't work get rif of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensor).enableLight(true);
+        }
+
         //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;
@@ -125,10 +137,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         */
-
-
 
 //        controlHubServoController.pwmEnable();
 
@@ -165,7 +174,7 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData(" bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
 
         if (alliance.equals("red")) {
             yGoal = 65;
@@ -188,6 +197,8 @@ public class TeleOpAutoAimTEST extends OpMode {
         }
 
         pinpoint.update();
+        colorSensor.setGain(colorGain);
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
         //update this and reactivate them if you want message to display on driver station
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
@@ -209,13 +220,9 @@ public class TeleOpAutoAimTEST extends OpMode {
         double dy = yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
-
         double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle
-
         double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
-
         double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
-
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         //turretMotor.setPower(1.0);
@@ -276,7 +283,6 @@ public class TeleOpAutoAimTEST extends OpMode {
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
-
 
         // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
@@ -359,6 +365,10 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         //telemetry.addData("turretMotor Position: ", turretPosition);
         //telemetry.addData("turret Angle: ", turretAngle);
+        telemetry.addLine()
+                .addData("Red",   "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue",  "%.3f", colors.blue);
         telemetry.update();
     }
 
@@ -410,6 +420,4 @@ public class TeleOpAutoAimTEST extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
         //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
-
-
 }

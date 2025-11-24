@@ -47,10 +47,10 @@ public class TeleOpAutoAimRR extends OpMode {
     Servo   artifactStopper;
     ServoController controlHubServoController;
 
-    double launcherPower = 0;
+    double launcherPower    = 0;
     double launcherVelocity = 900;
-    int intakeMotorMode = 0;
-    double TICKS_PER_REV = 537.7;
+    int intakeMotorMode     = 0;
+    double TICKS_PER_REV    = 537.7;
 
     MecanumDrive drive;
 
@@ -62,10 +62,12 @@ public class TeleOpAutoAimRR extends OpMode {
 
     String alliance = "red";
     boolean firstLoop = true;
-    int xGoal = -65;
-    int yGoal = 0;
+    int xGoal      = -65;
+    int yGoal      = 0;
     double dTurret = 3.0;
-    int adjustV = 0;
+    int adjustV    = 0;
+    int adjustAim  = 0;
+
     double ROBOT_CENTER_X = 8.169;
     double ROBOT_CENTER_Y = 8.169;
     double startPosX = 63.831;

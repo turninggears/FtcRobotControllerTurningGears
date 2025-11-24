@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
+import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -23,11 +26,13 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
+@SuppressLint("DefaultLocale")
 @TeleOp(name = "TeleOpAutoAimTEST", group = "Robot")
 @Config
 
 public class TeleOpAutoAimTEST extends OpMode {
     GoBildaPinpointDriver pinpoint;
+
 
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     // This declares the four drive chassis motors needed
@@ -46,6 +51,8 @@ public class TeleOpAutoAimTEST extends OpMode {
     double launcherVelocity = 900;
     int intakeMotorMode     = 0;
     double TICKS_PER_REV    = 537.7;
+
+
 
     // This declares the IMU needed to get the current direction the robot is facing
     // TODO: change this to use the Pinpoint for localization
@@ -119,7 +126,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         //if turret doesn't work get rid of these lines
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //if turret doesn't work get rif of previous two lines
+        //if turret doesn't work get rid of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");

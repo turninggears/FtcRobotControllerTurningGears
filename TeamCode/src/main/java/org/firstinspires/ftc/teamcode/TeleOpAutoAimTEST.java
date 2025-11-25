@@ -109,7 +109,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
         artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+        blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addLine("=== TeleOpAutoAimTEST ===");
@@ -346,7 +346,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         if (gamepad2.triangleWasPressed()) {
             if(alliance == "red")
               {alliance="blue";
-               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
+               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                yGoal = 65;}
             else
               {alliance="red";
@@ -401,9 +401,9 @@ public class TeleOpAutoAimTEST extends OpMode {
         if(avgColor > 2.2){
           isEmpty=false;
           if(alliance == "red") {
-              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
           } else {
-              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
+              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
           }
          }
         else {

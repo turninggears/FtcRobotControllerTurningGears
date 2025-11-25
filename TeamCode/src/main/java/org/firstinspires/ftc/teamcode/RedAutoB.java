@@ -191,7 +191,7 @@ public class RedAutoB extends LinearOpMode {
 
 
         Action secondRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(-38.00, 28.00)) //second row spot
+                .strafeTo(new Vector2d(10.00, 28.00)) //second row spot
                 //.waitSeconds(0.1)
                 .lineToY(56) //second row intake
                 //.waitSeconds(1)
@@ -266,23 +266,23 @@ public class RedAutoB extends LinearOpMode {
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
                         thirdRow,
-                        //secondRow,
-                        //launchPosition,
-                        //launcher.FireArtifact(),//first artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//second artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//third artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),//should be able to remove this line eventually
-                        //launcher.FireArtifact(),
-                        //Pause.pause(0.5),
-                        //launcher.ResetLauncher(),
+                        secondRow,
+                        launchPosition,
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),//should be able to remove this line eventually
+                        launcher.FireArtifact(),
+                        Pause.pause(0.5),
+                        launcher.ResetLauncher(),
                         endSpot
                 )
         );

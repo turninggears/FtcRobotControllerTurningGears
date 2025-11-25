@@ -265,23 +265,23 @@ public class BlueAutoB extends LinearOpMode {
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        //secondRow,
-                        //launchPosition,
-                        //launcher.FireArtifact(),//first artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//second artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),
-                        //launcher.FireArtifact(),//third artifact
-                        //Pause.pause(0.25),
-                        //launcher.ResetLauncher(),
-                        //Pause.pause(.5),//should be able to remove this line eventually
-                        //launcher.FireArtifact(),
-                        //Pause.pause(0.5),
-                        //launcher.ResetLauncher(),
+                        secondRow,
+                        launchPosition,
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),//should be able to remove this line eventually
+                        launcher.FireArtifact(),
+                        Pause.pause(0.5),
+                        launcher.ResetLauncher(),
                         endSpot
                 )
         );

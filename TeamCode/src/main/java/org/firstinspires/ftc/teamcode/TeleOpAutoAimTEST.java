@@ -26,6 +26,9 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
+import android.graphics.Color;
+import android.view.View;
+
 @SuppressLint("DefaultLocale")
 @TeleOp(name = "TeleOpAutoAimTEST", group = "Robot")
 @Config
@@ -91,13 +94,13 @@ public class TeleOpAutoAimTEST extends OpMode {
     @Override
     public void init() {
         //this assigns the motors for drive chassis based on name in control hub
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "FL Drive");
+        frontLeftDrive  = hardwareMap.get(DcMotor.class, "FL Drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "FR Drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "BL Drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "BR Drive");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakemotor");
-        launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher motor");
-        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+        backLeftDrive   = hardwareMap.get(DcMotor.class, "BL Drive");
+        backRightDrive  = hardwareMap.get(DcMotor.class, "BR Drive");
+        intakeMotor     = hardwareMap.get(DcMotor.class, "intakemotor");
+        launcherMotor   = hardwareMap.get(DcMotorEx.class,"launcher motor");
+        turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
 
         //this matches names of other motors in control hub to names created in beginning of this code
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
@@ -181,7 +184,6 @@ public class TeleOpAutoAimTEST extends OpMode {
             pinpoint.setPosY((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
         }
 
-
         //        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
         pinpoint.update();
 
@@ -192,12 +194,10 @@ public class TeleOpAutoAimTEST extends OpMode {
         } else {
             yGoal = 0;
         }
-
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
         telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("alliance: ", alliance);
-
 
     }
 
@@ -254,7 +254,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         int maxV = 960;
         int minD = 96;
         int maxD = 136;
-        double DistRatio = (maxV-minV)/(maxD-minD);
+        double DistRatio = (double)(maxV-minV)/(maxD-minD);
 
         launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;
 
@@ -353,7 +353,6 @@ public class TeleOpAutoAimTEST extends OpMode {
 //            launcherVelocity = 960;
         }
 
-
         if (gamepad2.dpadUpWasPressed()) {
             adjustV += 20;
         }
@@ -368,7 +367,6 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         //launcherMotor.setPower(Math.abs(launcherPower));
         launcherMotor.setVelocity(launcherVelocity);
-
 
         if (gamepad2.left_trigger > 0) {
             adjustAim = adjustAim - 1;
@@ -407,7 +405,7 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
+        double newRight =   r * Math.cos(theta);
 
         // Finally, call the drive method with robot relative forward and right amounts
         drive(newForward, newRight, rotate);
@@ -417,10 +415,10 @@ public class TeleOpAutoAimTEST extends OpMode {
     public void drive(double forward, double right, double rotate) {
         // This calculates the power needed for each wheel based on the amount of forward,
         // strafe right, and rotate
-        double frontLeftPower = forward + right + rotate;
+        double frontLeftPower  = forward + right + rotate;
         double frontRightPower = forward - right - rotate;
-        double backRightPower = forward + right - rotate;
-        double backLeftPower = forward - right + rotate;
+        double backRightPower  = forward + right - rotate;
+        double backLeftPower   = forward - right + rotate;
 
         double maxPower = 1;
 
@@ -436,10 +434,10 @@ public class TeleOpAutoAimTEST extends OpMode {
         // We multiply by maxSpeed so that it can be set lower for outreaches
         // When a young child is driving the robot, we may not want to allow full
         // speed.
-        frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
+        frontLeftDrive.setPower(maxSpeed  * (frontLeftPower / maxPower));
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
-        backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
-        backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+        backLeftDrive.setPower(maxSpeed   * (backLeftPower / maxPower));
+        backRightDrive.setPower(maxSpeed  * (backRightPower / maxPower));
         //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
 

@@ -33,7 +33,7 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 public class TeleOpAutoAimTEST extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
-
+    public static double TURN_SPEED = 0.5;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;
@@ -56,17 +56,17 @@ public class TeleOpAutoAimTEST extends OpMode {
 
     // This declares the IMU needed to get the current direction the robot is facing
     // TODO: change this to use the Pinpoint for localization
-    IMU imu;
+    // IMU imu;
 
     // TODO: add AutoAim variable declarations here
 
     String alliance = "red";
     boolean firstLoop = true;
-    int xGoal = -65;
-    int yGoal = 0;
+    int xGoal      = -65;
+    int yGoal      = 0;
     double dTurret = 3.0;
-    int adjustV = 0;
-    int adjustAim = 0;
+    int adjustV    = 0;
+    int adjustAim  = 0;
 
     double ROBOT_CENTER_X = 8.169;
     double ROBOT_CENTER_Y = 8.169;
@@ -105,6 +105,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry.addLine("=== TeleOpAutoAimTEST ===");
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -212,6 +213,8 @@ public class TeleOpAutoAimTEST extends OpMode {
         }
 
         pinpoint.update();
+        colorSensor.setGain(colorGain);
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
         //update this and reactivate them if you want message to display on driver station
         double ticksPerSecond = launcherMotor.getVelocity();
         double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
@@ -233,18 +236,13 @@ public class TeleOpAutoAimTEST extends OpMode {
         double dy = yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
-
         double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle
-
         double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
-
         double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
-
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         //turretMotor.setPower(1.0);
         turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3)+adjustAim-6);  //-3 for the right bias
-
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setPower(1.0);
 

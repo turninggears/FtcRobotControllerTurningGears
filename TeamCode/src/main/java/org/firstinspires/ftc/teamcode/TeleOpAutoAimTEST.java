@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.ServoController;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -48,6 +49,7 @@ public class TeleOpAutoAimTEST extends OpMode {
     DcMotor turretMotor;
     Servo   launchTrigger;
     Servo   artifactStopper;
+    RevBlinkinLedDriver blinkin;
     ServoController controlHubServoController;
 
     double launcherPower = 0;
@@ -88,7 +90,7 @@ public class TeleOpAutoAimTEST extends OpMode {
     Acceleration gravity;
 
     NormalizedColorSensor colorSensor;
-    float colorGain = 2;
+    float colorGain = 4;
     final float[] hsvValues = new float[3];
 
     @Override
@@ -106,6 +108,8 @@ public class TeleOpAutoAimTEST extends OpMode {
         controlHubServoController = hardwareMap.get(ServoController.class, "Control Hub");
         launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
         artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
+        blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
+        blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addLine("=== TeleOpAutoAimTEST ===");
@@ -256,15 +260,16 @@ public class TeleOpAutoAimTEST extends OpMode {
         int maxD = 136;
         double DistRatio = (double)(maxV-minV)/(maxD-minD);
 
-        launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;
+        if(launcherVelocity > 0)
+        {launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;}
 
         telemetry.addData("xBot: ", xBot);
       //telemetry.addData("x,y: ", xBot, yBot);
         telemetry.addData("yBot: ", yBot);
       //  telemetry.addData("xTurret: ", xTurret);
       //  telemetry.addData("yTurret: ", yTurret);
-        telemetry.addData("dx: ", dx);
-        telemetry.addData("dy: ", dy);
+        //telemetry.addData("dx: ", dx);
+        //telemetry.addData("dy: ", dy);
         telemetry.addData("angleGoalDeg: ", angleGoalDeg);
         telemetry.addData("angleTurretDeg_raw: ", angleTurretDeg_raw);
         telemetry.addData("angleBotDeg: ", angleBotDeg);
@@ -341,16 +346,18 @@ public class TeleOpAutoAimTEST extends OpMode {
         if (gamepad2.triangleWasPressed()) {
             if(alliance == "red")
               {alliance="blue";
+               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
                yGoal = 65;}
             else
               {alliance="red";
+               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
                yGoal = -65;
               }
 
         } else if (gamepad2.squareWasPressed()) {
             launcherVelocity = 0;
         } else if (gamepad2.circleWasPressed()) {
-//            launcherVelocity = 960;
+            launcherVelocity = 960;
         }
 
         if (gamepad2.dpadUpWasPressed()) {
@@ -385,10 +392,29 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         //telemetry.addData("turretMotor Position: ", turretPosition);
         //telemetry.addData("turret Angle: ", turretAngle);
-        telemetry.addLine()
-                .addData("Red", "%.3f", colors.red)
-                .addData("Green", "%.3f", colors.green)
-                .addData("Blue", "%.3f", colors.blue);
+
+        double rrr = colors.red * 256.0;
+        double ggg = colors.green * 256.0;
+        double bbb = colors.blue * 256.0;
+        double avgColor = (rrr+ggg+bbb)/3.0;
+        boolean isEmpty;
+        if(avgColor > 2.2){
+          isEmpty=false;
+          if(alliance == "red") {
+              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+          } else {
+              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
+          }
+         }
+        else {
+          isEmpty=true;
+          blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+        }
+
+        telemetry.addData("Red", rrr);
+        telemetry.addData("Green", ggg);
+        telemetry.addData("Blue", bbb);
+        telemetry.addData("isEmpty", isEmpty);
         telemetry.update();
     }
 

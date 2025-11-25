@@ -400,7 +400,18 @@ public class TeleOpAutoAimTEST extends OpMode {
         double bbb = colors.blue * 256.0;
         double avgColor = (rrr+ggg+bbb)/3.0;
         boolean isEmpty;
-        if(avgColor > 2.2){isEmpty=false;}else{isEmpty=true;}
+        if(avgColor > 2.2){
+          isEmpty=false;
+          if(alliance == "red") {
+              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+          } else {
+              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
+          }
+         }
+        else {
+          isEmpty=true;
+          blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+        }
 
         telemetry.addData("Red", rrr);
         telemetry.addData("Green", ggg);

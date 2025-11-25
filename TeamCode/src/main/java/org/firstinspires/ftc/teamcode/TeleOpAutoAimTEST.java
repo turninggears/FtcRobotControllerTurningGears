@@ -125,7 +125,7 @@ public class TeleOpAutoAimTEST extends OpMode {
                         0)
         );
         //if turret doesn't work get rid of these lines
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+          //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if turret doesn't work get rid of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

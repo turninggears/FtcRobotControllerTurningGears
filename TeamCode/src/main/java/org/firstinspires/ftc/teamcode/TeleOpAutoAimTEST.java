@@ -16,12 +16,15 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 @SuppressLint("DefaultLocale")
 @TeleOp(name = "TeleOpAutoAimTEST", group = "Robot")
@@ -81,6 +84,10 @@ public class TeleOpAutoAimTEST extends OpMode {
     Orientation angles;
     Acceleration gravity;
 
+    NormalizedColorSensor colorSensor;
+    float colorGain = 2;
+    final float[] hsvValues = new float[3];
+
     @Override
     public void init() {
         //this assigns the motors for drive chassis based on name in control hub
@@ -122,6 +129,11 @@ public class TeleOpAutoAimTEST extends OpMode {
         //if turret doesn't work get rid of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensor).enableLight(true);
+        }
+
         //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        /* this section is an example of creating pre set arm/motor position using encoder
         arm_down_position = 1;
@@ -132,10 +144,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         */
-
-
 
 //        controlHubServoController.pwmEnable();
 
@@ -380,6 +389,10 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         //telemetry.addData("turretMotor Position: ", turretPosition);
         //telemetry.addData("turret Angle: ", turretAngle);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue);
         telemetry.update();
     }
 

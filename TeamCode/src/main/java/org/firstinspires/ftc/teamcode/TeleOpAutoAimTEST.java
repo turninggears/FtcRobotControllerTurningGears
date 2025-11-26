@@ -196,8 +196,7 @@ public class TeleOpAutoAimTEST extends OpMode {
             pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
             pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
             pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
-        }
-        else {
+        } else {
             pinpoint.setHeading(0.0, AngleUnit.DEGREES);
             pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0, DistanceUnit.INCH);
             pinpoint.setPosX((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
@@ -235,8 +234,7 @@ public class TeleOpAutoAimTEST extends OpMode {
                 pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
                 pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
                 blackboard.clear();
-            }
-            else {
+            } else {
                 pinpoint.setHeading(0.0, AngleUnit.DEGREES);
                 pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0, DistanceUnit.INCH);
                 pinpoint.setPosX((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);

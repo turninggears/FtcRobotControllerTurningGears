@@ -21,6 +21,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous(name = "RedAutoB", group = "Autonomous")
 public class RedAutoB extends LinearOpMode {
 
+    public Pose2d getCurrentPose(MecanumDrive drive) {
+        Pose2d currentPose = drive.localizer.getPose();
+        return currentPose;
+    }
+
     public static class Pause implements Action {
 
         public static Pause pause(double seconds) {
@@ -184,14 +189,14 @@ public class RedAutoB extends LinearOpMode {
         Vector2d vector = new Vector2d(-36, 15.84);
         Pause pause = new Pause(0.5);
 
-        Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
+        Action launchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(-14, 15.84))//launch spot
                 .build();
 
 
         Action secondRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(10.00, 28.00)) //second row spot
+                .strafeTo(new Vector2d(10.00, 30.00)) //second row spot
                 //.waitSeconds(0.1)
                 .lineToY(56) //second row intake
                 //.waitSeconds(1)
@@ -265,7 +270,6 @@ public class RedAutoB extends LinearOpMode {
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        thirdRow,
                         secondRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact

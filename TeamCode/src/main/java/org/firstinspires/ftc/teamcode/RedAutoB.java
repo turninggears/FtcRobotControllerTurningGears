@@ -195,7 +195,7 @@ public class RedAutoB extends LinearOpMode {
                 .build();
 
 
-        Action secondRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
+        Action secondRow = drive.actionBuilder(getCurrentPose(drive))
                 .strafeTo(new Vector2d(10.00, 30.00)) //second row spot
                 //.waitSeconds(0.1)
                 .lineToY(56) //second row intake

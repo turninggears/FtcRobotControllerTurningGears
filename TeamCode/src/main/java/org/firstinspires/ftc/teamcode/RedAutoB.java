@@ -290,5 +290,19 @@ public class RedAutoB extends LinearOpMode {
                         endSpot
                 )
         );
+
+        // After everything is done, report telemetry ONCE
+        Pose2d finalPose = drive.localizer.getPose();
+
+        telemetry.addLine("=== AUTO COMPLETE ===");
+        telemetry.addData("X", finalPose.position.x);
+        telemetry.addData("Y", finalPose.position.y);
+        telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
+
+        telemetry.addData("Launcher Velocity", launcher.launcherMotor.getVelocity());
+        telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
+
+        telemetry.update();
+        sleep(5000);
     }
 }

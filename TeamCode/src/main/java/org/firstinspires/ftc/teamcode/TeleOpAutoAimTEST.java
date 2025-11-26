@@ -173,10 +173,6 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         imu.resetYaw();*/
 
-        headingFromAutonomous = blackboard.getOrDefault("heading", 0);
-        xFromAutonomous = blackboard.getOrDefault("x", 0);
-        yFromAutonomous = blackboard.getOrDefault("y", 0);
-
         String xFromAutonomous = "x";
         String yFromAutonomous = "y";
         String headingFromAutonomous = "heading";

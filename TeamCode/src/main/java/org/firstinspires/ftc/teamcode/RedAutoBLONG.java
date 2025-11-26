@@ -17,9 +17,11 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
 @Config
-@Autonomous(name = "RedAutoB", group = "Autonomous")
-public class RedAutoB extends LinearOpMode {
+@Autonomous(name = "RedAutoBLONG", group = "Autonomous")
+public class RedAutoBLONG extends LinearOpMode {
 
     public Pose2d getCurrentPose(MecanumDrive drive) {
         Pose2d currentPose = drive.localizer.getPose();
@@ -102,8 +104,8 @@ public class RedAutoB extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
-            }
+                this(800);
+            }//was 860
 
             public PowerUpLauncher(double velocity) {
                 launcherVelocity = velocity;
@@ -131,12 +133,15 @@ public class RedAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
+                double velocity = launcherMotor.getVelocity();
                 double launchTriggerPosition = 0.9;
                 double artifactStopperPosition = 0;
+
+            if (velocity >780 && velocity <820) {//take this line out if it doesnt work
                 artifactStopper.setPosition(artifactStopperPosition);
                 launchTrigger.setPosition(launchTriggerPosition);
-
-                return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
+            }//if the if statement is removed take out this bracket as well
+                 return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
             }
         }
 
@@ -195,7 +200,15 @@ public class RedAutoB extends LinearOpMode {
                 .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))//launch spot
                 .build();
 
-            Action secondRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
+        Action firstRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
+                .setTangent(Math.toRadians(0))
+                .strafeTo(new Vector2d(33, 30))
+                .lineToY(58)
+                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
+                .waitSeconds(.25)
+                .build();
+
+        Action secondRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(9.00, 30.00)) //second row spot
                 //.waitSeconds(0.1)
@@ -273,6 +286,24 @@ public class RedAutoB extends LinearOpMode {
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(860),
                         secondRow,
+                        launchPosition,
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),//should be able to remove this line eventually
+                        launcher.FireArtifact(),
+                        Pause.pause(0.5),
+                        launcher.ResetLauncher(),
+                       //might not have time for this
+                        firstRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),

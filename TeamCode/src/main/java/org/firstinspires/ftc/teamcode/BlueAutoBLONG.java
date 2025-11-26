@@ -18,13 +18,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "RedAutoB", group = "Autonomous")
-public class RedAutoB extends LinearOpMode {
-
-    public Pose2d getCurrentPose(MecanumDrive drive) {
-        Pose2d currentPose = drive.localizer.getPose();
-        return currentPose;
-    }
+@Autonomous(name = "BlueAutoBLONG", group = "Autonomous")
+public class BlueAutoBLONG extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -61,11 +56,11 @@ public class RedAutoB extends LinearOpMode {
 
 
         public Launcher (HardwareMap hardwareMap) {
-            launchTrigger   = hardwareMap.get(Servo.class,"launch trigger");
+            launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
             artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
-            turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
-            launcherMotor   = hardwareMap.get(DcMotorEx.class, "launcher motor");
-            intakeMotor     = hardwareMap.get(DcMotorEx.class, "intakemotor");
+            turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+            launcherMotor = hardwareMap.get(DcMotorEx.class, "launcher motor");
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakemotor");
             launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -85,10 +80,10 @@ public class RedAutoB extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 930;
+                int turretTargetPosition = 135;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(1.00);
+                turretMotor.setPower(.55);
 
 
                 return false;
@@ -102,7 +97,7 @@ public class RedAutoB extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
+                this(800);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -111,11 +106,11 @@ public class RedAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 800;  //780
+                double launcherVelocity = 800;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 750;  //700
+                return launcherMotor.getVelocity() < 700;
             }
         }
 
@@ -131,11 +126,14 @@ public class RedAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
+                double velocity = launcherMotor.getVelocity();
                 double launchTriggerPosition = 0.9;
                 double artifactStopperPosition = 0;
+
+            if (velocity >780 && velocity <820) {//take this line out if it doesnt work
                 artifactStopper.setPosition(artifactStopperPosition);
                 launchTrigger.setPosition(launchTriggerPosition);
-
+            }
                 return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
             }
         }
@@ -148,7 +146,7 @@ public class RedAutoB extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;  //was.45
+                double artifactStopperPosition = 0.35;//was.45
 
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);
@@ -182,41 +180,46 @@ public class RedAutoB extends LinearOpMode {
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
 
-        Pose2d startPose = new Pose2d(-64, 39.84, Math.toRadians(90));
-        Pose2d launchPose = new Pose2d(-14, 17.84, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-64, -39.84, Math.toRadians(270));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-//        Vector2d vector = new Vector2d(-36, 15.84);
+        Vector2d vector = new Vector2d(-36, -15.84);
         Pause pause = new Pause(0.5);
 
-        Action launchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
+        Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))//launch spot
+                .strafeTo(new Vector2d(-14, -17.84))//launch spot
                 .build();
 
-            Action secondRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
+        Action firstRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(90)))
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(9.00, 30.00)) //second row spot
-                //.waitSeconds(0.1)
-                //.lineToY(56) //second row intake
-                .strafeTo(new Vector2d(9.00, 58.00))
-                //.waitSeconds(1)
-                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
+                .strafeTo(new Vector2d(33, -30))
+                .lineToY(58)
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot launch position will be seperat action
                 .waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(-14.00, 30.00)) //third row spot
+        Action secondRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(270)))
+                .strafeTo(new Vector2d(10.00, -28.00)) //second row spot
+                // .waitSeconds(0.1)
+                .lineToY(-56) //second row intake
                 //.waitSeconds(1)
-                .lineToY(52) //third row intake
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot launch position will be seperat action
+                .waitSeconds(.25)
+                .build();
+
+        Action thirdRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(270)))
+                .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
+                .lineToY(-50) //third row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot - launch position will be seperat action
                 .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(-14,17.84,Math.toRadians(90)))// need to update to new end location
-                .strafeTo(new Vector2d(-14, 30))//this is a guess based on third row position
+        Action endSpot = drive.actionBuilder(new Pose2d(-14,-15.84,Math.toRadians(270)))// need to update to new end location
+                .strafeTo(new Vector2d(-14, -46))//this is a guess based on third row position
                 .build();
 
 
@@ -256,7 +259,7 @@ public class RedAutoB extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(860),
+                        launcher.InitializeLauncher(),
                         thirdRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact
@@ -271,8 +274,25 @@ public class RedAutoB extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(860),
+                        launcher.InitializeLauncher(),
                         secondRow,
+                        launchPosition,
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),//should be able to remove this line eventually
+                        launcher.FireArtifact(),
+                        Pause.pause(0.5),
+                        launcher.ResetLauncher(),
+                        firstRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
@@ -298,8 +318,10 @@ public class RedAutoB extends LinearOpMode {
         telemetry.addData("X", finalPose.position.x);
         telemetry.addData("Y", finalPose.position.y);
         telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
+
         telemetry.addData("Launcher Velocity", launcher.launcherMotor.getVelocity());
         telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
+
         telemetry.update();
 
         blackboard.put("x", finalPose.position.x);

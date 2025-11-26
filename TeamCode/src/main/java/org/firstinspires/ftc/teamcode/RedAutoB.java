@@ -195,7 +195,7 @@ public class RedAutoB extends LinearOpMode {
                 .build();
 
 
-        Action secondRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
+        Action secondRow = drive.actionBuilder(getCurrentPose(drive))
                 .strafeTo(new Vector2d(10.00, 30.00)) //second row spot
                 //.waitSeconds(0.1)
                 .lineToY(56) //second row intake
@@ -290,8 +290,6 @@ public class RedAutoB extends LinearOpMode {
                         endSpot
                 )
         );
-
-        // After everything is done, report telemetry ONCE
         Pose2d finalPose = drive.localizer.getPose();
 
         telemetry.addLine("=== AUTO COMPLETE ===");
@@ -303,6 +301,10 @@ public class RedAutoB extends LinearOpMode {
         telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
 
         telemetry.update();
+
+        blackboard.put("x", finalPose.position.x);
+        blackboard.put("y", finalPose.position.y);
+        blackboard.put("heading", finalPose.heading.toDouble());
         sleep(5000);
     }
 }

@@ -318,6 +318,10 @@ public class RedAutoA extends LinearOpMode {
         telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
 
         telemetry.update();
+
+        blackboard.put("x", finalPose.position.x);
+        blackboard.put("y", finalPose.position.y);
+        blackboard.put("heading", finalPose.heading.toDouble());
         sleep(5000);
     }
 }

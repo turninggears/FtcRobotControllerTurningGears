@@ -77,6 +77,10 @@ public class TeleOpAutoAimTEST extends OpMode {
     int adjustV    = 0;
     int adjustAim  = 0;
 
+    double bbx = 0.0;
+    double bby = 0.0;
+    double bbh = 0.0;
+
     double ROBOT_CENTER_X = 8.169;
     double ROBOT_CENTER_Y = 8.169;
     double startPosX = 63.831;
@@ -191,13 +195,18 @@ public class TeleOpAutoAimTEST extends OpMode {
         pinpoint.resetPosAndIMU();
 
         if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
-            pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
-            pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
-            pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
+            bbh = (double)(blackboard.get(headingFromAutonomous));
+            bbx = (double)(blackboard.get(yFromAutonomous));
+            bby = (double)(blackboard.get(xFromAutonomous))*-1.0;
+            blackboard.clear();
+
+            //pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
+            //pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
+            //pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
         } else {
-            pinpoint.setHeading(0.0, AngleUnit.DEGREES);
-            pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0, DistanceUnit.INCH);
-            pinpoint.setPosX((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
+            //pinpoint.setHeading(0.0, AngleUnit.DEGREES);
+            //pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0, DistanceUnit.INCH);
+            //pinpoint.setPosX((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
         }
 
         //        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
@@ -225,12 +234,17 @@ public class TeleOpAutoAimTEST extends OpMode {
 //            pinpoint.setHeading(0.0, AngleUnit.DEGREES);
 //            pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0,DistanceUnit.INCH);
 //            pinpoint.setPosX((ROBOT_CENTER_Y + startPosY),DistanceUnit.INCH);
-//            firstLoop=false;
 
-            if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
-                pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
-                pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
-                pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
+            firstLoop=false;
+
+            //if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
+            if(bbx+bby+bbh != 0){
+                //pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
+                //pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
+                //pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
+                pinpoint.setHeading(Math.toDegrees(bbh)-90,AngleUnit.DEGREES);
+                pinpoint.setPosY(bby, DistanceUnit.INCH);
+                pinpoint.setPosX(bbx, DistanceUnit.INCH);
                 blackboard.clear();
             } else {
                 pinpoint.setHeading(0.0, AngleUnit.DEGREES);

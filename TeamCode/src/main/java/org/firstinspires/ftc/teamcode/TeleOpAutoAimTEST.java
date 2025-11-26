@@ -52,6 +52,10 @@ public class TeleOpAutoAimTEST extends OpMode {
     RevBlinkinLedDriver blinkin;
     ServoController controlHubServoController;
 
+    Object headingFromAutonomous;
+    Object xFromAutonomous;
+    Object yFromAutonomous;
+
     double launcherPower = 0;
     double launcherVelocity = 900;
     int intakeMotorMode = 0;
@@ -169,6 +173,10 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         imu.resetYaw();*/
 
+        String xFromAutonomous = "x";
+        String yFromAutonomous = "y";
+        String headingFromAutonomous = "heading";
+
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
 
@@ -182,7 +190,14 @@ public class TeleOpAutoAimTEST extends OpMode {
         pinpoint.setOffsets(5.709,3.465, DistanceUnit.INCH);
        //Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);//pinpoint.setPosition(pose);
 
-        if(pinpoint.getPosX(DistanceUnit.INCH)==0 && pinpoint.getPosY(DistanceUnit.INCH)==0) {
+        pinpoint.resetPosAndIMU();
+
+        if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
+            pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
+            pinpoint.setPosX((double)(blackboard.get(xFromAutonomous)), DistanceUnit.INCH);
+            pinpoint.setPosY((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
+        }
+        else {
             pinpoint.setHeading(0.0, AngleUnit.DEGREES);
             pinpoint.setPosX((ROBOT_CENTER_X + startPosX), DistanceUnit.INCH);
             pinpoint.setPosY((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
@@ -217,6 +232,14 @@ public class TeleOpAutoAimTEST extends OpMode {
         }
 
         pinpoint.update();
+
+        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("alliance: ", alliance);
+
+
+
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         //update this and reactivate them if you want message to display on driver station

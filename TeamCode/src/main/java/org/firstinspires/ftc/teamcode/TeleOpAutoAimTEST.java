@@ -179,9 +179,7 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
-
-        // testing without this line..... pinpoint.resetPosAndIMU();
-
+        //testing without this line.....  pinpoint.resetPosAndIMU();
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
@@ -271,7 +269,7 @@ public class TeleOpAutoAimTEST extends OpMode {
         double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg));
 
         double dx = (xGoal - xTurret) *-1.0;
-        double dy = yGoal - yTurret;
+        double dy =  yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
         double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle

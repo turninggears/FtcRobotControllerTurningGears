@@ -85,10 +85,10 @@ public class RedAutoB extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 938;
+                int turretTargetPosition = 930;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(.55);
+                turretMotor.setPower(1.00);
 
 
                 return false;
@@ -111,11 +111,11 @@ public class RedAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 780;
+                double launcherVelocity = 800;  //780
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 700;
+                return launcherMotor.getVelocity() < 750;  //700
             }
         }
 
@@ -183,6 +183,7 @@ public class RedAutoB extends LinearOpMode {
         double start_pos_y_in = startPosY / 25.4;*/
 
         Pose2d startPose = new Pose2d(-64, 39.84, Math.toRadians(90));
+        Pose2d launchPose = new Pose2d(-14, 17.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
@@ -191,29 +192,30 @@ public class RedAutoB extends LinearOpMode {
 
         Action launchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(-14, 15.84))//launch spot
+                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))//launch spot
                 .build();
 
-
-        Action secondRow = drive.actionBuilder(getCurrentPose(drive))
-                .strafeTo(new Vector2d(10.00, 30.00)) //second row spot
+        Action secondRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
+                .setTangent(Math.toRadians(0))
+                .strafeTo(new Vector2d(9.00, 30.00)) //second row spot
                 //.waitSeconds(0.1)
-                .lineToY(56) //second row intake
+                //.lineToY(56) //second row intake
+                .strafeTo(new Vector2d(9.00, 58.00))
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(-14.0, 15.84))  //launch spot launch position will be seperat action
+                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
                 .waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(-14, 15.84, Math.toRadians(90)))
+        Action thirdRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(-14.00, 30.00)) //third row spot
                 //.waitSeconds(1)
                 .lineToY(52) //third row intake
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(-14, 15.84))  //launch spot - launch position will be seperat action
+                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
                 .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(-14,15.84,Math.toRadians(90)))// need to update to new end location
+        Action endSpot = drive.actionBuilder(new Pose2d(-14,17.84,Math.toRadians(90)))// need to update to new end location
                 .strafeTo(new Vector2d(-14, 30))//this is a guess based on third row position
                 .build();
 

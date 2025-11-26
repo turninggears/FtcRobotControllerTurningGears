@@ -350,7 +350,7 @@ public class TeleOpAutoAimTEST extends OpMode {
                yGoal = 65;}
             else
               {alliance="red";
-               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
                yGoal = -65;
               }
 

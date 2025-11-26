@@ -61,11 +61,11 @@ public class RedAutoB extends LinearOpMode {
 
 
         public Launcher (HardwareMap hardwareMap) {
-            launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
+            launchTrigger   = hardwareMap.get(Servo.class,"launch trigger");
             artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
-            turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
-            launcherMotor = hardwareMap.get(DcMotorEx.class, "launcher motor");
-            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakemotor");
+            turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
+            launcherMotor   = hardwareMap.get(DcMotorEx.class, "launcher motor");
+            intakeMotor     = hardwareMap.get(DcMotorEx.class, "intakemotor");
             launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -186,7 +186,7 @@ public class RedAutoB extends LinearOpMode {
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-        Vector2d vector = new Vector2d(-36, 15.84);
+//        Vector2d vector = new Vector2d(-36, 15.84);
         Pause pause = new Pause(0.5);
 
         Action launchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position

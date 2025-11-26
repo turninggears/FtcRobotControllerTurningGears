@@ -148,7 +148,7 @@ public class RedAutoB extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;//was.45
+                double artifactStopperPosition = 0.35;  //was.45
 
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);

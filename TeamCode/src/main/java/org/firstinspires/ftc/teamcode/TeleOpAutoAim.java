@@ -167,7 +167,7 @@ public class TeleOpAutoAim extends OpMode {
 
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("bot angle: ",  pinpoint.getHeading(AngleUnit.DEGREES));
 
         if (alliance.equals("red")) {
             yGoal = 65;

@@ -232,6 +232,14 @@ public class TeleOpAutoAimTEST extends OpMode {
         }
 
         pinpoint.update();
+
+        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("alliance: ", alliance);
+
+
+
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         //update this and reactivate them if you want message to display on driver station

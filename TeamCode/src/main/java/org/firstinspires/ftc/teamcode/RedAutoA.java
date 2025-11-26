@@ -272,7 +272,7 @@ public class RedAutoA extends LinearOpMode {
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(975),
-                        firstRow,
+                        firstRow.build(),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
@@ -286,7 +286,7 @@ public class RedAutoA extends LinearOpMode {
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        secondRow,
+                        secondRow.build(),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
@@ -302,7 +302,7 @@ public class RedAutoA extends LinearOpMode {
                         launcher.FireArtifact(),
                         Pause.pause(0.5),
                         launcher.ResetLauncher(),
-                        endSpot
+                        endSpot.build()
                 )
         );
 
@@ -313,10 +313,8 @@ public class RedAutoA extends LinearOpMode {
         telemetry.addData("X", finalPose.position.x);
         telemetry.addData("Y", finalPose.position.y);
         telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
-
         telemetry.addData("Launcher Velocity", launcher.launcherMotor.getVelocity());
         telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
-
         telemetry.update();
 
         blackboard.put("x", finalPose.position.x);

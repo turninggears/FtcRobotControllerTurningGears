@@ -296,10 +296,8 @@ public class RedAutoB extends LinearOpMode {
         telemetry.addData("X", finalPose.position.x);
         telemetry.addData("Y", finalPose.position.y);
         telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
-
         telemetry.addData("Launcher Velocity", launcher.launcherMotor.getVelocity());
         telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
-
         telemetry.update();
 
         blackboard.put("x", finalPose.position.x);

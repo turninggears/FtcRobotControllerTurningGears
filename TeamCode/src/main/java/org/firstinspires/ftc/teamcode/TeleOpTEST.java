@@ -1,40 +1,35 @@
 package org.firstinspires.ftc.teamcode;
+
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
+
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
-
-import android.graphics.Color;
-import android.view.View;
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "TeleOpAutoAimTEST", group = "Robot")
+@TeleOp(name = "TeleOpTEST", group = "Robot")
 @Config
 
-public class TeleOpAutoAimTEST extends OpMode {
+public class TeleOpTEST extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
     public static double TURN_SPEED = 0.5;
@@ -83,7 +78,7 @@ public class TeleOpAutoAimTEST extends OpMode {
 
     double ROBOT_CENTER_X = 8.169;
     double ROBOT_CENTER_Y = 8.169;
-    double startPosX = 63.831;
+    double startPosX = 54;
     double startPosY = 0;
     float theta;
     int drivemode;
@@ -140,7 +135,7 @@ public class TeleOpAutoAimTEST extends OpMode {
                         0)
         );
         //if turret doesn't work get rid of these lines
-          //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if turret doesn't work get rid of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -189,7 +184,7 @@ public class TeleOpAutoAimTEST extends OpMode {
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
-        pinpoint.setOffsets(5.709,3.465, DistanceUnit.INCH);
+        pinpoint.setOffsets(-5.709,3.465, DistanceUnit.INCH);
        //Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);//pinpoint.setPosition(pose);
 
         pinpoint.resetPosAndIMU();
@@ -198,18 +193,9 @@ public class TeleOpAutoAimTEST extends OpMode {
             bbh = (double)(blackboard.get(headingFromAutonomous));
             bbx = (double)(blackboard.get(yFromAutonomous));
             bby = (double)(blackboard.get(xFromAutonomous))*-1.0;
-            blackboard.clear();
-
-            //pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
-            //pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
-            //pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
-        } else {
-            //pinpoint.setHeading(0.0, AngleUnit.DEGREES);
-            //pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0, DistanceUnit.INCH);
-            //pinpoint.setPosX((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
+            blackboard.clear();;
         }
 
-        //        pinpoint.setHeading(0.0, AngleUnit.DEGREES);
         pinpoint.update();
 
         if (alliance.equals("red")) {
@@ -227,21 +213,14 @@ public class TeleOpAutoAimTEST extends OpMode {
     }
 
     @Override
-    //this is the code that runs once you press play put game play code in this section
+    //This is the code that runs repeatedly once you press play. Put game play code in this section
     public void loop() {
 
         if(firstLoop){
-//            pinpoint.setHeading(0.0, AngleUnit.DEGREES);
-//            pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0,DistanceUnit.INCH);
-//            pinpoint.setPosX((ROBOT_CENTER_Y + startPosY),DistanceUnit.INCH);
-
             firstLoop=false;
 
             //if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
             if(bbx+bby+bbh != 0){
-                //pinpoint.setHeading((double)(blackboard.get(headingFromAutonomous)), AngleUnit.RADIANS);
-                //pinpoint.setPosY((double)(blackboard.get(xFromAutonomous))*-1.0, DistanceUnit.INCH);
-                //pinpoint.setPosX((double)(blackboard.get(yFromAutonomous)), DistanceUnit.INCH);
                 pinpoint.setHeading(Math.toDegrees(bbh)-90,AngleUnit.DEGREES);
                 pinpoint.setPosY(bby, DistanceUnit.INCH);
                 pinpoint.setPosX(bbx, DistanceUnit.INCH);
@@ -271,7 +250,6 @@ public class TeleOpAutoAimTEST extends OpMode {
         telemetry.addData("alliance: ", alliance);
 
 
-
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         //update this and reactivate them if you want message to display on driver station
@@ -288,20 +266,20 @@ public class TeleOpAutoAimTEST extends OpMode {
 
         double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES);
 
-        double xTurret = xBot - dTurret * Math.cos(Math.toRadians(angleBotDeg));
-        double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg));
+        double xTurret = xBot - dTurret * Math.cos(Math.toRadians(angleBotDeg+90));
+        double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg+90));
 
-        double dx = (xGoal - xTurret) *-1.0;
-        double dy =  yGoal - yTurret;
+        double dx = xGoal - xTurret;
+        double dy = yGoal - yTurret;
 
-        double angleGoalDeg = Math.toDegrees(Math.atan2(dx, dy));      //angle to goal from X
-        double angleTurretDeg_raw = angleGoalDeg - angleBotDeg;        //angle to goal from X minus bot’s angle
+        double angleGoalDeg = Math.toDegrees(Math.atan2(dy, dx));      //angle to goal from X
+        double angleTurretDeg_raw = angleGoalDeg - angleBotDeg - 90;        //angle to goal from X minus bot’s angle
         double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
         double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
         double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         //turretMotor.setPower(1.0);
-        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3)+adjustAim-6);  //-3 for the right bias
+        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3)+adjustAim);
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setPower(1.0);
 
@@ -321,10 +299,10 @@ public class TeleOpAutoAimTEST extends OpMode {
         telemetry.addData("xBot: ", xBot);
       //telemetry.addData("x,y: ", xBot, yBot);
         telemetry.addData("yBot: ", yBot);
-      //  telemetry.addData("xTurret: ", xTurret);
-      //  telemetry.addData("yTurret: ", yTurret);
-        //telemetry.addData("dx: ", dx);
-        //telemetry.addData("dy: ", dy);
+        telemetry.addData("xTurret: ", xTurret);
+        telemetry.addData("yTurret: ", yTurret);
+        telemetry.addData("dx: ", dx);
+        telemetry.addData("dy: ", dy);
         telemetry.addData("angleGoalDeg: ", angleGoalDeg);
         telemetry.addData("angleTurretDeg_raw: ", angleTurretDeg_raw);
         telemetry.addData("angleBotDeg: ", angleBotDeg);

@@ -71,15 +71,15 @@ public class TeleOpTEST extends OpMode {
     double dTurret = 3.0;
     int adjustV    = 0;
     int adjustAim  = 0;
-
+    int angleCHEAT = 0;
     double bbx = 0.0;
     double bby = 0.0;
     double bbh = 0.0;
 
-    double ROBOT_CENTER_X = 8.169;
-    double ROBOT_CENTER_Y = 8.169;
-    double startPosX = 54;
-    double startPosY = 0;
+    //double ROBOT_CENTER_X = 8.169;
+    //double ROBOT_CENTER_Y = 8.169;
+    double startPosX = 62;
+    double startPosY = 8;
     float theta;
     int drivemode;
     double Slow_Speed;
@@ -193,21 +193,26 @@ public class TeleOpTEST extends OpMode {
             bbh = (double)(blackboard.get(headingFromAutonomous));
             bbx = (double)(blackboard.get(yFromAutonomous));
             bby = (double)(blackboard.get(xFromAutonomous))*-1.0;
+            alliance = (String) blackboard.get("team");
             blackboard.clear();;
         }
 
         pinpoint.update();
 
-        if (alliance.equals("red")) {
-            yGoal = 65;
-        } else if (alliance.equals("blue")) {
-            yGoal = -65;
-        } else {
-            yGoal = 0;
-        }
+//        if (alliance.equals("red")) {
+//            yGoal = 65;
+//        } else if (alliance.equals("blue")) {
+//            yGoal = -65;
+//        } else {
+//            yGoal = 0;
+//        }
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
         telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("bbx: ", bbx);
+        telemetry.addData("bby: ", bby);
+        telemetry.addData("bbh: ", bbh);
+
         telemetry.addData("alliance: ", alliance);
 
     }
@@ -219,68 +224,43 @@ public class TeleOpTEST extends OpMode {
         if(firstLoop){
             firstLoop=false;
 
-            //if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
-            if(bbx+bby+bbh != 0){
-                pinpoint.setHeading(Math.toDegrees(bbh)-90,AngleUnit.DEGREES);
+            if(bbx+bby+bbh != 0){  //if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
+                pinpoint.setHeading(bbh, AngleUnit.DEGREES);
                 pinpoint.setPosY(bby, DistanceUnit.INCH);
                 pinpoint.setPosX(bbx, DistanceUnit.INCH);
-                blackboard.clear();
-
-                if(bby > 0){
-                    alliance = "red";
-                    yGoal = 65;
-                } else {
-                    alliance = "blue";
-                    yGoal = -65;
-                }
-
+                angleCHEAT = 65;
             } else {
                 pinpoint.setHeading(0.0, AngleUnit.DEGREES);
-                pinpoint.setPosY((ROBOT_CENTER_X + startPosX)*-1.0, DistanceUnit.INCH);
-                pinpoint.setPosX((ROBOT_CENTER_Y + startPosY), DistanceUnit.INCH);
+                pinpoint.setPosY((startPosX)*-1.0, DistanceUnit.INCH);
+                pinpoint.setPosX((startPosY), DistanceUnit.INCH);
+            }
+
+            if(alliance.equals("red")){
+                yGoal = 65;
+            } else {
+                yGoal = -65;
             }
 
         }
 
         pinpoint.update();
 
-        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("alliance: ", alliance);
-
-
-        colorSensor.setGain(colorGain);
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        //update this and reactivate them if you want message to display on driver station
-        double ticksPerSecond = launcherMotor.getVelocity();
-        double rpm = (ticksPerSecond/TICKS_PER_REV) * 60;
-
-        //This gives ticks of the turret motor's rotation.
-        //double turretPosition = turretMotor.getCurrentPosition();
-        //This converts the turretMotorPosition to an angle to the bot in degrees.
-        //double turretAngle = (turretPosition % 1080)/3;
-
         double xBot = pinpoint.getPosY(DistanceUnit.INCH)*-1.0;
         double yBot = pinpoint.getPosX(DistanceUnit.INCH);
-
-        double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES);
-
+        double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES) ;
         double xTurret = xBot - dTurret * Math.cos(Math.toRadians(angleBotDeg+90));
         double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg+90));
-
         double dx = xGoal - xTurret;
         double dy = yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dy, dx));      //angle to goal from X
         double angleTurretDeg_raw = angleGoalDeg - angleBotDeg - 90;        //angle to goal from X minus bot’s angle
-        double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
-        double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
-        double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
+        //double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
+        //double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
+        //double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
-        //turretMotor.setPower(1.0);
-        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3)+adjustAim);
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim + (angleCHEAT*3));
         turretMotor.setPower(1.0);
 
         //turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
@@ -296,6 +276,10 @@ public class TeleOpTEST extends OpMode {
         if(launcherVelocity > 0)
         {launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;}
 
+        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("alliance: ", alliance);
         telemetry.addData("xBot: ", xBot);
       //telemetry.addData("x,y: ", xBot, yBot);
         telemetry.addData("yBot: ", yBot);
@@ -306,9 +290,9 @@ public class TeleOpTEST extends OpMode {
         telemetry.addData("angleGoalDeg: ", angleGoalDeg);
         telemetry.addData("angleTurretDeg_raw: ", angleTurretDeg_raw);
         telemetry.addData("angleBotDeg: ", angleBotDeg);
-        telemetry.addData("errorTurretDeg: ", errorTurretDeg);
-        telemetry.addData("turret_unwrapped: ", turret_unwrapped);
-        telemetry.addData("angleTurretCurr: ", angleTurretCurr);
+        //telemetry.addData("errorTurretDeg: ", errorTurretDeg);
+        //telemetry.addData("turret_unwrapped: ", turret_unwrapped);
+        //telemetry.addData("angleTurretCurr: ", angleTurretCurr);
         telemetry.addData("dGoal: ", dGoal);
         telemetry.addData("launcherVelocity: ", launcherVelocity);
 
@@ -375,16 +359,25 @@ public class TeleOpTEST extends OpMode {
             artifactStopper.setPosition(.45);
         }
 
+        if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
+            launchTrigger.setPosition(.9);
+            artifactStopper.setPosition(0);
+        } else {
+            launchTrigger.setPosition(0.3);
+            artifactStopper.setPosition(.45);
+        }
+
+
         //launcher manual control code
         if (gamepad2.triangleWasPressed()) {
             if(alliance.equals("red"))
               {alliance="blue";
                blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-               yGoal = 65;}
+               yGoal = -65;}
             else
               {alliance="red";
                blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-               yGoal = -65;
+               yGoal = 65;
               }
 
         } else if (gamepad2.squareWasPressed()) {
@@ -405,27 +398,18 @@ public class TeleOpTEST extends OpMode {
             launcherVelocity = 1200;
         }
 
-        //launcherMotor.setPower(Math.abs(launcherPower));
         launcherMotor.setVelocity(launcherVelocity);
 
         if (gamepad2.left_trigger > 0) {
             adjustAim = adjustAim - 1;
-            // turretMotor.setPower(-.30 * gamepad2.left_trigger);
         } else if (gamepad2.right_trigger > 0) {
             adjustAim = adjustAim + 1;
-            // turretMotor.setPower(.30 * gamepad2.right_trigger);
-        } else {
-        //    turretMotor.setPower(0);
         }
 
         telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
-        //telemetry.addData("launcher power: ", launcherPower);
-        //telemetry.addData("Launcher Velocity (ticks/s)", ticksPerSecond);
-        //telemetry.addData("Launcher RPM", rpm);
 
-        //telemetry.addData("turretMotor Position: ", turretPosition);
-        //telemetry.addData("turret Angle: ", turretAngle);
-
+        colorSensor.setGain(colorGain);
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
         double rrr = colors.red * 256.0;
         double ggg = colors.green * 256.0;
         double bbb = colors.blue * 256.0;

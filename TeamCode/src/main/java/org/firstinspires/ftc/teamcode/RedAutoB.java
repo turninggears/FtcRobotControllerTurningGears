@@ -305,6 +305,8 @@ public class RedAutoB extends LinearOpMode {
         blackboard.put("x", finalPose.position.x);
         blackboard.put("y", finalPose.position.y);
         blackboard.put("heading", finalPose.heading.toDouble());
+        blackboard.put("team","red");
+
         sleep(5000);
     }
 }

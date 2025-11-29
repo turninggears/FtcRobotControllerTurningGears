@@ -311,6 +311,7 @@ public class BlueAutoA extends LinearOpMode {
         blackboard.put("x", finalPose.position.x);
         blackboard.put("y", finalPose.position.y);
         blackboard.put("heading", finalPose.heading.toDouble());
+        blackboard.put("team","blue");
         sleep(5000);
     }
 }

@@ -220,7 +220,7 @@ public class RedAutoA extends LinearOpMode {
         TrajectoryActionBuilder thirdRow = secondRow.fresh()
 //        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
-                .waitSeconds(1)
+                .waitSeconds(0.25)
                 .lineToY(46) //third row intake
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
@@ -249,16 +249,13 @@ public class RedAutoA extends LinearOpMode {
 
 //        if (isStopRequested()) return;
 
-
-
-
         Actions.runBlocking(
                 new SequentialAction(
                         launcher.ResetLauncher(),
                         firstLaunchPosition,
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
-                        Pause.pause(1.0),
+                        Pause.pause(1.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
@@ -271,8 +268,9 @@ public class RedAutoA extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(975),
+                        launcher.InitializeLauncher(1000),
                         firstRow.build(),
+                        Pause.pause(0.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
@@ -285,7 +283,7 @@ public class RedAutoA extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(),
+                        launcher.InitializeLauncher(1000),
                         secondRow.build(),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),

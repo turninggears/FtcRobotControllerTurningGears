@@ -259,6 +259,7 @@ public class RedAutoB extends LinearOpMode {
                         launcher.InitializeLauncher(860),
                         thirdRow,
                         launchPosition,
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),

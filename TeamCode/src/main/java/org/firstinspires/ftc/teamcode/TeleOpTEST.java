@@ -231,11 +231,15 @@ public class TeleOpTEST extends OpMode {
                     pinpoint.setPosY(bby, DistanceUnit.INCH);
                     pinpoint.setPosX(bbx, DistanceUnit.INCH);
                     angleCHEAT = 0;
+                    adjustAim = -7;
+                    adjustV = 0;
                 } else {  //Alliance is BLUE
                     pinpoint.setHeading(0, AngleUnit.DEGREES);
                     pinpoint.setPosY(bbx, DistanceUnit.INCH);
                     pinpoint.setPosX(bby, DistanceUnit.INCH);
                     angleCHEAT = 0;
+                    adjustAim = -7;
+                    adjustV = -20;
                 }
 
             } else {
@@ -258,8 +262,8 @@ public class TeleOpTEST extends OpMode {
             xBot = pinpoint.getPosY(DistanceUnit.INCH)*-1.0;
             yBot = pinpoint.getPosX(DistanceUnit.INCH);
         } else {
-            yBot = pinpoint.getPosX(DistanceUnit.INCH)*-1.0;
             xBot = pinpoint.getPosY(DistanceUnit.INCH);
+            yBot = pinpoint.getPosX(DistanceUnit.INCH)*-1.0;
         }
 
         double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES) ;
@@ -291,7 +295,7 @@ public class TeleOpTEST extends OpMode {
         int minV = 860;
         int maxV = 960;
         int minD = 96;
-        int maxD = 136;
+        int maxD = 140;
         double DistRatio = (double)(maxV-minV)/(maxD-minD);
 
         if(launcherVelocity > 0)

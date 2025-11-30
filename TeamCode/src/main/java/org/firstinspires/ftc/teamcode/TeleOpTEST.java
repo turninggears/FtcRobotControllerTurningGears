@@ -66,6 +66,8 @@ public class TeleOpTEST extends OpMode {
 
     String alliance = "red";
     boolean firstLoop = true;
+    double xBot = 0.0;
+    double yBot = 0.0;
     int xGoal      = -65;
     int yGoal      = 0;
     double dTurret = 3.0;
@@ -135,7 +137,7 @@ public class TeleOpTEST extends OpMode {
                         0)
         );
         //if turret doesn't work get rid of these lines
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if turret doesn't work get rid of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -190,22 +192,20 @@ public class TeleOpTEST extends OpMode {
         pinpoint.resetPosAndIMU();
 
         if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
-            bbh = (double)(blackboard.get(headingFromAutonomous));
-            bbx = (double)(blackboard.get(yFromAutonomous));
-            bby = (double)(blackboard.get(xFromAutonomous))*-1.0;
             alliance = (String) blackboard.get("team");
+            bbh = (double)(blackboard.get(headingFromAutonomous));
+            if(alliance.equals("red")){
+                bbx = (double)(blackboard.get(yFromAutonomous));
+                bby = (double)(blackboard.get(xFromAutonomous))*-1.0;
+            } else {
+                bbx = (double)(blackboard.get(xFromAutonomous));
+                bby = (double)(blackboard.get(yFromAutonomous))*-1.0;
+            }
             blackboard.clear();;
         }
 
         pinpoint.update();
 
-//        if (alliance.equals("red")) {
-//            yGoal = 65;
-//        } else if (alliance.equals("blue")) {
-//            yGoal = -65;
-//        } else {
-//            yGoal = 0;
-//        }
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
         telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
@@ -225,10 +225,19 @@ public class TeleOpTEST extends OpMode {
             firstLoop=false;
 
             if(bbx+bby+bbh != 0){  //if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
-                pinpoint.setHeading(bbh, AngleUnit.DEGREES);
-                pinpoint.setPosY(bby, DistanceUnit.INCH);
-                pinpoint.setPosX(bbx, DistanceUnit.INCH);
-                angleCHEAT = 65;
+
+                if(alliance.equals("red")){
+                    pinpoint.setHeading(0, AngleUnit.DEGREES);
+                    pinpoint.setPosY(bby, DistanceUnit.INCH);
+                    pinpoint.setPosX(bbx, DistanceUnit.INCH);
+                    angleCHEAT = 0;
+                } else {  //Alliance is BLUE
+                    pinpoint.setHeading(0, AngleUnit.DEGREES);
+                    pinpoint.setPosY(bbx, DistanceUnit.INCH);
+                    pinpoint.setPosX(bby, DistanceUnit.INCH);
+                    angleCHEAT = 0;
+                }
+
             } else {
                 pinpoint.setHeading(0.0, AngleUnit.DEGREES);
                 pinpoint.setPosY((startPosX)*-1.0, DistanceUnit.INCH);
@@ -245,8 +254,14 @@ public class TeleOpTEST extends OpMode {
 
         pinpoint.update();
 
-        double xBot = pinpoint.getPosY(DistanceUnit.INCH)*-1.0;
-        double yBot = pinpoint.getPosX(DistanceUnit.INCH);
+        if(alliance.equals("red")){
+            xBot = pinpoint.getPosY(DistanceUnit.INCH)*-1.0;
+            yBot = pinpoint.getPosX(DistanceUnit.INCH);
+        } else {
+            yBot = pinpoint.getPosX(DistanceUnit.INCH)*-1.0;
+            xBot = pinpoint.getPosY(DistanceUnit.INCH);
+        }
+
         double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES) ;
         double xTurret = xBot - dTurret * Math.cos(Math.toRadians(angleBotDeg+90));
         double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg+90));
@@ -254,13 +269,19 @@ public class TeleOpTEST extends OpMode {
         double dy = yGoal - yTurret;
 
         double angleGoalDeg = Math.toDegrees(Math.atan2(dy, dx));      //angle to goal from X
-        double angleTurretDeg_raw = angleGoalDeg - angleBotDeg - 90;        //angle to goal from X minus bot’s angle
+        double angleTurretDeg_raw = 0.0;
+
+        if(alliance.equals("red")){
+            angleTurretDeg_raw = angleGoalDeg - angleBotDeg - 90 + angleCHEAT;        //angle to goal from X minus bot’s angle
+        } else {
+            angleTurretDeg_raw = angleGoalDeg - angleBotDeg + 90 + angleCHEAT;        //angle to goal from X minus bot’s angle
+        }
         //double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
         //double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
         //double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim + (angleCHEAT*3));
+        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim);
         turretMotor.setPower(1.0);
 
         //turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
@@ -281,10 +302,12 @@ public class TeleOpTEST extends OpMode {
         telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("alliance: ", alliance);
         telemetry.addData("xBot: ", xBot);
-      //telemetry.addData("x,y: ", xBot, yBot);
         telemetry.addData("yBot: ", yBot);
         telemetry.addData("xTurret: ", xTurret);
         telemetry.addData("yTurret: ", yTurret);
+        telemetry.addData("turretPos: ", turretMotor.getCurrentPosition());
+        telemetry.addData("adjustAim: ", adjustAim);
+        telemetry.addData("adjustV: ", adjustV);
         telemetry.addData("dx: ", dx);
         telemetry.addData("dy: ", dy);
         telemetry.addData("angleGoalDeg: ", angleGoalDeg);

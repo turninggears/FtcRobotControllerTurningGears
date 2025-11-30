@@ -223,6 +223,7 @@ public class BlueAutoA extends LinearOpMode {
                 .build();
         Action endSpot = drive.actionBuilder(new Pose2d(54.38,-15.84,Math.toRadians(270)))
                 .strafeTo(new Vector2d(54.38, -33.5))
+                //.turnTo(Math.toRadians(90))
                 .build();
 
 

@@ -186,29 +186,29 @@ public class BlueAutoB extends LinearOpMode {
 
         Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(-14, -15.84))//launch spot
+                .strafeTo(new Vector2d(-14, -17.84))//launch spot
                 .build();
 
 
-        Action secondRow = drive.actionBuilder(new Pose2d(-14, -15.84, Math.toRadians(270)))
+        Action secondRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(270)))
                 .strafeTo(new Vector2d(10.00, -28.00)) //second row spot
                 // .waitSeconds(0.1)
                 .lineToY(-56) //second row intake
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(-14, -15.84))  //launch spot launch position will be seperat action
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot launch position will be seperat action
                 .waitSeconds(.25)
                 .build();
 
-        Action thirdRow = drive.actionBuilder(new Pose2d(-14, -15.84, Math.toRadians(270)))
+        Action thirdRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(270)))
                 .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
                 //.waitSeconds(1)
                 .lineToY(-50) //third row intake
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(-14, -15.84))  //launch spot - launch position will be seperat action
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot - launch position will be seperat action
                 .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(-14,-15.84,Math.toRadians(270)))// need to update to new end location
+        Action endSpot = drive.actionBuilder(new Pose2d(-14,-17.84,Math.toRadians(270)))// need to update to new end location
                 .strafeTo(new Vector2d(-14, -46))//this is a guess based on third row position
                 .build();
 
@@ -236,51 +236,51 @@ public class BlueAutoB extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         launchPosition,
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
                         thirdRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
                         secondRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.FireArtifact(),
-                        Pause.pause(0.5),
+                        Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         endSpot
                 )

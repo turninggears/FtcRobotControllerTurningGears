@@ -11,7 +11,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -19,12 +18,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "BlueAutoB", group = "Autonomous")
-public class BlueAutoB extends LinearOpMode {
-
-    public Pose2d getCurrentPose(MecanumDrive drive) {
-        return drive.localizer.getPose();
-    }
+@Autonomous(name = "BlueAutoB321", group = "Autonomous")
+public class BlueAutoB321 extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -61,11 +56,11 @@ public class BlueAutoB extends LinearOpMode {
 
 
         public Launcher (HardwareMap hardwareMap) {
-            launchTrigger   = hardwareMap.get(Servo.class,"launch trigger");
+            launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
             artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
-            turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
-            launcherMotor   = hardwareMap.get(DcMotorEx.class, "launcher motor");
-            intakeMotor     = hardwareMap.get(DcMotorEx.class, "intakemotor");
+            turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+            launcherMotor = hardwareMap.get(DcMotorEx.class, "launcher motor");
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakemotor");
             launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -102,7 +97,7 @@ public class BlueAutoB extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
+                this(800);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -111,7 +106,7 @@ public class BlueAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 780;
+                double launcherVelocity = 800;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -131,11 +126,14 @@ public class BlueAutoB extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
+                double velocity = launcherMotor.getVelocity();
                 double launchTriggerPosition = 0.9;
                 double artifactStopperPosition = 0;
+
+            if (velocity >780 && velocity <820) {//take this line out if it doesnt work
                 artifactStopper.setPosition(artifactStopperPosition);
                 launchTrigger.setPosition(launchTriggerPosition);
-
+            }
                 return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
             }
         }
@@ -186,37 +184,43 @@ public class BlueAutoB extends LinearOpMode {
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-        Vector2d launchVector = new Vector2d(-14, -17.84);
+        Vector2d vector = new Vector2d(-36, -15.84);
         Pause pause = new Pause(0.5);
 
-        TrajectoryActionBuilder launchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
-//                .setTangent(Math.toRadians(0))
-                .strafeTo(launchVector);//launch spot
+        Action launchPosition = drive.actionBuilder(startPose)//we need to determine this position
+                .setTangent(Math.toRadians(0))
+                .strafeTo(new Vector2d(-14, -17.84))//launch spot
+                .build();
 
-        TrajectoryActionBuilder thirdRow = launchPosition.fresh()
-                .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
+        Action firstRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(90)))
+                .setTangent(Math.toRadians(0))
+                .strafeTo(new Vector2d(33, -30))
+                .lineToY(58)
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot launch position will be seperat action
+                .waitSeconds(.25)
+                .build();
 
-                //.waitSeconds(1)
-//                .lineToY(-50) //third row intake
-                //.waitSeconds(1)
-                .strafeTo(new Vector2d(-14.00, -50))
-                .strafeTo(launchVector)  //launch spot - launch position will be seperat action
-                .waitSeconds(.25);
-                //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
-
-        TrajectoryActionBuilder secondRow = thirdRow.fresh()
+        Action secondRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(270)))
                 .strafeTo(new Vector2d(10.00, -28.00)) //second row spot
-                .waitSeconds(1.0)
-                .strafeTo(new Vector2d(10, -56.00))
-                .waitSeconds(1.0)
                 // .waitSeconds(0.1)
-//                .lineToY(-56) //second row intake
+                .lineToY(-56) //second row intake
                 //.waitSeconds(1)
-                .strafeTo(launchVector)  //launch spot launch position will be seperat action
-                .waitSeconds(.25);
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot launch position will be seperat action
+                .waitSeconds(.25)
+                .build();
 
-        TrajectoryActionBuilder endSpot = secondRow.fresh()
-                .strafeTo(new Vector2d(-14, -46));//this is a guess based on third row position
+        Action thirdRow = drive.actionBuilder(new Pose2d(-14, -17.84, Math.toRadians(270)))
+                .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
+                //.waitSeconds(1)
+                .lineToY(-50) //third row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(-14, -17.84))  //launch spot - launch position will be seperat action
+                .waitSeconds(.25)
+                //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
+                .build();
+        Action endSpot = drive.actionBuilder(new Pose2d(-14,-15.84,Math.toRadians(270)))// need to update to new end location
+                .strafeTo(new Vector2d(-14, -46))//this is a guess based on third row position
+                .build();
 
 
 
@@ -241,54 +245,71 @@ public class BlueAutoB extends LinearOpMode {
                         launcher.ResetLauncher(),
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
-                        launchPosition.build(),
-                        Pause.pause(.25),
+                        launchPosition,
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        thirdRow.build(),
-//                        launchPosition.build(),
+                        thirdRow,
+                        launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.5),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        secondRow.build(),
-//                        launchPosition.build(),
+                        secondRow,
+                        launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.5),//should be able to remove this line eventually
                         launcher.FireArtifact(),
+                        Pause.pause(0.5),
+                        launcher.ResetLauncher(),
+                        firstRow,
+                        launchPosition,
+                        launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        endSpot.build()
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.5),//should be able to remove this line eventually
+                        launcher.FireArtifact(),
+                        Pause.pause(0.5),
+                        launcher.ResetLauncher(),
+                        endSpot
                 )
         );
         Pose2d finalPose = drive.localizer.getPose();

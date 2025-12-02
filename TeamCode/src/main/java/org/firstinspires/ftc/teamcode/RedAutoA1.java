@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -10,23 +11,15 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 @Config
-@Autonomous(name = "RedAutoBLONG", group = "Autonomous")
-public class RedAutoBLONG extends LinearOpMode {
-
-    public Pose2d getCurrentPose(MecanumDrive drive) {
-        Pose2d currentPose = drive.localizer.getPose();
-        return currentPose;
-    }
+@Autonomous(name = "RedAutoA1", group = "Autonomous")
+public class RedAutoA1 extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -63,11 +56,11 @@ public class RedAutoBLONG extends LinearOpMode {
 
 
         public Launcher (HardwareMap hardwareMap) {
-            launchTrigger   = hardwareMap.get(Servo.class,"launch trigger");
+            launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
             artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
-            turretMotor     = hardwareMap.get(DcMotor.class, "turretMotor");
-            launcherMotor   = hardwareMap.get(DcMotorEx.class, "launcher motor");
-            intakeMotor     = hardwareMap.get(DcMotorEx.class, "intakemotor");
+            turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+            launcherMotor = hardwareMap.get(DcMotorEx.class, "launcher motor");
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakemotor");
             launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intakeMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -87,10 +80,10 @@ public class RedAutoBLONG extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 930;
+                int turretTargetPosition = 875;//try -205 to see if it works
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(1.00);
+                turretMotor.setPower(.55);
 
 
                 return false;
@@ -104,8 +97,8 @@ public class RedAutoBLONG extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(800);
-            }//was 860
+                this(960);
+            }
 
             public PowerUpLauncher(double velocity) {
                 launcherVelocity = velocity;
@@ -113,11 +106,11 @@ public class RedAutoBLONG extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 800;  //780
+                double launcherVelocity = 960;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 750;  //700
+                return launcherMotor.getVelocity() < 900;
             }
         }
 
@@ -133,15 +126,13 @@ public class RedAutoBLONG extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double velocity = launcherMotor.getVelocity();
+                // TODO: Launcher run logic goes here
                 double launchTriggerPosition = 0.9;
                 double artifactStopperPosition = 0;
-
-            if (velocity >780 && velocity <820) {//take this line out if it doesnt work
                 artifactStopper.setPosition(artifactStopperPosition);
                 launchTrigger.setPosition(launchTriggerPosition);
-            }//if the if statement is removed take out this bracket as well
-                 return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
+
+                return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
             }
         }
 
@@ -153,7 +144,7 @@ public class RedAutoBLONG extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;  //was.45
+                double artifactStopperPosition = 0.35;//was.45
 
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);
@@ -187,49 +178,51 @@ public class RedAutoBLONG extends LinearOpMode {
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
 
-        Pose2d startPose = new Pose2d(-64, 39.84, Math.toRadians(90));
-        Pose2d launchPose = new Pose2d(-14, 17.84, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(64, 15.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-//        Vector2d vector = new Vector2d(-36, 15.84);
+        Vector2d vector = new Vector2d(36, 15.84);
         Pause pause = new Pause(0.5);
 
-        Action launchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
+        Action firstLaunchPosition = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))//launch spot
+                .strafeTo(new Vector2d(54.38, 15.84))//launch spot
                 .build();
 
-        Action firstRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
+
+        Action firstRow = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(33, 30))
-                .lineToY(58)
-                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
+                .strafeTo(new Vector2d(37, 28.00)) //first row start
+                //.waitSeconds(1)
+                .setTangent(Math.toRadians(90))
+                //.waitSeconds(1)
+                .lineToY(56)  //first row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84)) //launch spot
+                .waitSeconds(.25)//might be able to lower or remove this
+                .build();
+
+        Action secondRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
+                .strafeTo(new Vector2d(14.00, 28.00)) //second row spot
+                .waitSeconds(0.1)
+                .lineToY(56) //second row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
                 .waitSeconds(.25)
                 .build();
 
-        Action secondRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
-                .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(9.00, 30.00)) //second row spot
-                //.waitSeconds(0.1)
-                //.lineToY(56) //second row intake
-                .strafeTo(new Vector2d(9.00, 58.00))
+        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
+                .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
+                .waitSeconds(1)
+                .lineToY(46) //third row intake
                 //.waitSeconds(1)
-                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
-                .waitSeconds(.25)
-                .build();
-
-        Action thirdRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(-14.00, 30.00)) //third row spot
-                //.waitSeconds(1)
-                .lineToY(52) //third row intake
-                //.waitSeconds(1)
-                .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
+                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
                 .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
-        Action endSpot = drive.actionBuilder(new Pose2d(-14,17.84,Math.toRadians(90)))// need to update to new end location
-                .strafeTo(new Vector2d(-14, 30))//this is a guess based on third row position
+        Action endSpot = drive.actionBuilder(new Pose2d(54.38,15.84,Math.toRadians(90)))
+                .strafeTo(new Vector2d(64.0, 33.5))
                 .build();
 
 
@@ -253,9 +246,9 @@ public class RedAutoBLONG extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         launcher.ResetLauncher(),
+                        firstLaunchPosition,
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
-                        launchPosition,
                         Pause.pause(.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
@@ -269,42 +262,8 @@ public class RedAutoBLONG extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(860),
-                        thirdRow,
-                        launchPosition,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(860),
-                        secondRow,
-                        launchPosition,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.5),
-                        launcher.ResetLauncher(),
-                       //might not have time for this
+                        launcher.InitializeLauncher(975),
                         firstRow,
-                        launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
@@ -317,9 +276,6 @@ public class RedAutoBLONG extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.5),
-                        launcher.ResetLauncher(),
                         endSpot
                 )
         );
@@ -329,8 +285,10 @@ public class RedAutoBLONG extends LinearOpMode {
         telemetry.addData("X", finalPose.position.x);
         telemetry.addData("Y", finalPose.position.y);
         telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
+
         telemetry.addData("Launcher Velocity", launcher.launcherMotor.getVelocity());
         telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
+
         telemetry.update();
 
         blackboard.put("x", finalPose.position.x);
@@ -341,4 +299,3 @@ public class RedAutoBLONG extends LinearOpMode {
         sleep(5000);
     }
 }
-

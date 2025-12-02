@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -10,16 +11,15 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "BlueAutoA", group = "Autonomous")
-public class BlueAutoA extends LinearOpMode {
+@Autonomous(name = "BlueAutoA1", group = "Autonomous")
+public class BlueAutoA1 extends LinearOpMode {
 
     public static class Pause implements Action {
 
@@ -80,7 +80,7 @@ public class BlueAutoA extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 187;
+                int turretTargetPosition = 205;//is 875 in red version
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -97,7 +97,7 @@ public class BlueAutoA extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(950);
+                this(960);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -106,7 +106,7 @@ public class BlueAutoA extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 950;
+                double launcherVelocity = 960;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -178,7 +178,7 @@ public class BlueAutoA extends LinearOpMode {
         double start_pos_x_in = startPosX / 25.4;
         double start_pos_y_in = startPosY / 25.4;*/
 
-        Pose2d startPose = new Pose2d(64, -15.84, Math.toRadians(270));//y was 15.84 and raian was 90
+        Pose2d startPose = new Pose2d(64, -15.84, Math.toRadians(270));//y was 15.84 and radian was 90
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
@@ -204,7 +204,7 @@ public class BlueAutoA extends LinearOpMode {
                 .build();
 
         Action secondRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))//y was 15.84 and raian was 90
-                .strafeTo(new Vector2d(12.50, -28.00)) //second row spot - y was 28.0
+                .strafeTo(new Vector2d(14.00, -28.00)) //second row spot - y was 28.0
                 .waitSeconds(0.1)
                 .lineToY(-56) //second row intake - y was 56
                 //.waitSeconds(1)
@@ -222,8 +222,7 @@ public class BlueAutoA extends LinearOpMode {
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
         Action endSpot = drive.actionBuilder(new Pose2d(54.38,-15.84,Math.toRadians(270)))
-                .strafeTo(new Vector2d(54.38, -33.5))
-                //.turnTo(Math.toRadians(90))
+                .strafeTo(new Vector2d(64.0, -33.5))
                 .build();
 
 
@@ -276,24 +275,6 @@ public class BlueAutoA extends LinearOpMode {
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(),
-                        secondRow,
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.5),
-                        launcher.ResetLauncher(),
                         endSpot
                 )
         );
@@ -314,5 +295,6 @@ public class BlueAutoA extends LinearOpMode {
         blackboard.put("heading", finalPose.heading.toDouble());
         blackboard.put("team","blue");
         sleep(5000);
+
     }
 }

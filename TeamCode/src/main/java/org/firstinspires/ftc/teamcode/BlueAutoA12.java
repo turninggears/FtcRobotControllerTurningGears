@@ -110,7 +110,7 @@ public class BlueAutoA12 extends LinearOpMode {
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 900;
+                return launcherMotor.getVelocity() < 750;
             }
         }
 
@@ -144,7 +144,7 @@ public class BlueAutoA12 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;//was.45
+                double artifactStopperPosition = 0.45;//was.45
 
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);
@@ -247,52 +247,52 @@ public class BlueAutoA12 extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         launcher.ResetLauncher(),
+                        launcher.InitializeLauncher(),
                         firstLaunchPosition,
                         launcher.InitializeTurret(),
-                        launcher.InitializeLauncher(),
                         Pause.pause(.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(975),
                         firstRow,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
                         secondRow,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.FireArtifact(),
-                        Pause.pause(0.5),
+                        Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         endSpot
                 )

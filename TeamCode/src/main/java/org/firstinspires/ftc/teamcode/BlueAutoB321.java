@@ -111,7 +111,7 @@ public class BlueAutoB321 extends LinearOpMode {
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 700;
+                return launcherMotor.getVelocity() < 500;
             }
         }
 
@@ -144,7 +144,7 @@ public class BlueAutoB321 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;//was.45
+                double artifactStopperPosition = 0.45;//was.45
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);
                 return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
@@ -171,18 +171,19 @@ public class BlueAutoB321 extends LinearOpMode {
                 .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
                 .strafeTo(new Vector2d(-14.00, -49))  // gather third row artifacts
                 .strafeTo(launchPosition)
-                .waitSeconds(.25);
+                .waitSeconds(.10);
 
         TrajectoryActionBuilder moveToSecondRow = moveToThirdRow.fresh()
                 .strafeTo(new Vector2d(10.00, -28.00)) //second row spot
                 .strafeTo(new Vector2d(10, -55.00)) // gather second row artifacts
                 .strafeTo(launchPosition)
-                .waitSeconds(.25);
+                .waitSeconds(.10);
 
         TrajectoryActionBuilder moveToFirstRow = moveToSecondRow.fresh()
                 .strafeTo(new Vector2d(33, -30))
                 .strafeTo(new Vector2d(33, -55))
-                .waitSeconds(.25);
+                .strafeTo(launchPosition)
+                .waitSeconds(.10);
 
         TrajectoryActionBuilder moveToEndPosition = moveToFirstRow.fresh()
                 .strafeTo(endPosition);
@@ -247,13 +248,19 @@ public class BlueAutoB321 extends LinearOpMode {
                         Pause.pause(.25),
                         launcher.InitializeLauncher(),
                         moveToFirstRow.build(),
-                        launcher.FireArtifact(),
-                        Pause.pause(0.25),
-                        launcher.FireArtifact(),
-                        Pause.pause(0.25),
-                        launcher.FireArtifact(),
+                        launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
+                        Pause.pause(.25),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.25),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.25),
+                        launcher.InitializeLauncher(),
                         moveToEndPosition.build()
                 )
         );

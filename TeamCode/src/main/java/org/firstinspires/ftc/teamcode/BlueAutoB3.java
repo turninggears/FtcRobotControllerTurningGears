@@ -111,7 +111,7 @@ public class BlueAutoB3 extends LinearOpMode {
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 700;
+                return launcherMotor.getVelocity() < 500;
             }
         }
 
@@ -144,7 +144,7 @@ public class BlueAutoB3 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;//was.45
+                double artifactStopperPosition = 0.45;//was.45
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);
                 return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);

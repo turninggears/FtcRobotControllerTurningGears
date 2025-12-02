@@ -303,24 +303,24 @@ public class TeleOpTEST extends OpMode {
 
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("pinpoint heading: ", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("alliance: ", alliance);
         telemetry.addData("xBot: ", xBot);
         telemetry.addData("yBot: ", yBot);
         telemetry.addData("xTurret: ", xTurret);
         telemetry.addData("yTurret: ", yTurret);
-        telemetry.addData("turretPos: ", turretMotor.getCurrentPosition());
+        telemetry.addData("turretMotor.encoder: ", turretMotor.getCurrentPosition());
         telemetry.addData("adjustAim: ", adjustAim);
         telemetry.addData("adjustV: ", adjustV);
         telemetry.addData("dx: ", dx);
         telemetry.addData("dy: ", dy);
+        telemetry.addData("dGoal: ", dGoal);
         telemetry.addData("angleGoalDeg: ", angleGoalDeg);
         telemetry.addData("angleTurretDeg_raw: ", angleTurretDeg_raw);
         telemetry.addData("angleBotDeg: ", angleBotDeg);
         //telemetry.addData("errorTurretDeg: ", errorTurretDeg);
         //telemetry.addData("turret_unwrapped: ", turret_unwrapped);
         //telemetry.addData("angleTurretCurr: ", angleTurretCurr);
-        telemetry.addData("dGoal: ", dGoal);
         telemetry.addData("launcherVelocity: ", launcherVelocity);
 
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.

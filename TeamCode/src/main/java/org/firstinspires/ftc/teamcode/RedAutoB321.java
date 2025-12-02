@@ -115,7 +115,7 @@ public class RedAutoB321 extends LinearOpMode {
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 750;  //700
+                return launcherMotor.getVelocity() < 650;  //700
             }
         }
 
@@ -151,7 +151,7 @@ public class RedAutoB321 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;  //was.45
+                double artifactStopperPosition = 0.45;  //was.45
 
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);
@@ -209,22 +209,16 @@ public class RedAutoB321 extends LinearOpMode {
         Action secondRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(9.00, 30.00)) //second row spot
-                //.waitSeconds(0.1)
-                //.lineToY(56) //second row intake
                 .strafeTo(new Vector2d(9.00, 58.00))
-                //.waitSeconds(1)
                 .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
                 .waitSeconds(.25)
                 .build();
 
         Action thirdRow = drive.actionBuilder(new Pose2d(-14, 17.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(-14.00, 30.00)) //third row spot
-                //.waitSeconds(1)
-                .lineToY(52) //third row intake
-                //.waitSeconds(1)
+                .lineToY(52)
                 .strafeTo(new Vector2d(launchPose.position.x, launchPose.position.y))  //launch spot launch position will be seperat action
                 .waitSeconds(.25)
-                //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
         Action endSpot = drive.actionBuilder(new Pose2d(-14,17.84,Math.toRadians(90)))// need to update to new end location
                 .strafeTo(new Vector2d(-14, 30))//this is a guess based on third row position
@@ -254,51 +248,51 @@ public class RedAutoB321 extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         launchPosition,
-                        Pause.pause(.5),
+                        Pause.pause(.15),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(860),
                         thirdRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(860),
                         secondRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.FireArtifact(),
-                        Pause.pause(0.5),
+                        Pause.pause(0.25),
                         launcher.ResetLauncher(),
                        //might not have time for this
                         firstRow,
@@ -306,17 +300,17 @@ public class RedAutoB321 extends LinearOpMode {
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.25),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.FireArtifact(),
-                        Pause.pause(0.5),
+                        Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         endSpot
                 )

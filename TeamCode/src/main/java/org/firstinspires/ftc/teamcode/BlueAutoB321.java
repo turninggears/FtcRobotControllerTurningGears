@@ -182,11 +182,11 @@ public class BlueAutoB321 extends LinearOpMode {
 
         TrajectoryActionBuilder moveToFirstRow = moveToSecondRow.fresh()
                 .strafeTo(new Vector2d(33, -30))
-                .strafeTo(new Vector2d(33, -55))  //launch spot launch position will be seperat action
+                .strafeTo(new Vector2d(33, -55))
                 .waitSeconds(.25);
 
-        TrajectoryActionBuilder moveToEndPosition = moveToSecondRow.fresh()
-                .strafeTo(endPosition);//this is a guess based on third row position
+        TrajectoryActionBuilder moveToEndPosition = moveToFirstRow.fresh()
+                .strafeTo(endPosition);
 
         // actions that need to happen on init
 
@@ -217,7 +217,7 @@ public class BlueAutoB321 extends LinearOpMode {
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.25),
                         launcher.InitializeLauncher(),
                         moveToThirdRow.build(),
                         launcher.FireArtifact(),//first artifact
@@ -231,7 +231,7 @@ public class BlueAutoB321 extends LinearOpMode {
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.25),
                         launcher.InitializeLauncher(),
                         moveToSecondRow.build(),
                         launcher.FireArtifact(),//first artifact
@@ -245,7 +245,7 @@ public class BlueAutoB321 extends LinearOpMode {
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.25),
                         launcher.InitializeLauncher(),
                         moveToFirstRow.build(),
                         launcher.FireArtifact(),

@@ -162,7 +162,6 @@ public class BlueAutoB32 extends LinearOpMode {
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d launchPosition = new Vector2d(-14, -17.84);
         Vector2d endPosition = new Vector2d(-14, -46);
-        Pause pause = new Pause(0.5);
 
         TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))
                 .strafeTo(launchPosition);

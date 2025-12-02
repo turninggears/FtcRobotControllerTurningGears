@@ -19,8 +19,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
-@Autonomous(name = "BlueAutoB321", group = "Autonomous")
-public class BlueAutoB321 extends LinearOpMode {
+@Autonomous(name = "BlueAutoB3", group = "Autonomous")
+public class BlueAutoB3 extends LinearOpMode {
 
     public Pose2d getCurrentPose(MecanumDrive drive) {
         return drive.localizer.getPose();
@@ -179,13 +179,8 @@ public class BlueAutoB321 extends LinearOpMode {
                 .strafeTo(launchPosition)
                 .waitSeconds(.25);
 
-        TrajectoryActionBuilder moveToFirstRow = moveToSecondRow.fresh()
-                .strafeTo(new Vector2d(33, -30))
-                .strafeTo(new Vector2d(33, -55))
-                .waitSeconds(.25);
-
-        TrajectoryActionBuilder moveToEndPosition = moveToFirstRow.fresh()
-                .strafeTo(endPosition);
+        TrajectoryActionBuilder moveToEndPosition = moveToSecondRow.fresh()
+                .strafeTo(endPosition);//this is a guess based on third row position
 
         // actions that need to happen on init
 
@@ -216,7 +211,7 @@ public class BlueAutoB321 extends LinearOpMode {
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
                         moveToThirdRow.build(),
                         launcher.FireArtifact(),//first artifact
@@ -230,28 +225,8 @@ public class BlueAutoB321 extends LinearOpMode {
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.25),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
-                        moveToSecondRow.build(),
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),
-                        launcher.InitializeLauncher(),
-                        moveToFirstRow.build(),
-                        launcher.FireArtifact(),
-                        Pause.pause(0.25),
-                        launcher.FireArtifact(),
-                        Pause.pause(0.25),
-                        launcher.FireArtifact(),
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         moveToEndPosition.build()

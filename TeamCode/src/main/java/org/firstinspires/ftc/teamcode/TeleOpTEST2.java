@@ -18,7 +18,6 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -27,14 +26,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "TeleOpTEST", group = "Robot")
+@TeleOp(name = "TeleOpTEST2", group = "Robot")
 @Config
 
-public class TeleOpTEST extends OpMode {
+public class TeleOpTEST2 extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
     public static double TURN_SPEED = 0.5;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
+    public static double KP = 50;
+    public static double KI = .05;
+    public static double KD = 2;
+    public static double KF = 14.0;
+
     // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
@@ -47,6 +51,35 @@ public class TeleOpTEST extends OpMode {
     Servo   artifactStopper;
     RevBlinkinLedDriver blinkin;
     ServoController controlHubServoController;
+
+    // === Launcher gating & state (teleop) ===
+    // Velocity tolerance and dwell (in encoder ticks/sec)
+    private static final double LAUNCH_BAND_TICKS_PER_SEC = 35.0; // target ±1 quantization step
+    private static final int   LAUNCH_IN_BAND_REQUIRED    = 4;    // consecutive in-band samples
+
+    // Servo positions
+    private static final double TRIGGER_OPEN_POS   = 0.90;
+    private static final double TRIGGER_CLOSED_POS = 0.30;
+    private static final double STOPPER_OPEN_POS   = 0.00;
+    private static final double STOPPER_CLOSED_POS = 0.45;
+
+    // Timing (milliseconds)
+    private static final long LAUNCH_FIRING_MS  = 250;  // how long trigger stays open
+    private static final long LAUNCH_RECOVER_MS = 150;  // short settle before next shot
+
+    // Gating and FSM state
+    private int     launchInBandCount    = 0;
+    private boolean launchShotRequested  = false;
+    private boolean lastCross            = false;
+
+    private enum LaunchShotState { IDLE, FIRING, RECOVERING }
+    private LaunchShotState launchShotState = LaunchShotState.IDLE;
+
+    private ElapsedTime launchShotTimer = new ElapsedTime();
+
+    // For telemetry
+    private double  launchLastMeasuredVel = 0.0;
+    private boolean launchLastReady       = false;
 
     Object headingFromAutonomous;
     Object xFromAutonomous;
@@ -132,10 +165,10 @@ public class TeleOpTEST extends OpMode {
         launcherMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(
-                        70,
-                        1.5,
-                        3,
-                        0)
+                        KP,
+                        KI,
+                        KD,
+                        KF)
         );
         //if turret doesn't work get rid of these lines
 //        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -378,14 +411,74 @@ public class TeleOpTEST extends OpMode {
             intakeMotor.setPower(1);
         }
 
-        //Launch trigger control
-        if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
-            launchTrigger.setPosition(.9);
-            artifactStopper.setPosition(0);
+        // === Launch trigger control: gated + no-chatter ===
+
+        // 1) Compute "readyToShoot" from the current target & measured velocity
+        double currentLaunchVel = launcherMotor.getVelocity();
+        boolean inBand = Math.abs(launcherVelocity - currentLaunchVel) < LAUNCH_BAND_TICKS_PER_SEC;
+
+        if (inBand) {
+            launchInBandCount++;
         } else {
-            launchTrigger.setPosition(0.3);
-            artifactStopper.setPosition(.45);
+            launchInBandCount = 0;
         }
+
+        boolean readyToShoot = (launchInBandCount >= LAUNCH_IN_BAND_REQUIRED);
+
+        // Store for telemetry
+        launchLastMeasuredVel = currentLaunchVel;
+        launchLastReady       = readyToShoot;
+
+        // 2) Edge-detect CROSS on gamepad2 and queue a shot
+        boolean crossNow = gamepad2.cross;
+        boolean crossPressed = crossNow && !lastCross;
+        lastCross = crossNow;
+
+        if (crossPressed) {
+            launchShotRequested = true;   // one queued shot per press
+        }
+
+        // 3) Launcher state machine (servo control)
+        switch (launchShotState) {
+            case IDLE:
+                // Default safe positions
+                launchTrigger.setPosition(TRIGGER_CLOSED_POS);
+                artifactStopper.setPosition(STOPPER_CLOSED_POS);
+
+                // Fire only when queued AND we've been at speed for multiple loops
+                if (launchShotRequested && readyToShoot) {
+                    launchTrigger.setPosition(TRIGGER_OPEN_POS);
+                    artifactStopper.setPosition(STOPPER_OPEN_POS);
+
+                    launchShotTimer.reset();
+                    launchShotState = LaunchShotState.FIRING;
+                    launchShotRequested = false;  // consume request
+                }
+                break;
+
+            case FIRING:
+                // Hold trigger open for a fixed time
+                if (launchShotTimer.milliseconds() < LAUNCH_FIRING_MS) {
+                    launchTrigger.setPosition(TRIGGER_OPEN_POS);
+                    artifactStopper.setPosition(STOPPER_OPEN_POS);
+                } else {
+                    // Close back up
+                    launchTrigger.setPosition(TRIGGER_CLOSED_POS);
+                    artifactStopper.setPosition(STOPPER_CLOSED_POS);
+
+                    launchShotTimer.reset();
+                    launchShotState = LaunchShotState.RECOVERING;
+                }
+                break;
+
+            case RECOVERING:
+                // Short settle delay before allowing the next shot
+                if (launchShotTimer.milliseconds() > LAUNCH_RECOVER_MS) {
+                    launchShotState = LaunchShotState.IDLE;
+                }
+                break;
+        }
+
 
         //if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
             //launchTrigger.setPosition(.9);
@@ -460,6 +553,14 @@ public class TeleOpTEST extends OpMode {
         telemetry.addData("Green", ggg);
         telemetry.addData("Blue", bbb);
         telemetry.addData("isEmpty", isEmpty);
+
+        telemetry.addData("Launch state",   launchShotState);
+        telemetry.addData("Launch tgt",     "%.0f", launcherVelocity);
+        telemetry.addData("Launch vel",     "%.0f", launchLastMeasuredVel);
+        telemetry.addData("Launch inBand",  launchInBandCount);
+        telemetry.addData("Launch ready",   launchLastReady);
+        telemetry.addData("Launch queued",  launchShotRequested);
+
         telemetry.update();
     }
 

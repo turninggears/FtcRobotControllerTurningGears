@@ -129,7 +129,7 @@ public class RedAutoA12 extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket packet) {
                 // TODO: Launcher run logic goes here
                 double launchTriggerPosition = 0.9;
-                double artifactStopperPosition = 0;
+                double artifactStopperPosition = 0.1;
                 artifactStopper.setPosition(artifactStopperPosition);
                 launchTrigger.setPosition(launchTriggerPosition);
 
@@ -145,7 +145,7 @@ public class RedAutoA12 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 double launchTriggerPosition = 0.3;
-                double artifactStopperPosition = 0.35;//was.45
+                double artifactStopperPosition = 0.45;//was.45
 
                 launchTrigger.setPosition(launchTriggerPosition);
                 artifactStopper.setPosition(artifactStopperPosition);

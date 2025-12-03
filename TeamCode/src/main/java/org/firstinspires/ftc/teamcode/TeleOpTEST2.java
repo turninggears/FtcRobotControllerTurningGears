@@ -37,7 +37,7 @@ public class TeleOpTEST2 extends OpMode {
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     public static double KP = 50;
     public static double KI = 0.05;
-    public static double KD = 2;
+    public static double KD = 0;
     public static double KF = 14.0;
 
     // This declares the four drive chassis motors needed
@@ -205,7 +205,7 @@ public class TeleOpTEST2 extends OpMode {
 
         telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("bot angle: ",  pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("bbx: ", bbx);
         telemetry.addData("bby: ", bby);
         telemetry.addData("bbh: ", bbh);

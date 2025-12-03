@@ -81,7 +81,7 @@ public class RedAutoA12 extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 865; //it was 875
+                int turretTargetPosition = 860; //it was 875
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(1);
@@ -107,11 +107,11 @@ public class RedAutoA12 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 980; //it was 960
+                double launcherVelocity = 990; //it was 960
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 800;
+                return launcherMotor.getVelocity() < 900;
             }
         }
 
@@ -206,7 +206,7 @@ public class RedAutoA12 extends LinearOpMode {
 
         TrajectoryActionBuilder secondRow = firstRow.fresh()
 //        Action secondRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
-                .strafeTo(new Vector2d(14.00, 28.00)) //second row spot
+                .strafeTo(new Vector2d(15.00, 28.00)) //second row spot
                 .waitSeconds(0.1)
                 .lineToY(56) //second row intake
                 //.waitSeconds(1)
@@ -256,46 +256,46 @@ public class RedAutoA12 extends LinearOpMode {
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(1020),
+                        Pause.pause(.75),//should be able to remove this line eventually
+                        launcher.InitializeLauncher(1045),
                         firstRow.build(),
                         Pause.pause(0.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(1020),
+                        Pause.pause(.75),//should be able to remove this line eventually
+                        launcher.InitializeLauncher(1045),
                         secondRow.build(),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(.75),//should be able to remove this line eventually
                         launcher.FireArtifact(),
-                        Pause.pause(0.5),
+                        Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         endSpot.build()
                 )

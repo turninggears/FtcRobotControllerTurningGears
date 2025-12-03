@@ -70,17 +70,17 @@ public class BlueAutoA12 extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            70,
-                            1.5,
-                            3,
-                            0)
+                            50,
+                            .05,
+                            0,
+                            14)
             );
         }
 
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 187;
+                int turretTargetPosition = 175;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -97,7 +97,7 @@ public class BlueAutoA12 extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(950);
+                this(925);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -106,7 +106,7 @@ public class BlueAutoA12 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 950;
+                double launcherVelocity = 925;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -204,7 +204,7 @@ public class BlueAutoA12 extends LinearOpMode {
                 .build();
 
         Action secondRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))//y was 15.84 and raian was 90
-                .strafeTo(new Vector2d(12.50, -28.00)) //second row spot - y was 28.0
+                .strafeTo(new Vector2d(15, -28.00)) //second row spot - y was 28.0
                 .waitSeconds(0.1)
                 .lineToY(-56) //second row intake - y was 56
                 //.waitSeconds(1)
@@ -254,43 +254,44 @@ public class BlueAutoA12 extends LinearOpMode {
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.75),//should be able to remove this line eventually
                         launcher.InitializeLauncher(975),
                         firstRow,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.75),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
+                        launcher.InitializeLauncher(975),
                         secondRow,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.75),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.75),//should be able to remove this line eventually
                         launcher.FireArtifact(),
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),

@@ -433,7 +433,7 @@ public class TeleOpTEST extends OpMode {
             adjustAim = adjustAim + 1;
         }
 
-        telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
+        telemetry.addData("launcherMotor.getVelocity: ", launcherMotor.getVelocity());
 
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();

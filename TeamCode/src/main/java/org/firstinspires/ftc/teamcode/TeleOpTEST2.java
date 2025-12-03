@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -36,7 +35,7 @@ public class TeleOpTEST2 extends OpMode {
     public static double TURN_SPEED = 0.5;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     public static double KP = 50;
-    public static double KI = .05;
+    public static double KI = 0.05;
     public static double KD = 2;
     public static double KF = 14.0;
 
@@ -45,6 +44,7 @@ public class TeleOpTEST2 extends OpMode {
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
+
     DcMotor intakeMotor;
     DcMotorEx launcherMotor;
     DcMotor turretMotor;
@@ -90,14 +90,6 @@ public class TeleOpTEST2 extends OpMode {
     double launcherVelocity = 900;
     int intakeMotorMode = 0;
     double TICKS_PER_REV = 537.7;
-
-
-
-    // This declares the IMU needed to get the current direction the robot is facing
-    // TODO: change this to use the Pinpoint for localization
-    // IMU imu;
-
-    // TODO: add AutoAim variable declarations here
 
     String alliance = "red";
     boolean firstLoop = true;
@@ -171,43 +163,14 @@ public class TeleOpTEST2 extends OpMode {
                         KD,
                         KF)
         );
-        //if turret doesn't work get rid of these lines
-//        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //if turret doesn't work get rid of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         if (colorSensor instanceof SwitchableLight) {
             ((SwitchableLight)colorSensor).enableLight(true);
         }
-
-        //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       /* this section is an example of creating pre set arm/motor position using encoder
-        arm_down_position = 1;
-        arm_mid_position = 655;
-        arm_up_position = 940;
-        Arm_Pickup_Position = 330;
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        */
-
-//        controlHubServoController.pwmEnable();
-
-        /*imu = hardwareMap.get(IMU.class, "imu");
-        // This needs to be changed to match the orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        RevHubOrientationOnRobot orientationOnRobot = new
-                RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        imu.resetYaw();*/
 
         String xFromAutonomous = "x";
         String yFromAutonomous = "y";
@@ -222,8 +185,6 @@ public class TeleOpTEST2 extends OpMode {
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
         pinpoint.setOffsets(-5.709,3.465, DistanceUnit.INCH);
-       //Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);//pinpoint.setPosition(pose);
-
         pinpoint.resetPosAndIMU();
 
         if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
@@ -249,7 +210,6 @@ public class TeleOpTEST2 extends OpMode {
         telemetry.addData("bbh: ", bbh);
 
         telemetry.addData("alliance: ", alliance);
-
     }
 
     @Override
@@ -365,10 +325,9 @@ public class TeleOpTEST2 extends OpMode {
 
         //this is start of drive code
         // --- dynamic drive speed ---
-
         maxSpeed = gamepad1.right_bumper ? 0.3 : 1.0;
 
-// --- drive control ---
+        // --- drive control ---
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
@@ -383,10 +342,6 @@ public class TeleOpTEST2 extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
-        // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
-        // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
-        // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
-        // telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
 //end of first drive code--
 
         //intake control code
@@ -480,7 +435,6 @@ public class TeleOpTEST2 extends OpMode {
                 break;
         }
 
-
         //if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
             //launchTrigger.setPosition(.9);
             //artifactStopper.setPosition(0);
@@ -488,7 +442,6 @@ public class TeleOpTEST2 extends OpMode {
             //launchTrigger.setPosition(0.3);
             //artifactStopper.setPosition(.45);
         //}
-
 
         //launcher manual control code
         if (gamepad2.triangleWasPressed()) {
@@ -532,22 +485,21 @@ public class TeleOpTEST2 extends OpMode {
 
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        double rrr = colors.red * 256.0;
-        double ggg = colors.green * 256.0;
-        double bbb = colors.blue * 256.0;
+        double rrr = colors.red   * 255.0;
+        double ggg = colors.green * 255.0;
+        double bbb = colors.blue  * 255.0;
         double avgColor = (rrr+ggg+bbb)/3.0;
         boolean isEmpty;
         if(avgColor > 2.2){
-          isEmpty=false;
-          if(alliance == "red") {
-              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-          } else {
-              blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-          }
-         }
-        else {
-          isEmpty=true;
-          blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+            isEmpty = false;
+            if (alliance == "red") {
+                blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+            } else {
+                blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+            }
+        } else {
+            isEmpty = true;
+            blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
 
         telemetry.addData("Red", rrr);
@@ -564,7 +516,6 @@ public class TeleOpTEST2 extends OpMode {
 
         telemetry.update();
     }
-
 
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
@@ -584,7 +535,6 @@ public class TeleOpTEST2 extends OpMode {
         drive(newForward, newRight, rotate);
     }
 
-    // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {
         // This calculates the power needed for each wheel based on the amount of forward,
         // strafe right, and rotate
@@ -594,7 +544,6 @@ public class TeleOpTEST2 extends OpMode {
         double backLeftPower   = forward - right + rotate;
 
         double maxPower = 1;
-
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
@@ -607,12 +556,11 @@ public class TeleOpTEST2 extends OpMode {
         // We multiply by maxSpeed so that it can be set lower for outreaches
         // When a young child is driving the robot, we may not want to allow full
         // speed.
-        frontLeftDrive.setPower(maxSpeed  * (frontLeftPower / maxPower));
+        frontLeftDrive.setPower(maxSpeed  * (frontLeftPower  / maxPower));
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
-        backLeftDrive.setPower(maxSpeed   * (backLeftPower / maxPower));
-        backRightDrive.setPower(maxSpeed  * (backRightPower / maxPower));
+        backLeftDrive.setPower(maxSpeed   * (backLeftPower   / maxPower));
+        backRightDrive.setPower(maxSpeed  * (backRightPower  / maxPower));
         //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
-
 
 }

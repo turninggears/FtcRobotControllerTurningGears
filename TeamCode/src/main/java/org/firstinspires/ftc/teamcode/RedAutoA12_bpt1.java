@@ -43,7 +43,6 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
             return System.currentTimeMillis() < startTime + (seconds * 1000);
         }
 
-
     }
 
     public Action Pause() {
@@ -97,7 +96,6 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(1);
-
 
                 return false;
             }
@@ -205,29 +203,12 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
     }
     @Override
     public void runOpMode() {
-        /* measurements done in millimeters but RoadRunner uses inches;
-           easiest to measure in mm and then convert to inches (mm/25.4)
-         */
-        /*double ROBOT_CENTER_X = 207.5;
-
-        double ROBOT_CENTER_Y = 207.5;
-
-        // Start position on the grid in mm
-
-        double startPosX = 1414.3;
-
-        double startPosY = 0;
-
-        double ROBOT_CENTER_X_IN = ROBOT_CENTER_X / 25.4;
-        double ROBOT_CENTER_Y_IN = ROBOT_CENTER_Y / 25.4;
-        double start_pos_x_in = startPosX / 25.4;
-        double start_pos_y_in = startPosY / 25.4;*/
+        //  RoadRunner uses inches
 
         Pose2d startPose = new Pose2d(64, 15.84, Math.toRadians(90));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-//        Vector2d vector = new Vector2d(36, 15.84);
         Pause pause = new Pause(0.5);
 
         Action firstLaunchPosition = drive.actionBuilder(startPose)
@@ -236,7 +217,6 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                 .build();
 
         TrajectoryActionBuilder firstRow = drive.actionBuilder(startPose)
-//        Action firstRow = firstLaunchPosition.fresh()
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(37, 28.00)) //first row start
                 //.waitSeconds(1)
@@ -246,20 +226,16 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(54.38, 15.84)) //launch spot
                 .waitSeconds(.25);  //might be able to lower or remove this
-//                .build();
 
         TrajectoryActionBuilder secondRow = firstRow.fresh()
-//        Action secondRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(15.00, 28.00)) //second row spot
                 .waitSeconds(0.1)
                 .lineToY(56) //second row intake
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
                 .waitSeconds(.25);
-//                .build();
 
         TrajectoryActionBuilder thirdRow = secondRow.fresh()
-//        Action thirdRow = drive.actionBuilder(new Pose2d(54.38, 15.84, Math.toRadians(90)))
                 .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
                 .waitSeconds(0.25)
                 .lineToY(46) //third row intake
@@ -267,20 +243,11 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                 .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
                 .waitSeconds(.25);
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
-//                .build();
 
         TrajectoryActionBuilder endSpot = thirdRow.fresh()
-//        Action endSpot = drive.actionBuilder(new Pose2d(54.38,15.84,Math.toRadians(90)))
                 .strafeTo(new Vector2d(54.380, 33.5));
-//                .build();
-
-
-
-
-//        Action position = traj.build();
 
         // actions that need to happen on init
-
 //        while (!isStopRequested() && !opModeIsActive()) {
 //            // any logic while the robot is running but OpMode ius not yet active
 //        }

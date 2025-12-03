@@ -526,10 +526,6 @@ public class TeleOpTEST2 extends OpMode {
             telemetry.addData("Green", ggg);
             telemetry.addData("Blue",  bbb);
         }
-
-        telemetry.update();
-
-
         telemetry.update();
     }
 

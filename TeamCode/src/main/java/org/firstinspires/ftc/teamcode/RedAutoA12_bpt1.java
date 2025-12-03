@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 @Autonomous(name = "RedAutoA12_bpt1", group = "Autonomous")
 public class RedAutoA12_bpt1 extends LinearOpMode {
+    public static boolean DEBUG_AUTO_TELEMETRY = true;
 
     public static class Pause implements Action {
 
@@ -120,9 +121,18 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
 
+                double currentVel = launcherMotor.getVelocity();
+                double error      = launcherVelocity - currentVel;
+
+                if (RedAutoA12_bpt1.DEBUG_AUTO_TELEMETRY) {
+                    packet.put("PU_targetVel", launcherVelocity);
+                    packet.put("PU_currentVel", currentVel);
+                    packet.put("PU_error", error);
+                }
+
                 // keep running until we reach some margin below target
                 // (e.g., 90–95% of target?)
-                return launcherMotor.getVelocity() < (launcherVelocity - 60);
+                return currentVel < (launcherVelocity - 60);
             }
         }
 
@@ -151,6 +161,16 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                     inBandCount++;
                 } else {
                     inBandCount = 0;
+                }
+
+                // --- Dashboard telemetry for this shot ---
+                if (RedAutoA12_bpt1.DEBUG_AUTO_TELEMETRY) {
+                    packet.put("L_targetVel", TARGET_VELOCITY);
+                    packet.put("L_currentVel", currentVel);
+                    packet.put("L_error", error);
+                    packet.put("L_inBandCount", inBandCount);
+                    packet.put("L_ready", inBandCount >= IN_BAND_REQUIRED);
+                    packet.put("L_fired", fired);
                 }
 
                 if (!fired) {
@@ -210,7 +230,7 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-        Pause pause = new Pause(0.5);
+        // Pause pause = new Pause(0.5);
 
         Action firstLaunchPosition = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))

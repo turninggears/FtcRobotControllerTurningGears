@@ -185,6 +185,7 @@ public class TeleOpTEST2 extends OpMode {
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setOffsets(-5.709,3.465, DistanceUnit.INCH);
         pinpoint.resetPosAndIMU();
 

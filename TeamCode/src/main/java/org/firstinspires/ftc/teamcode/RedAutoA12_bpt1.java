@@ -185,11 +185,6 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
             return new Launch();
         }
 
-
-        public Action FireArtifact() {
-            return new Launch();
-        }
-
         public class Reset implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {

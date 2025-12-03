@@ -499,6 +499,7 @@ public class TeleOpTEST2 extends OpMode {
 
         // --- Debug telemetry (toggle in Dashboard) ---
         if (DEBUG_TELEMETRY) {
+            telemetry.addData("timestamp", System.nanoTime());
             telemetry.addData("bbx", bbx);
             telemetry.addData("bby", bby);
             telemetry.addData("bbh", bbh);
@@ -520,8 +521,11 @@ public class TeleOpTEST2 extends OpMode {
 
             telemetry.addData("launch inBand", launchInBandCount);
             telemetry.addData("launch queued", launchShotRequested);
+            telemetry.addData("inBand", launchInBandCount);
 
             telemetry.addData("launcherVelRaw", launcherMotor.getVelocity());
+            telemetry.addData("error", launcherVelocity - launcherMotor.getVelocity());
+
             telemetry.addData("Red",   rrr);
             telemetry.addData("Green", ggg);
             telemetry.addData("Blue",  bbb);

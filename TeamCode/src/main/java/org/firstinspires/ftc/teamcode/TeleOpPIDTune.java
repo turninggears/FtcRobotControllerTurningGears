@@ -38,7 +38,7 @@ public class TeleOpPIDTune extends OpMode {
     public static double KP = 50;
     public static double KI = .05;
     public static double KD = 0;
-    public static double KF = 12.5;
+    public static double KF = 14.0;
 
     // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;
@@ -392,13 +392,13 @@ public class TeleOpPIDTune extends OpMode {
             artifactStopper.setPosition(.45);
         }
 
-        if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
-            launchTrigger.setPosition(.9);
-            artifactStopper.setPosition(0);
-        } else {
-            launchTrigger.setPosition(0.3);
-            artifactStopper.setPosition(.45);
-        }
+//        if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 55) {
+//            launchTrigger.setPosition(.9);
+//            artifactStopper.setPosition(0);
+//        } else {
+//            launchTrigger.setPosition(0.3);
+//            artifactStopper.setPosition(.45);
+//        }
 
 
         //launcher manual control code

@@ -71,17 +71,17 @@ public class RedAutoA12 extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            70,
-                            1.5,
-                            3,
-                            0)
+                            50,
+                            .05,
+                            0,
+                            14)
             );
         }
 
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 870; //it was 875
+                int turretTargetPosition = 865; //it was 875
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(1);
@@ -107,11 +107,11 @@ public class RedAutoA12 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 910; //it was 960
+                double launcherVelocity = 980; //it was 960
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 900;
+                return launcherMotor.getVelocity() < 800;
             }
         }
 
@@ -252,7 +252,7 @@ public class RedAutoA12 extends LinearOpMode {
                         firstLaunchPosition,
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
-                        Pause.pause(1.5),
+                        Pause.pause(.5),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
@@ -265,7 +265,7 @@ public class RedAutoA12 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(1000),
+                        launcher.InitializeLauncher(1020),
                         firstRow.build(),
                         Pause.pause(0.5),
                         launcher.FireArtifact(),//first artifact
@@ -280,7 +280,7 @@ public class RedAutoA12 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.5),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(1000),
+                        launcher.InitializeLauncher(1020),
                         secondRow.build(),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),

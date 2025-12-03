@@ -386,13 +386,13 @@ public class TeleOpTEST extends OpMode {
             artifactStopper.setPosition(.45);
         }
 
-        if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
-            launchTrigger.setPosition(.9);
-            artifactStopper.setPosition(0);
-        } else {
-            launchTrigger.setPosition(0.3);
-            artifactStopper.setPosition(.45);
-        }
+        //if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
+            //launchTrigger.setPosition(.9);
+            //artifactStopper.setPosition(0);
+        //} else {
+            //launchTrigger.setPosition(0.3);
+            //artifactStopper.setPosition(.45);
+        //}
 
 
         //launcher manual control code
@@ -433,7 +433,7 @@ public class TeleOpTEST extends OpMode {
             adjustAim = adjustAim + 1;
         }
 
-        telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
+        telemetry.addData("launcherMotor.getVelocity: ", launcherMotor.getVelocity());
 
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();

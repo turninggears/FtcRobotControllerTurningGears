@@ -74,10 +74,10 @@ public class RedAutoB32 extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            70,
-                            1.5,
-                            3,
-                            0)
+                            60,
+                            0,
+                            0,
+                            12.5)
             );
         }
 
@@ -101,7 +101,7 @@ public class RedAutoB32 extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
+                this(980);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -110,7 +110,7 @@ public class RedAutoB32 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 800;  //780
+                double launcherVelocity = 980;  //780
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -255,7 +255,7 @@ public class RedAutoB32 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(890),
+                        launcher.InitializeLauncher(980),
                         thirdRow,
                         launchPosition,
                         Pause.pause(.25),
@@ -271,7 +271,7 @@ public class RedAutoB32 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(890),
+                        launcher.InitializeLauncher(980),
                         secondRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact

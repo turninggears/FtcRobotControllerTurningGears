@@ -96,7 +96,6 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(1);
-
                 return false;
             }
         }
@@ -117,11 +116,13 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 990; //it was 960
-                double intakePower = 1;
+                double intakePower = 1.0;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 900;
+
+                // keep running until we reach some margin below target
+                // (e.g., 90–95% of target?)
+                return launcherMotor.getVelocity() < (launcherVelocity - 60);
             }
         }
 

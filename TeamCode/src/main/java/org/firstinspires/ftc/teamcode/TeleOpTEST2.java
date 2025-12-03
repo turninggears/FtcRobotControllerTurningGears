@@ -30,6 +30,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 @Config
 
 public class TeleOpTEST2 extends OpMode {
+    public static boolean DEBUG_TELEMETRY = false;
     GoBildaPinpointDriver pinpoint;
 
     public static double TURN_SPEED = 0.5;
@@ -296,28 +297,6 @@ public class TeleOpTEST2 extends OpMode {
         if(launcherVelocity > 0)
         {launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;}
 
-        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("pinpoint heading: ", pinpoint.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("alliance: ", alliance);
-        telemetry.addData("xBot: ", xBot);
-        telemetry.addData("yBot: ", yBot);
-        telemetry.addData("xTurret: ", xTurret);
-        telemetry.addData("yTurret: ", yTurret);
-        telemetry.addData("turretMotor.encoder: ", turretMotor.getCurrentPosition());
-        telemetry.addData("adjustAim: ", adjustAim);
-        telemetry.addData("adjustV: ", adjustV);
-        telemetry.addData("dx: ", dx);
-        telemetry.addData("dy: ", dy);
-        telemetry.addData("dGoal: ", dGoal);
-        telemetry.addData("angleGoalDeg: ", angleGoalDeg);
-        telemetry.addData("angleTurretDeg_raw: ", angleTurretDeg_raw);
-        telemetry.addData("angleBotDeg: ", angleBotDeg);
-        //telemetry.addData("errorTurretDeg: ", errorTurretDeg);
-        //telemetry.addData("turret_unwrapped: ", turret_unwrapped);
-        //telemetry.addData("angleTurretCurr: ", angleTurretCurr);
-        telemetry.addData("launcherVelocity: ", launcherVelocity);
-
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
         if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
             pinpoint.setHeading(0, AngleUnit.DEGREES);
@@ -481,7 +460,6 @@ public class TeleOpTEST2 extends OpMode {
             adjustAim = adjustAim + 1;
         }
 
-        telemetry.addData("launcherMotor.getVelocity: ", launcherMotor.getVelocity());
 
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -492,7 +470,7 @@ public class TeleOpTEST2 extends OpMode {
         boolean isEmpty;
         if(avgColor > 2.2){
             isEmpty = false;
-            if (alliance == "red") {
+            if ("red".equals(alliance)) {   // safe against nulls too
                 blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
             } else {
                 blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
@@ -502,17 +480,55 @@ public class TeleOpTEST2 extends OpMode {
             blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
 
-        telemetry.addData("Red", rrr);
-        telemetry.addData("Green", ggg);
-        telemetry.addData("Blue", bbb);
+        // --- Basic telemetry (always on) ---
+        telemetry.addData("pinpoint x (in)", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pinpoint y (in)", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("heading (deg)",   pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("alliance",        alliance);
+
+        telemetry.addData("launcher target", "%.0f", launcherVelocity);
+        telemetry.addData("launcher vel",    "%.0f", launchLastMeasuredVel);
+        telemetry.addData("launch state",    launchShotState);
+        telemetry.addData("launch ready",    launchLastReady);
+
         telemetry.addData("isEmpty", isEmpty);
 
-        telemetry.addData("Launch state",   launchShotState);
-        telemetry.addData("Launch tgt",     "%.0f", launcherVelocity);
-        telemetry.addData("Launch vel",     "%.0f", launchLastMeasuredVel);
-        telemetry.addData("Launch inBand",  launchInBandCount);
-        telemetry.addData("Launch ready",   launchLastReady);
-        telemetry.addData("Launch queued",  launchShotRequested);
+//telemetry.addData("errorTurretDeg: ", errorTurretDeg);
+//telemetry.addData("turret_unwrapped: ", turret_unwrapped);
+//telemetry.addData("angleTurretCurr: ", angleTurretCurr);
+
+        // --- Debug telemetry (toggle in Dashboard) ---
+        if (DEBUG_TELEMETRY) {
+            telemetry.addData("bbx", bbx);
+            telemetry.addData("bby", bby);
+            telemetry.addData("bbh", bbh);
+
+            telemetry.addData("xBot",    xBot);
+            telemetry.addData("yBot",    yBot);
+            telemetry.addData("xTurret", xTurret);
+            telemetry.addData("yTurret", yTurret);
+            telemetry.addData("turret enc", turretMotor.getCurrentPosition());
+            telemetry.addData("adjustAim", adjustAim);
+            telemetry.addData("adjustV",   adjustV);
+
+            telemetry.addData("dx",  dx);
+            telemetry.addData("dy",  dy);
+            telemetry.addData("dGoal", dGoal);
+            telemetry.addData("angGoal", angleGoalDeg);
+            telemetry.addData("angTurretRaw", angleTurretDeg_raw);
+            telemetry.addData("angBot", angleBotDeg);
+
+            telemetry.addData("launch inBand", launchInBandCount);
+            telemetry.addData("launch queued", launchShotRequested);
+
+            telemetry.addData("launcherVelRaw", launcherMotor.getVelocity());
+            telemetry.addData("Red",   rrr);
+            telemetry.addData("Green", ggg);
+            telemetry.addData("Blue",  bbb);
+        }
+
+        telemetry.update();
+
 
         telemetry.update();
     }

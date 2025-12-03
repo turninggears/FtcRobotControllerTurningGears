@@ -71,17 +71,17 @@ public class BlueAutoAPark extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            70,
-                            1.5,
-                            3,
-                            0)
+                            50,
+                            .05,
+                            2,
+                            14)
             );
         }
 
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 187;//is 875 in red version
+                int turretTargetPosition = 175;//is 875 in red version
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -98,7 +98,7 @@ public class BlueAutoAPark extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(960);
+                this(940);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -107,7 +107,7 @@ public class BlueAutoAPark extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 960;
+                double launcherVelocity = 940;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -221,6 +221,7 @@ public class BlueAutoAPark extends LinearOpMode {
                 .waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
+
         Action endSpot = drive.actionBuilder(new Pose2d(54.38,-15.84,Math.toRadians(270)))
                 .strafeTo(new Vector2d(64.0, -33.5))
                 .build();

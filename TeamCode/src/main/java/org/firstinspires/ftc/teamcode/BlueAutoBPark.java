@@ -73,10 +73,10 @@ public class BlueAutoBPark extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            70,
-                            1.5,
-                            3,
-                            0)
+                            50,
+                            .05,
+                            2,
+                            14)
             );
         }
 

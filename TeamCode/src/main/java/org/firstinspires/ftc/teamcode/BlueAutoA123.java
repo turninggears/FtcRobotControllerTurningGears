@@ -70,10 +70,10 @@ public class BlueAutoA123 extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            70,
-                            1.5,
-                            3,
-                            0)
+                            50,
+                            .05,
+                            2,
+                            14)
             );
         }
 
@@ -205,20 +205,20 @@ public class BlueAutoA123 extends LinearOpMode {
 
         Action secondRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))//y was 15.84 and raian was 90
                 .strafeTo(new Vector2d(12.50, -28.00)) //second row spot - y was 28.0
-                .waitSeconds(0.1)
+                //.waitSeconds(0.25)
                 .lineToY(-56) //second row intake - y was 56
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(54.38, -15.84))  //launch spot - y was
-                .waitSeconds(.25)
+                //.waitSeconds(.25)
                 .build();
 
         Action thirdRow = drive.actionBuilder(new Pose2d(54.38, -15.84, Math.toRadians(270)))
                 .strafeTo(new Vector2d(-8.00, -28.00)) //third row spot
-                .waitSeconds(1)
+                .waitSeconds(.25)
                 .lineToY(-46) //third row intake
                 //.waitSeconds(1)
                 .strafeTo(new Vector2d(54.38, -15.84))  //launch spot
-                .waitSeconds(.25)
+                //.waitSeconds(.25)
                 //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
                 .build();
         Action endSpot = drive.actionBuilder(new Pose2d(54.38,-15.84,Math.toRadians(270)))

@@ -72,7 +72,7 @@ public class BlueAutoA12 extends LinearOpMode {
                     new PIDFCoefficients(
                             50,
                             .05,
-                            0,
+                            2,
                             14)
             );
         }

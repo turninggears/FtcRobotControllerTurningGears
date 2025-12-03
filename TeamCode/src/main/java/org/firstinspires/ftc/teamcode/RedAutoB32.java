@@ -74,10 +74,10 @@ public class RedAutoB32 extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            60,
-                            0,
-                            0,
-                            12.5)
+                            50,
+                            0.05,
+                            2,
+                            14)
             );
         }
 

@@ -128,7 +128,7 @@ public class BlueAutoA12 extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket packet) {
                 // TODO: Launcher run logic goes here
                 double launchTriggerPosition = 0.9;
-                double artifactStopperPosition = 0;
+                double artifactStopperPosition = 0.;
                 artifactStopper.setPosition(artifactStopperPosition);
                 launchTrigger.setPosition(launchTriggerPosition);
 

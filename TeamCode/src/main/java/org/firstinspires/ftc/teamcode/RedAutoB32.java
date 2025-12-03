@@ -255,7 +255,7 @@ public class RedAutoB32 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(860),
+                        launcher.InitializeLauncher(890),
                         thirdRow,
                         launchPosition,
                         Pause.pause(.25),
@@ -271,7 +271,7 @@ public class RedAutoB32 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(860),
+                        launcher.InitializeLauncher(890),
                         secondRow,
                         launchPosition,
                         launcher.FireArtifact(),//first artifact

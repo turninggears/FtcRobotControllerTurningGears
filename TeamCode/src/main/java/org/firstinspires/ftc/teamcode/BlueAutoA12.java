@@ -10,12 +10,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.System.PIDF;
 
 @Config
 @Autonomous(name = "BlueAutoA12", group = "Autonomous")
@@ -67,13 +67,15 @@ public class BlueAutoA12 extends LinearOpMode {
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            PIDF coefficients = new PIDF();
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            50,
-                            .05,
-                            0,
-                            14)
+                            PIDF.P,
+                            PIDF.I,
+                            PIDF.D,
+                            PIDF.F
+                    )
             );
         }
 
@@ -126,9 +128,8 @@ public class BlueAutoA12 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                // TODO: Launcher run logic goes here
                 double launchTriggerPosition = 0.9;
-                double artifactStopperPosition = 0.;
+                double artifactStopperPosition = 0;
                 artifactStopper.setPosition(artifactStopperPosition);
                 launchTrigger.setPosition(launchTriggerPosition);
 

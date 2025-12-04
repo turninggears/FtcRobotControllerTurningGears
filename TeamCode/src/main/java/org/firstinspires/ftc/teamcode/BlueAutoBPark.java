@@ -75,7 +75,7 @@ public class BlueAutoBPark extends LinearOpMode {
                     new PIDFCoefficients(
                             50,
                             .05,
-                            2,
+                            0,
                             14)
             );
         }
@@ -98,7 +98,7 @@ public class BlueAutoBPark extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
+                this(890);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -107,7 +107,7 @@ public class BlueAutoBPark extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 780;
+                double launcherVelocity = 830;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -162,7 +162,7 @@ public class BlueAutoBPark extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d launchPosition = new Vector2d(-14, -17.84);
-        Vector2d endPosition = new Vector2d(-14, -46);
+        Vector2d endPosition = new Vector2d(-33, -52);
 
         TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))
                 .strafeTo(launchPosition);
@@ -199,19 +199,19 @@ public class BlueAutoBPark extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         moveToLaunchPosition.build(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.905),//should be able to remove this line eventually
                         moveToEndPosition.build()
                 )
         );

@@ -162,7 +162,7 @@ public class RedAutoBPark extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d launchPosition = new Vector2d(-14, 17.84);
-        Vector2d endPosition = new Vector2d(-36, 56);//-14,30
+        Vector2d endPosition = new Vector2d(-33, 52);//-14,30
 
         TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
                 .strafeTo(launchPosition);

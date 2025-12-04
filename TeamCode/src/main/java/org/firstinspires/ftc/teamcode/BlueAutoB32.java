@@ -97,7 +97,7 @@ public class BlueAutoB32 extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
+                this(890);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -106,7 +106,7 @@ public class BlueAutoB32 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 800;
+                double launcherVelocity = 830;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -174,7 +174,7 @@ public class BlueAutoB32 extends LinearOpMode {
 
         TrajectoryActionBuilder moveToSecondRow = moveToThirdRow.fresh()
                 .strafeTo(new Vector2d(10.00, -28.00)) //second row spot
-                .strafeTo(new Vector2d(10, -55.00)) // gather second row artifacts
+                .strafeTo(new Vector2d(10, -56.00)) // gather second row artifacts
                 .strafeTo(launchPosition)
                 .waitSeconds(.25);
 
@@ -202,43 +202,43 @@ public class BlueAutoB32 extends LinearOpMode {
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.905),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
                         moveToThirdRow.build(),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.905),//should be able to remove this line eventually
                         launcher.InitializeLauncher(),
                         moveToSecondRow.build(),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.905),//should be able to remove this line eventually
                         launcher.FireArtifact(),
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),

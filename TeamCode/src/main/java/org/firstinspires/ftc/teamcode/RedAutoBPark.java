@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.System.PIDF;
+
 @Config
 @Autonomous(name = "RedAutoBPark", group = "Autonomous")
 public class RedAutoBPark extends LinearOpMode {
@@ -73,10 +75,10 @@ public class RedAutoBPark extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            50,
-                            .05,
-                            0,
-                            14)
+                            PIDF.P,
+                            PIDF.I,
+                            PIDF.D,
+                            PIDF.F)
             );
         }
 
@@ -86,7 +88,7 @@ public class RedAutoBPark extends LinearOpMode {
                 int turretTargetPosition = 925;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(1.00);
+                turretMotor.setPower(.55);
                 return false;
             }
         }
@@ -107,7 +109,6 @@ public class RedAutoBPark extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 890;  //780
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -162,12 +163,13 @@ public class RedAutoBPark extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d launchPosition = new Vector2d(-14, 17.84);
-        Vector2d endPosition = new Vector2d(-33, 52);//-14,30
+        Vector2d endPosition = new Vector2d(-36, 52);//-14,30
 
-        TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
+        TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))
                 .strafeTo(launchPosition);
 
         TrajectoryActionBuilder moveToEndPosition = moveToLaunchPosition.fresh()
+                .strafeTo(new Vector2d(-36, 17.84))
                 .strafeTo(endPosition);
 
         // actions that need to happen on init
@@ -187,19 +189,19 @@ public class RedAutoBPark extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         moveToLaunchPosition.build(),
-                        Pause.pause(.905),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.905),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.905),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.905),//should be able to remove this line eventually
+                        Pause.pause(0.905),//should be able to remove this line eventually
                         moveToEndPosition.build()
                 )
         );

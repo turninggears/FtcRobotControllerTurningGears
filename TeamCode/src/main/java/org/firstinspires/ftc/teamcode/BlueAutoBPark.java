@@ -112,7 +112,7 @@ public class BlueAutoBPark extends LinearOpMode {
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 600;
+                return launcherMotor.getVelocity() < 650;  //700
             }
         }
 
@@ -176,7 +176,7 @@ public class BlueAutoBPark extends LinearOpMode {
 
 /*        while (!isStopRequested() && !opModeIsActive()) {
 
-        }*/
+        } */
 
         // any logic that we want to run once before the OpMode starts
         waitForStart();

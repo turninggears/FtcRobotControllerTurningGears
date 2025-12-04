@@ -1,25 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Config
-@Autonomous(name = "BlueAutoB32", group = "Autonomous")
-public class BlueAutoB32 extends LinearOpMode {
+@Autonomous(name = "RedAutoBPark", group = "Autonomous")
+public class RedAutoBPark extends LinearOpMode {
 
     public Pose2d getCurrentPose(MecanumDrive drive) {
         return drive.localizer.getPose();
@@ -82,10 +83,10 @@ public class BlueAutoB32 extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 135;
+                int turretTargetPosition = 930;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretMotor.setPower(.55);
+                turretMotor.setPower(1.00);
                 return false;
             }
         }
@@ -97,7 +98,7 @@ public class BlueAutoB32 extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
+                this(980);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -106,11 +107,11 @@ public class BlueAutoB32 extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 780;
+                double launcherVelocity = 980;  //780
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 500;
+                return launcherMotor.getVelocity() < 650;  //700
             }
         }
 
@@ -157,35 +158,23 @@ public class BlueAutoB32 extends LinearOpMode {
     }
     @Override
     public void runOpMode() {
-        Pose2d startPose = new Pose2d(-64, -39.84, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(-64, 39.84, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
-        Vector2d launchPosition = new Vector2d(-14, -17.84);
-        Vector2d endPosition = new Vector2d(-14, -46);
+        Vector2d launchPosition = new Vector2d(-14, 17.84);
+        Vector2d endPosition = new Vector2d(-14, 30);
 
-        TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))
+        TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
                 .strafeTo(launchPosition);
 
-        TrajectoryActionBuilder moveToThirdRow = moveToLaunchPosition.fresh()
-                .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
-                .strafeTo(new Vector2d(-14.00, -49))  // gather third row artifacts
-                .strafeTo(launchPosition)
-                .waitSeconds(.25);
-
-        TrajectoryActionBuilder moveToSecondRow = moveToThirdRow.fresh()
-                .strafeTo(new Vector2d(10.00, -28.00)) //second row spot
-                .strafeTo(new Vector2d(10, -55.00)) // gather second row artifacts
-                .strafeTo(launchPosition)
-                .waitSeconds(.25);
-
-        TrajectoryActionBuilder moveToEndPosition = moveToSecondRow.fresh()
-                .strafeTo(endPosition);//this is a guess based on third row position
+        TrajectoryActionBuilder moveToEndPosition = moveToLaunchPosition.fresh()
+                .strafeTo(endPosition);
 
         // actions that need to happen on init
 
 /*        while (!isStopRequested() && !opModeIsActive()) {
 
-        }*/
+        } */
 
         // any logic that we want to run once before the OpMode starts
         waitForStart();
@@ -198,7 +187,7 @@ public class BlueAutoB32 extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         moveToLaunchPosition.build(),
-                        Pause.pause(.25),
+                        Pause.pause(.15),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
@@ -211,37 +200,6 @@ public class BlueAutoB32 extends LinearOpMode {
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
                         Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(),
-                        moveToThirdRow.build(),
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(),
-                        moveToSecondRow.build(),
-                        launcher.FireArtifact(),//first artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),
-                        launcher.FireArtifact(),//second artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),
-                        launcher.FireArtifact(),//third artifact
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.FireArtifact(),
-                        Pause.pause(0.25),
-                        launcher.ResetLauncher(),
                         moveToEndPosition.build()
                 )
         );
@@ -258,7 +216,7 @@ public class BlueAutoB32 extends LinearOpMode {
         blackboard.put("x", finalPose.position.x);
         blackboard.put("y", finalPose.position.y);
         blackboard.put("heading", finalPose.heading.toDouble());
-        blackboard.put("team","blue");
+        blackboard.put("team","red");
         sleep(5000);
     }
 }

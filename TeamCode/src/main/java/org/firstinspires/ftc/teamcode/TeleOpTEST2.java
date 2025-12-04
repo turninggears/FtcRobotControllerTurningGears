@@ -187,6 +187,7 @@ public class TeleOpTEST2 extends OpMode {
         );
         pinpoint.setOffsets(-5.709,3.465, DistanceUnit.INCH);
         pinpoint.resetPosAndIMU();
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
         if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
             alliance = (String) blackboard.get("team");

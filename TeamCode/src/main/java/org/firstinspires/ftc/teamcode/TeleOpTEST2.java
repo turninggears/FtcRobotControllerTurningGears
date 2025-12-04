@@ -330,7 +330,7 @@ public class TeleOpTEST2 extends OpMode {
                 intakeMotorMode = 1;
         }
         if (gamepad2.rightBumperWasPressed()) {
-            if(intakeMotor.getPower()!=0){
+            if( intakeMotor.getPower()!=0 ){
                 intakeMotor.setPower(0);
             } else {
                 intakeMotor.setPower(1);

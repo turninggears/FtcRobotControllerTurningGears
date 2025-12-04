@@ -25,6 +25,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
+import org.firstinspires.ftc.teamcode.System.PIDF;
+
 @SuppressLint("DefaultLocale")
 @TeleOp(name = "TeleOpPIDTune", group = "Robot")
 @Config
@@ -34,10 +36,10 @@ public class TeleOpPIDTune extends OpMode {
 
     public static double TURN_SPEED = 0.5;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
-    public static double KP = 50;
-    public static double KI = .05;
-    public static double KD = 0;
-    public static double KF = 14.0;
+    public static double KP = PIDF.P;
+    public static double KI = PIDF.I;
+    public static double KD = PIDF.D;
+    public static double KF = PIDF.F;
 
     // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;

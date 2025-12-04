@@ -75,7 +75,7 @@ public class RedAutoAPark extends LinearOpMode {
                     new PIDFCoefficients(
                             50,
                             .05,
-                            2,
+                            0,
                             14)
             );
         }
@@ -98,7 +98,7 @@ public class RedAutoAPark extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(960);
+                this(985);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -107,7 +107,7 @@ public class RedAutoAPark extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 990; //it was 960
+                double launcherVelocity = 985; //it was 960
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -162,10 +162,11 @@ public class RedAutoAPark extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d launchPosition = new Vector2d(54.38, 15.84);
-        Vector2d endPosition = new Vector2d(54.38, 33.5);
-
+        Vector2d endPosition = new Vector2d(56, 33.5);
+        Vector2d artifactPick = new Vector2d(54,56);
         TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
                 .strafeTo(launchPosition);
+
 
         TrajectoryActionBuilder moveToEndPosition = moveToLaunchPosition.fresh()
                 .strafeTo(endPosition);
@@ -187,15 +188,15 @@ public class RedAutoAPark extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         moveToLaunchPosition.build(),
-                        Pause.pause(.15),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),

@@ -73,7 +73,7 @@ public class BlueAutoAPark extends LinearOpMode {
                     new PIDFCoefficients(
                             50,
                             .05,
-                            2,
+                            0,
                             14)
             );
         }
@@ -81,7 +81,7 @@ public class BlueAutoAPark extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 175;//is 875 in red version
+                int turretTargetPosition = 180;//is 875 in red version
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(.55);
@@ -98,7 +98,7 @@ public class BlueAutoAPark extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(940);
+                this(935);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -107,7 +107,7 @@ public class BlueAutoAPark extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 940;
+                double launcherVelocity = 935;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -250,20 +250,20 @@ public class BlueAutoAPark extends LinearOpMode {
                         launcher.InitializeLauncher(),
                         firstLaunchPosition,
                         launcher.InitializeTurret(),
-                        Pause.pause(.5),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
-                        launcher.InitializeLauncher(975),
+                        Pause.pause(.905),//should be able to remove this line eventually
+                        launcher.InitializeLauncher(),
                         endSpot
                 )
         );

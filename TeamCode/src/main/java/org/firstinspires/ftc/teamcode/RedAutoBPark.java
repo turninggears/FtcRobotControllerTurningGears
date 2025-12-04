@@ -75,7 +75,7 @@ public class RedAutoBPark extends LinearOpMode {
                     new PIDFCoefficients(
                             50,
                             .05,
-                            2,
+                            0,
                             14)
             );
         }
@@ -83,7 +83,7 @@ public class RedAutoBPark extends LinearOpMode {
         public class SetTurretPosition implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                int turretTargetPosition = 930;
+                int turretTargetPosition = 925;
                 turretMotor.setTargetPosition(turretTargetPosition);
                 turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 turretMotor.setPower(1.00);
@@ -98,7 +98,7 @@ public class RedAutoBPark extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(980);
+                this(890);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -107,7 +107,7 @@ public class RedAutoBPark extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 980;  //780
+                double launcherVelocity = 890;  //780
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
@@ -162,7 +162,7 @@ public class RedAutoBPark extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d launchPosition = new Vector2d(-14, 17.84);
-        Vector2d endPosition = new Vector2d(-14, 30);
+        Vector2d endPosition = new Vector2d(-36, 56);//-14,30
 
         TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))//we need to determine this position
                 .strafeTo(launchPosition);
@@ -187,19 +187,19 @@ public class RedAutoBPark extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         moveToLaunchPosition.build(),
-                        Pause.pause(.15),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(.905),//should be able to remove this line eventually
                         moveToEndPosition.build()
                 )
         );

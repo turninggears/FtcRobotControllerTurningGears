@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.System.PIDF;
+
 @Config
 @Autonomous(name = "BlueAutoBPark", group = "Autonomous")
 public class BlueAutoBPark extends LinearOpMode {
@@ -73,10 +75,10 @@ public class BlueAutoBPark extends LinearOpMode {
             launcherMotor.setPIDFCoefficients(
                     DcMotor.RunMode.RUN_USING_ENCODER,
                     new PIDFCoefficients(
-                            50,
-                            .05,
-                            2,
-                            14)
+                            PIDF.P,
+                            PIDF.I,
+                            PIDF.D,
+                            PIDF.F)
             );
         }
 
@@ -98,7 +100,7 @@ public class BlueAutoBPark extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(860);
+                this(875);
             }
 
             public PowerUpLauncher(double velocity) {
@@ -107,11 +109,10 @@ public class BlueAutoBPark extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                double launcherVelocity = 780;
                 double intakePower = 1;
                 launcherMotor.setVelocity(launcherVelocity);
                 intakeMotor.setPower(intakePower);
-                return launcherMotor.getVelocity() < 500;
+                return launcherMotor.getVelocity() < 600;
             }
         }
 
@@ -162,25 +163,14 @@ public class BlueAutoBPark extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap);
         Vector2d launchPosition = new Vector2d(-14, -17.84);
-        Vector2d endPosition = new Vector2d(-14, -46);
+        Vector2d endPosition = new Vector2d(-36, -52);
 
         TrajectoryActionBuilder moveToLaunchPosition = drive.actionBuilder(getCurrentPose(drive))
                 .strafeTo(launchPosition);
 
-        TrajectoryActionBuilder moveToThirdRow = moveToLaunchPosition.fresh()
-                .strafeTo(new Vector2d(-14.00, -30.00)) //third row spot
-                .strafeTo(new Vector2d(-14.00, -49))  // gather third row artifacts
-                .strafeTo(launchPosition)
-                .waitSeconds(.25);
-
-        TrajectoryActionBuilder moveToSecondRow = moveToThirdRow.fresh()
-                .strafeTo(new Vector2d(10.00, -28.00)) //second row spot
-                .strafeTo(new Vector2d(10, -55.00)) // gather second row artifacts
-                .strafeTo(launchPosition)
-                .waitSeconds(.25);
-
-        TrajectoryActionBuilder moveToEndPosition = moveToSecondRow.fresh()
-                .strafeTo(endPosition);//this is a guess based on third row position
+        TrajectoryActionBuilder moveToEndPosition = moveToLaunchPosition.fresh()
+                .strafeTo(new Vector2d(-36, -17.84))
+                .strafeTo(endPosition);
 
         // actions that need to happen on init
 
@@ -199,19 +189,19 @@ public class BlueAutoBPark extends LinearOpMode {
                         launcher.InitializeTurret(),
                         launcher.InitializeLauncher(),
                         moveToLaunchPosition.build(),
-                        Pause.pause(.25),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.25),//should be able to remove this line eventually
+                        Pause.pause(0.905),//should be able to remove this line eventually
                         moveToEndPosition.build()
                 )
         );

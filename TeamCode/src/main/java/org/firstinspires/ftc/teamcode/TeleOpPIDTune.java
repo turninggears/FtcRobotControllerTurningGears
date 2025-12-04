@@ -36,7 +36,7 @@ public class TeleOpPIDTune extends OpMode {
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     public static double KP = 50;
     public static double KI = .05;
-    public static double KD = 2;
+    public static double KD = 0;
     public static double KF = 14.0;
 
     // This declares the four drive chassis motors needed
@@ -388,7 +388,7 @@ public class TeleOpPIDTune extends OpMode {
         //Launch trigger control
         if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
             launchTrigger.setPosition(.9);
-            artifactStopper.setPosition(0);
+            artifactStopper.setPosition(0.0);
         } else {
             launchTrigger.setPosition(0.3);
             artifactStopper.setPosition(.45);

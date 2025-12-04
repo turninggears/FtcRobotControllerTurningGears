@@ -19,7 +19,6 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
 @Config
 @Autonomous(name = "RedAutoA12_bpt1", group = "Autonomous")
 public class RedAutoA12_bpt1 extends LinearOpMode {
@@ -85,7 +84,7 @@ public class RedAutoA12_bpt1 extends LinearOpMode {
                     new PIDFCoefficients(
                             50,
                             .05,
-                            2,
+                            0,
                             14)
             );
         }

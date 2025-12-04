@@ -381,7 +381,7 @@ public class TeleOpTEST extends OpMode {
         //Launch trigger control
         if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
             launchTrigger.setPosition(.9);
-            artifactStopper.setPosition(0);
+            artifactStopper.setPosition(0.);
         } else {
             launchTrigger.setPosition(0.3);
             artifactStopper.setPosition(.45);

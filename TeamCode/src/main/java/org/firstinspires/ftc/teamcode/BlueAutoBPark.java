@@ -100,7 +100,7 @@ public class BlueAutoBPark extends LinearOpMode {
         public class PowerUpLauncher implements Action {
             double launcherVelocity;
             public PowerUpLauncher() {
-                this(875);
+                this(890);
             }
 
             public PowerUpLauncher(double velocity) {

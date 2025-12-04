@@ -281,9 +281,10 @@ public class TeleOpTEST extends OpMode {
         } else {
             angleTurretDeg_raw = angleGoalDeg - angleBotDeg + 90 + angleCHEAT;        //angle to goal from X minus bot’s angle
         }
-        //double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
-        //double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
-        //double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
+
+        double angleTurretCurr = turretMotor.getCurrentPosition() / 3.0; //current turret position in degrees (degrees=ticks/3)
+        double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
+        double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim);

@@ -17,7 +17,6 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -28,10 +27,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 import org.firstinspires.ftc.teamcode.System.PIDF;
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "TeleOpPIDTune", group = "Robot")
+@TeleOp(name = "TeleOpCompetition", group = "Robot")
 @Config
 
-public class TeleOpPIDTune extends OpMode {
+public class TeleOpCompetition extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
     public static double TURN_SPEED = 0.5;

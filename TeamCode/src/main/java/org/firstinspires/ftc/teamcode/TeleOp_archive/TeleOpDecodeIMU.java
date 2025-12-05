@@ -22,7 +22,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 @TeleOp(name = "TeleOpDecodeIMU", group = "Robot")
 @Disabled
 @Config
-@Disabled
 
 public class TeleOpDecodeIMU extends OpMode {
 

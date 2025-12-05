@@ -293,8 +293,8 @@ public class TeleOpCompetition extends OpMode {
         //double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
         //double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim);
+        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setPower(1.0);
 
         //turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
@@ -333,7 +333,7 @@ public class TeleOpCompetition extends OpMode {
         telemetry.addData("launcherVelocity: ", launcherVelocity);
 
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
-        if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
+        if (gamepad1.cross && gamepad1.right_bumper && gamepad1.left_bumper) {
             pinpoint.setHeading(0, AngleUnit.DEGREES);
         }
 

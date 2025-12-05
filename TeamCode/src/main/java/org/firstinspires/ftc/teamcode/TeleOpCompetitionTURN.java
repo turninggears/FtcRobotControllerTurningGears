@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -6,7 +7,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,36 +18,33 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import org.firstinspires.ftc.teamcode.System.PIDF;
 
 @SuppressLint("DefaultLocale")
-@Disabled
-@TeleOp(name = "TeleOpTEST2", group = "Robot")
+@TeleOp(name = "TeleOpCompetitionTURN", group = "Robot")
 @Config
 
-public class TeleOpTEST2 extends OpMode {
-    public static boolean DEBUG_TELEMETRY = false;
+public class TeleOpCompetitionTURN extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
-    public static double TURN_SPEED = 0.5;
+    public static double TURN_SPEED = 0.65;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
-    public static double KP = 50;
-    public static double KI = 0.05;
-    public static double KD = 0;
-    public static double KF = 14.0;
+    public static double KP = PIDF.P;
+    public static double KI = PIDF.I;
+    public static double KD = PIDF.D;
+    public static double KF = PIDF.F;
 
     // This declares the four drive chassis motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
-
     DcMotor intakeMotor;
     DcMotorEx launcherMotor;
     DcMotor turretMotor;
@@ -55,35 +52,6 @@ public class TeleOpTEST2 extends OpMode {
     Servo   artifactStopper;
     RevBlinkinLedDriver blinkin;
     ServoController controlHubServoController;
-
-    // === Launcher gating & state (teleop) ===
-    // Velocity tolerance and dwell (in encoder ticks/sec)
-    private static final double LAUNCH_BAND_TICKS_PER_SEC = 35.0; // target ±1 quantization step
-    private static final int   LAUNCH_IN_BAND_REQUIRED    = 4;    // consecutive in-band samples
-
-    // Servo positions
-    private static final double TRIGGER_OPEN_POS   = 0.90;
-    private static final double TRIGGER_CLOSED_POS = 0.30;
-    private static final double STOPPER_OPEN_POS   = 0.00;
-    private static final double STOPPER_CLOSED_POS = 0.45;
-
-    // Timing (milliseconds)
-    private static final long LAUNCH_FIRING_MS  = 250;  // how long trigger stays open
-    private static final long LAUNCH_RECOVER_MS = 150;  // short settle before next shot
-
-    // Gating and FSM state
-    private int     launchInBandCount    = 0;
-    private boolean launchShotRequested  = false;
-    private boolean lastCross            = false;
-
-    private enum LaunchShotState { IDLE, FIRING, RECOVERING }
-    private LaunchShotState launchShotState = LaunchShotState.IDLE;
-
-    private ElapsedTime launchShotTimer = new ElapsedTime();
-
-    // For telemetry
-    private double  launchLastMeasuredVel = 0.0;
-    private boolean launchLastReady       = false;
 
     Object headingFromAutonomous;
     Object xFromAutonomous;
@@ -93,6 +61,8 @@ public class TeleOpTEST2 extends OpMode {
     double launcherVelocity = 900;
     int intakeMotorMode = 0;
     double TICKS_PER_REV = 537.7;
+
+    // TODO: add AutoAim variable declarations here
 
     String alliance = "red";
     boolean firstLoop = true;
@@ -147,7 +117,7 @@ public class TeleOpTEST2 extends OpMode {
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addLine("=== TeleOpTEST2 ===");
+        telemetry.addLine("=== TeleOpCompetitionTURN ===");
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -166,8 +136,10 @@ public class TeleOpTEST2 extends OpMode {
                         KD,
                         KF)
         );
-        // turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //if turret doesn't work get rid of these lines
+//        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //if turret doesn't work get rid of previous two lines
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
@@ -175,22 +147,23 @@ public class TeleOpTEST2 extends OpMode {
             ((SwitchableLight)colorSensor).enableLight(true);
         }
 
+        //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         String xFromAutonomous = "x";
         String yFromAutonomous = "y";
         String headingFromAutonomous = "heading";
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
-        //testing without this line.....  pinpoint.resetPosAndIMU();
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
                 GoBildaPinpointDriver.EncoderDirection.FORWARD   //Y pod direction
         );
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setOffsets(-5.709,3.465, DistanceUnit.INCH);
+        //Pose2D pose = new Pose2D(DistanceUnit.INCH, (ROBOT_CENTER_X + startPosX), (ROBOT_CENTER_Y + startPosY), AngleUnit.DEGREES, 90);//pinpoint.setPosition(pose);
+
         pinpoint.resetPosAndIMU();
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
         if (blackboard.containsKey(xFromAutonomous) && blackboard.containsKey(yFromAutonomous) && blackboard.containsKey(headingFromAutonomous)) {
             alliance = (String) blackboard.get("team");
@@ -207,9 +180,9 @@ public class TeleOpTEST2 extends OpMode {
 
         pinpoint.update();
 
-        telemetry.addData("PP x: ", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("PP y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("PP angle: ",  pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("pp x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pp y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("pp heading: ", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("bbx: ", bbx);
         telemetry.addData("bby: ", bby);
         telemetry.addData("bbh: ", bbh);
@@ -284,8 +257,8 @@ public class TeleOpTEST2 extends OpMode {
         //double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
         //double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim);
+        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setPower(1.0);
 
         //turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
@@ -301,39 +274,61 @@ public class TeleOpTEST2 extends OpMode {
         if(launcherVelocity > 0)
         {launcherVelocity = minV + (dGoal-minD)*DistRatio + adjustV;}
 
+        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("pinpoint heading: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("alliance: ", alliance);
+        telemetry.addData("xBot: ", xBot);
+        telemetry.addData("yBot: ", yBot);
+        telemetry.addData("xTurret: ", xTurret);
+        telemetry.addData("yTurret: ", yTurret);
+        telemetry.addData("turretMotor.encoder: ", turretMotor.getCurrentPosition());
+        telemetry.addData("adjustAim: ", adjustAim);
+        telemetry.addData("adjustV: ", adjustV);
+        telemetry.addData("dx: ", dx);
+        telemetry.addData("dy: ", dy);
+        telemetry.addData("dGoal: ", dGoal);
+        telemetry.addData("angleGoalDeg: ", angleGoalDeg);
+        telemetry.addData("angleTurretDeg_raw: ", angleTurretDeg_raw);
+        telemetry.addData("angleBotDeg: ", angleBotDeg);
+        //telemetry.addData("errorTurretDeg: ", errorTurretDeg);
+        //telemetry.addData("turret_unwrapped: ", turret_unwrapped);
+        //telemetry.addData("angleTurretCurr: ", angleTurretCurr);
+        telemetry.addData("launcherVelocity: ", launcherVelocity);
+
         // ***IF THE BOT'S LOCATION IS CONFUSED, hold both bumpers and press X to reset YAW.
-        if (gamepad1.cross && gamepad1.rightBumperWasPressed() && gamepad1.leftBumperWasPressed()) {
+        if (gamepad1.cross && gamepad1.right_bumper && gamepad1.left_bumper) {
             pinpoint.setHeading(0, AngleUnit.DEGREES);
         }
 
-        //this is start of drive code
+        // This is start of drive code
         // --- dynamic drive speed ---
         maxSpeed = gamepad1.right_bumper ? 0.3 : 1.0;
 
-        // --- drive control ---
+// --- drive control ---
+        double forward = -gamepad1.left_stick_y;
+        double right   =  gamepad1.left_stick_x;
+        double rotate  =  gamepad1.right_stick_x * TURN_SPEED;
+
+// If you press the left bumper, you get a drive from the point of view of the robot
+// (much like driving an RC vehicle)
         if (gamepad1.left_bumper) {
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            // robot-centric
+            drive(forward, right, rotate);
         } else {
-            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            // field-centric
+            driveFieldRelative(forward, right, rotate);
         }
 
-//         If you press the left bumper, you get a drive from the point of view of the robot
-//         (much like driving an RC vehicle)
-        if (gamepad1.left_bumper) {
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        } else {
-            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        }
-
-//end of first drive code--
+// end of first drive code--
 
         //intake control code
         if (intakeMotorMode == 0) {
-                intakeMotor.setPower(1);
-                intakeMotorMode = 1;
+            intakeMotor.setPower(1);
+            intakeMotorMode = 1;
         }
         if (gamepad2.rightBumperWasPressed()) {
-            if( intakeMotor.getPower()!=0 ){
+            if(intakeMotor.getPower()!=0){
                 intakeMotor.setPower(0);
             } else {
                 intakeMotor.setPower(1);
@@ -350,93 +345,34 @@ public class TeleOpTEST2 extends OpMode {
             intakeMotor.setPower(1);
         }
 
-        // === Launch trigger control: gated + no-chatter ===
-
-        // 1) Compute "readyToShoot" from the current target & measured velocity
-        double currentLaunchVel = launcherMotor.getVelocity();
-        boolean inBand = Math.abs(launcherVelocity - currentLaunchVel) < LAUNCH_BAND_TICKS_PER_SEC;
-
-        if (inBand) {
-            launchInBandCount++;
+        //Launch trigger control
+        if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
+            launchTrigger.setPosition(.9);
+            artifactStopper.setPosition(0.0);
         } else {
-            launchInBandCount = 0;
+            launchTrigger.setPosition(0.3);
+            artifactStopper.setPosition(.45);
         }
 
-        boolean readyToShoot = (launchInBandCount >= LAUNCH_IN_BAND_REQUIRED);
-
-        // Store for telemetry
-        launchLastMeasuredVel = currentLaunchVel;
-        launchLastReady       = readyToShoot;
-
-        // 2) Edge-detect CROSS on gamepad2 and queue a shot
-        boolean crossNow = gamepad2.cross;
-        boolean crossPressed = crossNow && !lastCross;
-        lastCross = crossNow;
-
-        if (crossPressed) {
-            launchShotRequested = true;   // one queued shot per press
-        }
-
-        // 3) Launcher state machine (servo control)
-        switch (launchShotState) {
-            case IDLE:
-                // Default safe positions
-                launchTrigger.setPosition(TRIGGER_CLOSED_POS);
-                artifactStopper.setPosition(STOPPER_CLOSED_POS);
-
-                // Fire only when queued AND we've been at speed for multiple loops
-                if (launchShotRequested && readyToShoot) {
-                    launchTrigger.setPosition(TRIGGER_OPEN_POS);
-                    artifactStopper.setPosition(STOPPER_OPEN_POS);
-
-                    launchShotTimer.reset();
-                    launchShotState = LaunchShotState.FIRING;
-                    launchShotRequested = false;  // consume request
-                }
-                break;
-
-            case FIRING:
-                // Hold trigger open for a fixed time
-                if (launchShotTimer.milliseconds() < LAUNCH_FIRING_MS) {
-                    launchTrigger.setPosition(TRIGGER_OPEN_POS);
-                    artifactStopper.setPosition(STOPPER_OPEN_POS);
-                } else {
-                    // Close back up
-                    launchTrigger.setPosition(TRIGGER_CLOSED_POS);
-                    artifactStopper.setPosition(STOPPER_CLOSED_POS);
-
-                    launchShotTimer.reset();
-                    launchShotState = LaunchShotState.RECOVERING;
-                }
-                break;
-
-            case RECOVERING:
-                // Short settle delay before allowing the next shot
-                if (launchShotTimer.milliseconds() > LAUNCH_RECOVER_MS) {
-                    launchShotState = LaunchShotState.IDLE;
-                }
-                break;
-        }
-
-        //if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
-            //launchTrigger.setPosition(.9);
-            //artifactStopper.setPosition(0);
-        //} else {
-            //launchTrigger.setPosition(0.3);
-            //artifactStopper.setPosition(.45);
-        //}
+//        if (gamepad1.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 55) {
+//            launchTrigger.setPosition(.9);
+//            artifactStopper.setPosition(0);
+//        } else {
+//            launchTrigger.setPosition(0.3);
+//            artifactStopper.setPosition(.45);
+//        }
 
         //launcher manual control code
         if (gamepad2.triangleWasPressed()) {
             if(alliance.equals("red"))
-              {alliance="blue";
-               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-               yGoal = -65;}
+            {alliance="blue";
+                blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+                yGoal = -65;}
             else
-              {alliance="red";
-               blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-               yGoal = 65;
-              }
+            {alliance="red";
+                blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                yGoal = 65;
+            }
 
         } else if (gamepad2.squareWasPressed()) {
             launcherVelocity = 0;
@@ -464,76 +400,32 @@ public class TeleOpTEST2 extends OpMode {
             adjustAim = adjustAim + 1;
         }
 
+        telemetry.addData("launcherMotor.getVelocity: ", launcherMotor.getVelocity());
 
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        double rrr = colors.red   * 255.0;
-        double ggg = colors.green * 255.0;
-        double bbb = colors.blue  * 255.0;
+        double rrr = colors.red * 256.0;
+        double ggg = colors.green * 256.0;
+        double bbb = colors.blue * 256.0;
         double avgColor = (rrr+ggg+bbb)/3.0;
         boolean isEmpty;
         if(avgColor > 2.2){
-            isEmpty = false;
-            if ("red".equals(alliance)) {   // safe against nulls too
+            isEmpty=false;
+            if(alliance == "red") {
                 blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
             } else {
                 blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             }
-        } else {
-            isEmpty = true;
+        }
+        else {
+            isEmpty=true;
             blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
 
-        // --- Basic telemetry (always on) ---
-        telemetry.addData("pinpoint x (in)", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("pinpoint y (in)", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("heading (deg)",   pinpoint.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("alliance",        alliance);
-
-        telemetry.addData("launcher target", "%.0f", launcherVelocity);
-        telemetry.addData("launcher vel",    "%.0f", launchLastMeasuredVel);
-        telemetry.addData("launch state",    launchShotState);
-        telemetry.addData("launch ready",    launchLastReady);
-
+        telemetry.addData("Red", rrr);
+        telemetry.addData("Green", ggg);
+        telemetry.addData("Blue", bbb);
         telemetry.addData("isEmpty", isEmpty);
-
-//telemetry.addData("errorTurretDeg: ", errorTurretDeg);
-//telemetry.addData("turret_unwrapped: ", turret_unwrapped);
-//telemetry.addData("angleTurretCurr: ", angleTurretCurr);
-
-        // --- Debug telemetry (toggle in Dashboard) ---
-        if (DEBUG_TELEMETRY) {
-            telemetry.addData("timestamp", System.nanoTime());
-            telemetry.addData("bbx", bbx);
-            telemetry.addData("bby", bby);
-            telemetry.addData("bbh", bbh);
-
-            telemetry.addData("xBot",    xBot);
-            telemetry.addData("yBot",    yBot);
-            telemetry.addData("xTurret", xTurret);
-            telemetry.addData("yTurret", yTurret);
-            telemetry.addData("turret enc", turretMotor.getCurrentPosition());
-            telemetry.addData("adjustAim", adjustAim);
-            telemetry.addData("adjustV",   adjustV);
-
-            telemetry.addData("dx",  dx);
-            telemetry.addData("dy",  dy);
-            telemetry.addData("dGoal", dGoal);
-            telemetry.addData("angGoal", angleGoalDeg);
-            telemetry.addData("angTurretRaw", angleTurretDeg_raw);
-            telemetry.addData("angBot", angleBotDeg);
-
-            telemetry.addData("launch inBand", launchInBandCount);
-            telemetry.addData("launch queued", launchShotRequested);
-            telemetry.addData("inBand", launchInBandCount);
-
-            telemetry.addData("launcherVelRaw", launcherMotor.getVelocity());
-            telemetry.addData("error", launcherVelocity - launcherMotor.getVelocity());
-
-            telemetry.addData("Red",   rrr);
-            telemetry.addData("Green", ggg);
-            telemetry.addData("Blue",  bbb);
-        }
         telemetry.update();
     }
 
@@ -555,6 +447,7 @@ public class TeleOpTEST2 extends OpMode {
         drive(newForward, newRight, rotate);
     }
 
+    // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {
         // This calculates the power needed for each wheel based on the amount of forward,
         // strafe right, and rotate
@@ -563,11 +456,10 @@ public class TeleOpTEST2 extends OpMode {
         double backRightPower  = forward + right - rotate;
         double backLeftPower   = forward - right + rotate;
 
-        double maxPower = 1;
-
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
         // be and not get clipped
+        double maxPower = 1;
         maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
         maxPower = Math.max(maxPower, Math.abs(frontRightPower));
         maxPower = Math.max(maxPower, Math.abs(backRightPower));
@@ -576,10 +468,10 @@ public class TeleOpTEST2 extends OpMode {
         // We multiply by maxSpeed so that it can be set lower for outreaches
         // When a young child is driving the robot, we may not want to allow full
         // speed.
-        frontLeftDrive.setPower(maxSpeed  * (frontLeftPower  / maxPower));
+        frontLeftDrive.setPower(maxSpeed  * (frontLeftPower / maxPower));
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
-        backLeftDrive.setPower(maxSpeed   * (backLeftPower   / maxPower));
-        backRightDrive.setPower(maxSpeed  * (backRightPower  / maxPower));
+        backLeftDrive.setPower(maxSpeed   * (backLeftPower / maxPower));
+        backRightDrive.setPower(maxSpeed  * (backRightPower / maxPower));
         //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
 

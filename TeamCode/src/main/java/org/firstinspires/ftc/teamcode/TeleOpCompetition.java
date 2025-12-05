@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.System.PIDF;
 public class TeleOpCompetition extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
-    public static double TURN_SPEED = 0.5;
+    public static double TURN_SPEED = 0.65;
     public static double maxSpeed = 1.0;  // make this slower for outreaches
     public static double KP = PIDF.P;
     public static double KI = PIDF.I;
@@ -53,9 +53,6 @@ public class TeleOpCompetition extends OpMode {
     RevBlinkinLedDriver blinkin;
     ServoController controlHubServoController;
 
-
-
-
     Object headingFromAutonomous;
     Object xFromAutonomous;
     Object yFromAutonomous;
@@ -64,12 +61,6 @@ public class TeleOpCompetition extends OpMode {
     double launcherVelocity = 900;
     int intakeMotorMode = 0;
     double TICKS_PER_REV = 537.7;
-
-
-
-    // This declares the IMU needed to get the current direction the robot is facing
-    // TODO: change this to use the Pinpoint for localization
-    // IMU imu;
 
     // TODO: add AutoAim variable declarations here
 
@@ -126,7 +117,7 @@ public class TeleOpCompetition extends OpMode {
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addLine("=== TeleOpAutoAimTEST ===");
+        telemetry.addLine("=== TeleOpCompetition ===");
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -157,31 +148,6 @@ public class TeleOpCompetition extends OpMode {
         }
 
         //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       /* this section is an example of creating pre set arm/motor position using encoder
-        arm_down_position = 1;
-        arm_mid_position = 655;
-        arm_up_position = 940;
-        Arm_Pickup_Position = 330;
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        */
-
-//        controlHubServoController.pwmEnable();
-
-        /*imu = hardwareMap.get(IMU.class, "imu");
-        // This needs to be changed to match the orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        RevHubOrientationOnRobot orientationOnRobot = new
-                RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        imu.resetYaw();*/
 
         String xFromAutonomous = "x";
         String yFromAutonomous = "y";
@@ -189,7 +155,6 @@ public class TeleOpCompetition extends OpMode {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         //pinpoint reset to zero its internal IMU and reset pose to (0,0,0)
-        //testing without this line.....  pinpoint.resetPosAndIMU();
         //configure pinpoint pods
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.REVERSED, //X pod direction
@@ -215,15 +180,14 @@ public class TeleOpCompetition extends OpMode {
 
         pinpoint.update();
 
-        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("pp x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("pp y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("pp heading: ", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("bbx: ", bbx);
         telemetry.addData("bby: ", bby);
         telemetry.addData("bbh: ", bbh);
 
         telemetry.addData("alliance: ", alliance);
-
     }
 
     @Override
@@ -337,9 +301,8 @@ public class TeleOpCompetition extends OpMode {
             pinpoint.setHeading(0, AngleUnit.DEGREES);
         }
 
-        //this is start of drive code
+        // This is start of drive code
         // --- dynamic drive speed ---
-
         maxSpeed = gamepad1.right_bumper ? 0.3 : 1.0;
 
 // --- drive control ---
@@ -403,7 +366,6 @@ public class TeleOpCompetition extends OpMode {
 //            artifactStopper.setPosition(.45);
 //        }
 
-
         //launcher manual control code
         if (gamepad2.triangleWasPressed()) {
             if(alliance.equals("red"))
@@ -442,7 +404,7 @@ public class TeleOpCompetition extends OpMode {
             adjustAim = adjustAim + 1;
         }
 
-        telemetry.addData("launcher velocity: ", launcherMotor.getVelocity());
+        telemetry.addData("launcherMotor.getVelocity: ", launcherMotor.getVelocity());
 
         colorSensor.setGain(colorGain);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -471,7 +433,6 @@ public class TeleOpCompetition extends OpMode {
         telemetry.update();
     }
 
-
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
         // First, convert direction being asked to drive to polar coordinates
@@ -499,12 +460,10 @@ public class TeleOpCompetition extends OpMode {
         double backRightPower  = forward + right - rotate;
         double backLeftPower   = forward - right + rotate;
 
-        double maxPower = 1;
-
-
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
         // be and not get clipped
+        double maxPower = 1;
         maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
         maxPower = Math.max(maxPower, Math.abs(frontRightPower));
         maxPower = Math.max(maxPower, Math.abs(backRightPower));
@@ -519,6 +478,5 @@ public class TeleOpCompetition extends OpMode {
         backRightDrive.setPower(maxSpeed  * (backRightPower / maxPower));
         //telemetry.addData("speed", maxSpeed * (frontLeftPower / maxPower));
     }
-
 
 }

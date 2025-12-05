@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.TeleOp_archive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+@Disabled
 @TeleOp(name = "zzzPitBoard", group = "TeleOp")
 public class zzzPitBoard extends LinearOpMode {
 

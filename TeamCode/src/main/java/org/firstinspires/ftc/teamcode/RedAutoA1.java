@@ -246,36 +246,35 @@ public class RedAutoA1 extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         launcher.ResetLauncher(),
+                        launcher.InitializeLauncher(),
                         firstLaunchPosition,
                         launcher.InitializeTurret(),
-                        launcher.InitializeLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
+                        Pause.pause(0.905),//should be able to remove this line eventually
                         launcher.InitializeLauncher(975),
                         firstRow,
                         launcher.FireArtifact(),//first artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//second artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),
+                        Pause.pause(0.905),
                         launcher.FireArtifact(),//third artifact
                         Pause.pause(0.25),
                         launcher.ResetLauncher(),
-                        Pause.pause(.5),//should be able to remove this line eventually
                         endSpot
                 )
         );

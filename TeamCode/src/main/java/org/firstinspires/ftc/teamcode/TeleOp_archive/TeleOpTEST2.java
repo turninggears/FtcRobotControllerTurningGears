@@ -147,7 +147,7 @@ public class TeleOpTEST2 extends OpMode {
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addLine("=== TeleOpAutoAimTEST ===");
+        telemetry.addLine("=== TeleOpTEST2 ===");
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -207,9 +207,9 @@ public class TeleOpTEST2 extends OpMode {
 
         pinpoint.update();
 
-        telemetry.addData("pinpoint x: ", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("pinpoint y: ", pinpoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("bot angle: ",  pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("PP x: ", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("PP y: ", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("PP angle: ",  pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("bbx: ", bbx);
         telemetry.addData("bby: ", bby);
         telemetry.addData("bbh: ", bbh);

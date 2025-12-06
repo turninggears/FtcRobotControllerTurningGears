@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -23,14 +24,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
-
 import org.firstinspires.ftc.teamcode.System.PIDF;
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "TeleOpCompetition", group = "Robot")
+@TeleOp(name = "TeleOpCompetitionTURN", group = "Robot")
 @Config
 
-public class TeleOpCompetition extends OpMode {
+public class TeleOpCompetitionTURN extends OpMode {
     GoBildaPinpointDriver pinpoint;
 
     public static double TURN_SPEED = 0.65;
@@ -117,7 +117,7 @@ public class TeleOpCompetition extends OpMode {
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addLine("=== TeleOpCompetition ===");
+        telemetry.addLine("=== TeleOpCompetitionTURN ===");
 
         // We need to test once chasis is done to make sure this is still correct direction for motors.
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -306,19 +306,21 @@ public class TeleOpCompetition extends OpMode {
         maxSpeed = gamepad1.right_bumper ? 0.3 : 1.0;
 
 // --- drive control ---
-//         If you press the left bumper, you get a drive from the point of view of the robot
-//         (much like driving an RC vehicle)
+        double forward = -gamepad1.left_stick_y;
+        double right   =  gamepad1.left_stick_x;
+        double rotate  =  gamepad1.right_stick_x * TURN_SPEED;
+
+// If you press the left bumper, you get a drive from the point of view of the robot
+// (much like driving an RC vehicle)
         if (gamepad1.left_bumper) {
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            // robot-centric
+            drive(forward, right, rotate);
         } else {
-            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            // field-centric
+            driveFieldRelative(forward, right, rotate);
         }
 
-        // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
-        // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
-        // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
-        // telemetry.addData("Back Right drive power: ", backRightDrive.getPower());
-//end of first drive code--
+// end of first drive code--
 
         //intake control code
         if (intakeMotorMode == 0) {

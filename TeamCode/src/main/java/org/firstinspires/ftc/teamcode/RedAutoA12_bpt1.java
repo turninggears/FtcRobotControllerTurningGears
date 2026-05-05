@@ -1,0 +1,352 @@
+package org.firstinspires.ftc.teamcode;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Config
+@Autonomous(name = "RedAutoA12_bpt1", group = "Autonomous")
+public class RedAutoA12_bpt1 extends LinearOpMode {
+    public static boolean DEBUG_AUTO_TELEMETRY = true;
+
+    public static class Pause implements Action {
+
+        public static Pause pause(double seconds) {
+            return new Pause(seconds);
+        }
+        double seconds;
+        long startTime = -1;
+        public Pause(double seconds) {
+            this.seconds = seconds;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (startTime < 0) {
+                startTime = System.currentTimeMillis();
+            }
+            return System.currentTimeMillis() < startTime + (seconds * 1000);
+        }
+
+    }
+
+    public Action Pause() {
+        return new Pause(0.5);
+    }
+
+    public static class Launcher {
+        private Servo launchTrigger;
+        private Servo artifactStopper;
+        private DcMotorEx launcherMotor;
+        private DcMotorEx intakeMotor;
+        private DcMotor turretMotor;
+
+        // === Launcher gating & timing for auto ===
+        private static final double BAND_TICKS_PER_SEC = 35.0;
+        private static final int    IN_BAND_REQUIRED   = 4;
+
+        private static final double AUTO_TRIGGER_OPEN_POS   = 0.90;
+        private static final double AUTO_TRIGGER_CLOSED_POS = 0.30;
+        private static final double AUTO_STOPPER_OPEN_POS   = 0.00;
+        private static final double AUTO_STOPPER_CLOSED_POS = 0.45;
+
+        private static final long   AUTO_FIRING_MS    = 250;
+
+        public Launcher (HardwareMap hardwareMap) {
+            launchTrigger = hardwareMap.get(Servo.class,"launch trigger");
+            artifactStopper = hardwareMap.get(Servo.class,"artifact stopper");
+            turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+            launcherMotor = hardwareMap.get(DcMotorEx.class, "launcher motor");
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakemotor");
+            launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+            turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            launcherMotor.setPIDFCoefficients(
+                    DcMotor.RunMode.RUN_USING_ENCODER,
+                    new PIDFCoefficients(
+                            50,
+                            .05,
+                            0,
+                            14)
+            );
+        }
+
+        public class SetTurretPosition implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                int turretTargetPosition = 860; //it was 875
+                turretMotor.setTargetPosition(turretTargetPosition);
+                turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turretMotor.setPower(1);
+                return false;
+            }
+        }
+
+        public Action InitializeTurret() {
+            return new SetTurretPosition();
+        }
+
+        public class PowerUpLauncher implements Action {
+            double launcherVelocity;
+            public PowerUpLauncher() {
+                this(960);
+            }
+
+            public PowerUpLauncher(double velocity) {
+                launcherVelocity = velocity;
+            }
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                double intakePower = 1.0;
+                launcherMotor.setVelocity(launcherVelocity);
+                intakeMotor.setPower(intakePower);
+
+                double currentVel = launcherMotor.getVelocity();
+                double error      = launcherVelocity - currentVel;
+
+                if (RedAutoA12_bpt1.DEBUG_AUTO_TELEMETRY) {
+                    packet.put("PU_targetVel", launcherVelocity);
+                    packet.put("PU_currentVel", currentVel);
+                    packet.put("PU_error", error);
+                }
+
+                // keep running until we reach some margin below target
+                // (e.g., 90–95% of target?)
+                return currentVel < (launcherVelocity - 60);
+            }
+        }
+
+        public Action InitializeLauncher() {
+            return new PowerUpLauncher();
+        }
+
+        public Action InitializeLauncher(double velocity) {
+            return new PowerUpLauncher(velocity);
+        }
+
+        public class Launch implements Action {
+            private static final double TARGET_VELOCITY = 960.0; // match your InitializeLauncher default
+
+            private int inBandCount = 0;
+            private boolean fired   = false;
+            private ElapsedTime timer = new ElapsedTime();
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                double currentVel = launcherMotor.getVelocity();
+                double error      = TARGET_VELOCITY - currentVel;
+                boolean inBand    = Math.abs(error) < BAND_TICKS_PER_SEC;
+
+                if (inBand) {
+                    inBandCount++;
+                } else {
+                    inBandCount = 0;
+                }
+
+                // --- Dashboard telemetry for this shot ---
+                if (RedAutoA12_bpt1.DEBUG_AUTO_TELEMETRY) {
+                    packet.put("L_targetVel", TARGET_VELOCITY);
+                    packet.put("L_currentVel", currentVel);
+                    packet.put("L_error", error);
+                    packet.put("L_inBandCount", inBandCount);
+                    packet.put("L_ready", inBandCount >= IN_BAND_REQUIRED);
+                    packet.put("L_fired", fired);
+                }
+
+                if (!fired) {
+                    // Wait until we've been in band for N cycles
+                    if (inBandCount >= IN_BAND_REQUIRED) {
+                        artifactStopper.setPosition(AUTO_STOPPER_OPEN_POS);
+                        launchTrigger.setPosition(AUTO_TRIGGER_OPEN_POS);
+                        timer.reset();
+                        fired = true;
+                    } else {
+                        artifactStopper.setPosition(AUTO_STOPPER_CLOSED_POS);
+                        launchTrigger.setPosition(AUTO_TRIGGER_CLOSED_POS);
+                    }
+                } else {
+                    // Maintain open positions for a fixed time, then close and finish
+                    if (timer.milliseconds() < AUTO_FIRING_MS) {
+                        artifactStopper.setPosition(AUTO_STOPPER_OPEN_POS);
+                        launchTrigger.setPosition(AUTO_TRIGGER_OPEN_POS);
+                    } else {
+                        artifactStopper.setPosition(AUTO_STOPPER_CLOSED_POS);
+                        launchTrigger.setPosition(AUTO_TRIGGER_CLOSED_POS);
+                        return false;  // Action complete
+                    }
+                }
+
+                return true; // Keep running until fire pulse is done
+            }
+        }
+
+        public Action FireArtifact() {
+            return new Launch();
+        }
+
+        public class Reset implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                double launchTriggerPosition = 0.3;
+                double artifactStopperPosition = 0.35;//was.45
+
+                launchTrigger.setPosition(launchTriggerPosition);
+                artifactStopper.setPosition(artifactStopperPosition);
+
+                return (launchTrigger.getPosition() != launchTriggerPosition && artifactStopper.getPosition() != artifactStopperPosition);
+            }
+        }
+
+        public Action ResetLauncher() {
+            return new Reset();
+        }
+
+    }
+    @Override
+    public void runOpMode() {
+        //  RoadRunner uses inches
+
+        Pose2d startPose = new Pose2d(64, 15.84, Math.toRadians(90));
+//        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        Launcher launcher = new Launcher(hardwareMap);
+        // Pause pause = new Pause(0.5);
+
+        Action firstLaunchPosition = drive.actionBuilder(startPose)
+                .setTangent(Math.toRadians(0))
+                .strafeTo(new Vector2d(54.38, 15.84))//launch spot
+                .build();
+
+        TrajectoryActionBuilder firstRow = drive.actionBuilder(startPose)
+                .setTangent(Math.toRadians(0))
+                .strafeTo(new Vector2d(37, 28.00)) //first row start
+                //.waitSeconds(1)
+                .setTangent(Math.toRadians(90))
+                //.waitSeconds(1)
+                .lineToY(56)  //first row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84)) //launch spot
+                .waitSeconds(.25);  //might be able to lower or remove this
+
+        TrajectoryActionBuilder secondRow = firstRow.fresh()
+                .strafeTo(new Vector2d(15.00, 28.00)) //second row spot
+                .waitSeconds(0.1)
+                .lineToY(56) //second row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
+                .waitSeconds(.25);
+
+        TrajectoryActionBuilder thirdRow = secondRow.fresh()
+                .strafeTo(new Vector2d(-8.00, 28.00)) //third row spot
+                .waitSeconds(0.25)
+                .lineToY(46) //third row intake
+                //.waitSeconds(1)
+                .strafeTo(new Vector2d(54.38, 15.84))  //launch spot
+                .waitSeconds(.25);
+                //.strafeTo(new Vector2d(64.00, 33.50))  //launch spot
+
+        TrajectoryActionBuilder endSpot = thirdRow.fresh()
+                .strafeTo(new Vector2d(54.380, 33.5));
+
+        // actions that need to happen on init
+//        while (!isStopRequested() && !opModeIsActive()) {
+//            // any logic while the robot is running but OpMode ius not yet active
+//        }
+
+        // any logic that we want to run once before the OpMode starts
+        waitForStart();
+
+//        if (isStopRequested()) return;
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        launcher.ResetLauncher(),
+                        firstLaunchPosition,
+                        launcher.InitializeTurret(),
+                        launcher.InitializeLauncher(),
+                        Pause.pause(.5),
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),//should be able to remove this line eventually
+                        launcher.InitializeLauncher(1045),
+                        firstRow.build(),
+                        Pause.pause(0.5),
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),//should be able to remove this line eventually
+                        launcher.InitializeLauncher(1045),
+                        secondRow.build(),
+                        launcher.FireArtifact(),//first artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),
+                        launcher.FireArtifact(),//second artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),
+                        launcher.FireArtifact(),//third artifact
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        Pause.pause(.75),//should be able to remove this line eventually
+                        launcher.FireArtifact(),
+                        Pause.pause(0.25),
+                        launcher.ResetLauncher(),
+                        endSpot.build()
+                )
+        );
+
+// After everything is done, report telemetry ONCE
+        Pose2d finalPose = drive.localizer.getPose();
+
+        telemetry.addLine("=== AUTO COMPLETE ===");
+        telemetry.addData("X", finalPose.position.x);
+        telemetry.addData("Y", finalPose.position.y);
+        telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
+        telemetry.addData("Launcher Velocity", launcher.launcherMotor.getVelocity());
+        telemetry.addData("Turret Position", launcher.turretMotor.getCurrentPosition());
+        telemetry.update();
+
+        blackboard.put("x", finalPose.position.x);
+        blackboard.put("y", finalPose.position.y);
+        blackboard.put("heading", finalPose.heading.toDouble());
+        blackboard.put("team","red");
+        sleep(5000);
+    }
+}

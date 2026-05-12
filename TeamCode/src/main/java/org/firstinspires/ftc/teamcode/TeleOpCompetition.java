@@ -257,9 +257,12 @@ public class TeleOpCompetition extends OpMode {
         //double errorTurretDeg = Math.IEEEremainder(angleTurretDeg_raw - angleTurretCurr, 360.0); //shortest path
         //double turret_unwrapped = angleTurretCurr + errorTurretDeg;    //target position
 
-        turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim);
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turretMotor.setPower(1.0);
+       /* Auto Aim
+       // turretMotor.setTargetPosition((int)(1080-angleTurretDeg_raw * 3) + adjustAim);
+        //turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //turretMotor.setPower(1.0);
+
+        */
 
         //turretMotor.setTargetPosition((int)(turret_unwrapped * 3));  //move turret to target position (ticks=degrees*3)
 

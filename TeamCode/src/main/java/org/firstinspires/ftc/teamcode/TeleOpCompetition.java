@@ -398,8 +398,11 @@ public class TeleOpCompetition extends OpMode {
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         if (gamepad2.left_trigger > 0) {
+            turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
             turretMotor.setPower(gamepad2.left_trigger);
         } else if (gamepad2.right_trigger > 0) {
+            turretMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             turretMotor.setPower(gamepad2.right_trigger);
         }
 

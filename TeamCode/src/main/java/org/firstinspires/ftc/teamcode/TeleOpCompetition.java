@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -23,7 +24,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
-
 import org.firstinspires.ftc.teamcode.System.PIDF;
 
 @SuppressLint("DefaultLocale")
@@ -239,7 +239,7 @@ public class TeleOpCompetition extends OpMode {
             yBot = pinpoint.getPosX(DistanceUnit.INCH)*-1.0;
         }
 
-        double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES) ;
+        double angleBotDeg = pinpoint.getHeading(AngleUnit.DEGREES);
         double xTurret = xBot - dTurret * Math.cos(Math.toRadians(angleBotDeg+90));
         double yTurret = yBot - dTurret * Math.sin(Math.toRadians(angleBotDeg+90));
         double dx = xGoal - xTurret;
@@ -395,10 +395,12 @@ public class TeleOpCompetition extends OpMode {
 
         launcherMotor.setVelocity(launcherVelocity);
 
+        turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         if (gamepad2.left_trigger > 0) {
-            adjustAim = adjustAim - 1;
+            turretMotor.setPower(gamepad2.left_trigger);
         } else if (gamepad2.right_trigger > 0) {
-            adjustAim = adjustAim + 1;
+            turretMotor.setPower(gamepad2.right_trigger);
         }
 
         telemetry.addData("launcherMotor.getVelocity: ", launcherMotor.getVelocity());

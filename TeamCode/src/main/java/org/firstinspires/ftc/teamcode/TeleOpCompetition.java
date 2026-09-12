@@ -306,17 +306,18 @@ public class TeleOpCompetition extends OpMode {
 
         // This is start of drive code
         // --- dynamic drive speed ---
-        maxSpeed = gamepad1.right_bumper ? 0.3 : 1.0;
+//         maxSpeed = gamepad1.right_bumper ? 0.3 : 1.0;
+        maxSpeed=0.75;
 
 // --- drive control ---
 //         If you press the left bumper, you get a drive from the point of view of the robot
 //         (much like driving an RC vehicle)
-        if (gamepad1.left_bumper) {
+        /*if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        }
-
+        }*/
+        driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         // telemetry.addData("Front Left drive power: ", frontLeftDrive.getPower());
         // telemetry.addData("Front Right drive power: ", frontRightDrive.getPower());
         // telemetry.addData("Back Left drive power: ", backLeftDrive.getPower());
@@ -324,7 +325,7 @@ public class TeleOpCompetition extends OpMode {
 //end of first drive code--
 
         //intake control code
-        if (intakeMotorMode == 0) {
+ /*       if (intakeMotorMode == 0) {
             intakeMotor.setPower(1);
             intakeMotorMode = 1;
         }
@@ -344,7 +345,9 @@ public class TeleOpCompetition extends OpMode {
             }
         } else if(intakeMotor.getPower()!=0){
             intakeMotor.setPower(1);
-        }
+        }*/
+
+        intakeMotor.setPower(1);
 
         //Launch trigger control
         if (gamepad2.cross && Math.abs(launcherVelocity - launcherMotor.getVelocity()) < 35) {
@@ -397,10 +400,12 @@ public class TeleOpCompetition extends OpMode {
 
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if (gamepad2.left_trigger > 0) {
-            turretMotor.setPower(gamepad2.left_trigger);
-        } else if (gamepad2.right_trigger > 0) {
-            turretMotor.setPower(gamepad2.right_trigger);
+        if (gamepad2.left_bumper) {
+            turretMotor.setPower(-0.5);
+        } else if (gamepad2.right_bumper) {
+            turretMotor.setPower(0.5);
+        } else {
+            turretMotor.setPower(0);
         }
 
         telemetry.addData("launcherMotor.getVelocity: ", launcherMotor.getVelocity());

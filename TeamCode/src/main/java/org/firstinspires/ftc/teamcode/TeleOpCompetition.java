@@ -32,14 +32,23 @@ import org.firstinspires.ftc.teamcode.System.PIDF;
 
 public class TeleOpCompetition extends OpMode {
 
-
+    DcMotor motor;
+    Servo servo;
+    ServoController servoController;
     @Override
     public void init() {
+        motor = hardwareMap.get(DcMotor.class, "motor");
+        servo = hardwareMap.get(Servo.class,"servo");
+        servoController = hardwareMap.get(ServoController.class, "servocontroller");
     }
 
     @Override
     //This is the code that runs repeatedly once you press play. Put game play code in this section
     public void loop() {
+        servo.setPosition(0.444);
+        motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setPower(0.349);
 
     }
 }

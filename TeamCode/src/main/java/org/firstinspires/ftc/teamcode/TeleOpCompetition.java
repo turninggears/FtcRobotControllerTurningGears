@@ -50,5 +50,18 @@ public class TeleOpCompetition extends OpMode {
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setPower(0.349);
 
+        servo.setPosition(0.5);
+
+        motor.setDirection(DcMotor.Direction.FORWARD);
+
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        motor.setPower(0.5);
+
+        if (gamepad1.a && motor.getDirection() == DcMotor.Direction.FORWARD) {
+            motor.setDirection(DcMotor.Direction.REVERSE);
+        } else if (gamepad1.a && motor.getDirection() == DcMotor.Direction.REVERSE) {
+            motor.setDirection(DcMotor.Direction.FORWARD);
+        }
     }
 }

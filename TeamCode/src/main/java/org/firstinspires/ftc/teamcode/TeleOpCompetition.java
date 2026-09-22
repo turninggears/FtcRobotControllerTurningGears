@@ -32,36 +32,57 @@ import org.firstinspires.ftc.teamcode.System.PIDF;
 
 public class TeleOpCompetition extends OpMode {
 
-    DcMotor motor;
-    Servo servo;
-    ServoController servoController;
+    DcMotorEx motor;
+    //Servo servo;
+    //ServoController servoController;
     @Override
     public void init() {
-        motor = hardwareMap.get(DcMotor.class, "motor");
-        servo = hardwareMap.get(Servo.class,"servo");
-        servoController = hardwareMap.get(ServoController.class, "servocontroller");
+        motor = hardwareMap.get(DcMotorEx.class, "motor");
+        //servo = hardwareMap.get(Servo.class,"servo");
+        //servoController = hardwareMap.get(ServoController.class, "servocontroller");
+        motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setPower(0
+        );
+
     }
 
     @Override
     //This is the code that runs repeatedly once you press play. Put game play code in this section
     public void loop() {
-        servo.setPosition(0.444);
-        motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor.setPower(0.349);
+       // servo.setPosition(0.444);
+       // motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        //motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //motor.setPower(0.349);
 
-        servo.setPosition(0.5);
+        //servo.setPosition(0.5);
 
-        motor.setDirection(DcMotor.Direction.FORWARD);
+        //motor.setDirection(DcMotor.Direction.FORWARD);
 
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        motor.setPower(0.5);
+       // motor.setPower(0.5);
 
-        if (gamepad1.a && motor.getDirection() == DcMotor.Direction.FORWARD) {
-            motor.setDirection(DcMotor.Direction.REVERSE);
-        } else if (gamepad1.a && motor.getDirection() == DcMotor.Direction.REVERSE) {
-            motor.setDirection(DcMotor.Direction.FORWARD);
+        // A = Forward
+        if (gamepad1.square) {
+            motor.setDirection(DcMotorEx.Direction.FORWARD);
+            motor.setPower(0.5);
+        }
+
+        // B = Reverse
+        else if (gamepad1.circle) {
+            motor.setDirection(DcMotorEx.Direction.REVERSE);
+            motor.setPower(0.5);
+        }
+
+        // Square = Stop
+        else if (gamepad1.x) {
+            motor.setPower(0);
         }
     }
-}
+
+       // if (gamepad1.a && motor.getDirection() == DcMotor.Direction.FORWARD) {
+         //   motor.setDirection(DcMotor.Direction.REVERSE);
+       // } else if (gamepad1.a && motor.getDirection() == DcMotor.Direction.REVERSE) {
+       //     motor.setDirection(DcMotor.Direction.FORWARD);
+        }

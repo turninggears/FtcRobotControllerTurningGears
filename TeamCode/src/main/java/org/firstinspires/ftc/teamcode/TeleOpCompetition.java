@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -40,10 +40,9 @@ public class TeleOpCompetition extends OpMode {
         motor = hardwareMap.get(DcMotorEx.class, "motor");
         //servo = hardwareMap.get(Servo.class,"servo");
         //servoController = hardwareMap.get(ServoController.class, "servocontroller");
-        motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor.setPower(0
-        );
+        motor.setDirection(DcMotorEx.Direction.FORWARD);
+        motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        motor.setPower(0);
 
     }
 
@@ -63,23 +62,26 @@ public class TeleOpCompetition extends OpMode {
 
        // motor.setPower(0.5);
 
-        // A = Forward
+        // Square = Forward
         if (gamepad1.square) {
             motor.setDirection(DcMotorEx.Direction.FORWARD);
             motor.setPower(0.5);
         }
 
-        // B = Reverse
+        // Circle = Reverse
         else if (gamepad1.circle) {
             motor.setDirection(DcMotorEx.Direction.REVERSE);
             motor.setPower(0.5);
         }
 
-        // Square = Stop
+        // X = Stop
         else if (gamepad1.x) {
             motor.setPower(0);
         }
+        telemetry.addData("Motor Velocity", motor.getVelocity());
+        telemetry.update();
     }
+
 
        // if (gamepad1.a && motor.getDirection() == DcMotor.Direction.FORWARD) {
          //   motor.setDirection(DcMotor.Direction.REVERSE);

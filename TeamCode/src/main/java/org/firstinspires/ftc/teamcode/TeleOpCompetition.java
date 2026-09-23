@@ -30,7 +30,7 @@ import org.firstinspires.ftc.teamcode.System.PIDF;
 @TeleOp(name = "TeleOpCompetition", group = "Robot")
 @Config
 
-public class TeleOpCompetition extends OpMode {
+public class TeleOpCompetition extends OpMode{
 
     DcMotorEx motor;
     //Servo servo;

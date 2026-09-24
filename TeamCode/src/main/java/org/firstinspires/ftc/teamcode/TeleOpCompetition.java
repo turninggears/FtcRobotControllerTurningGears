@@ -63,22 +63,35 @@ public class TeleOpCompetition extends OpMode{
        // motor.setPower(0.5);
 
         // Square = Forward
-        if (gamepad1.square) {
+        if (gamepad2.square) {
             motor.setDirection(DcMotorEx.Direction.FORWARD);
             motor.setPower(0.5);
         }
 
         // Circle = Reverse
-        else if (gamepad1.circle) {
+        else if (gamepad2.circle) {
             motor.setDirection(DcMotorEx.Direction.REVERSE);
             motor.setPower(0.5);
         }
 
-        // X = Stop
-        else if (gamepad1.x) {
-            motor.setPower(0);
+        //Flywheel stop command
+        else if (gamepad2.crossWasPressed()) {
+            motor.setDirection(DcMotorEx.Direction.FORWARD);
+            motor.setPower(0.0);
         }
+
+        //10% power reduction
+        else if (gamepad2.dpadDownWasPressed() && motor.getPower()>0.0) {
+            motor.setPower(motor.getPower()-0.01);
+        }
+
+        //10% power increase
+        else if (gamepad2.dpadUpWasPressed() && motor.getPower()<1.0) {
+            motor.setPower(motor.getPower()+0.01);
+        }
+
         telemetry.addData("Motor Velocity", motor.getVelocity());
+        telemetry.addData("Motor Power", motor.getPower());
         telemetry.update();
     }
 

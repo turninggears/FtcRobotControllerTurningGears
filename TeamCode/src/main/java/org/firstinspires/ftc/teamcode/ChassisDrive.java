@@ -99,7 +99,7 @@ public class ChassisDrive extends OpMode {
         //added10-6-2026 not tested
         drive.setDrivePowers(
                 new PoseVelocity2d(
-                        driveVector.times(speedMultiplier),
+                        driveVector.times(speedMultiplier), 
                         turn * speedMultiplier
                 )
         );// end added 10-6-2026 not tested

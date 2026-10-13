@@ -8,8 +8,51 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 public class Intake {
-    public static 
+
+    public static double INTAKE_VELOCITY = 1000;
+    DcMotorEx intakeMotor;
+    Telemetry telemetry;
+
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void start() {
+        intakeMotor.setVelocity(INTAKE_VELOCITY);
+    }
+
+    public void stop() {
+        intakeMotor.setVelocity(0);
+    }
+
+    public void reverse() {
+        intakeMotor.setVelocity(-INTAKE_VELOCITY);
+    }
+
+    public Action startIntake() {
+        return telemetryPacket -> {
+            start();
+            return false;
+        };
+    }
+
+    public Action stopIntake() {
+        return telemetryPacket -> {
+            stop();
+            return false;
+        };
+    }
+
+    public Action reverseIntake() {
+        return telemetryPacket -> {
+            reverse();
+            return false;
+        };
+    }
 }

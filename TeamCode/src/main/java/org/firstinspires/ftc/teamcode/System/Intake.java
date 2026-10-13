@@ -11,5 +11,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Intake {
-    public static 
+    DcMotorEx intakeMotor;
+
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
 }

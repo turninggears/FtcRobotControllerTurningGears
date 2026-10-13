@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Intake {
 
-    public static double INTAKE_VELOCITY = 1000;
+    public static double INTAKE_POWER = 1.0;
     DcMotorEx intakeMotor;
     Telemetry telemetry;
 
@@ -24,7 +24,7 @@ public class Intake {
     }
 
     public void start() {
-        intakeMotor.setVelocity(INTAKE_VELOCITY);
+        intakeMotor.setVelocity(INTAKE_POWER);
     }
 
     public void stop() {
@@ -32,7 +32,7 @@ public class Intake {
     }
 
     public void reverse() {
-        intakeMotor.setVelocity(-INTAKE_VELOCITY);
+        intakeMotor.setVelocity(-INTAKE_POWER);
     }
 
     public Action startIntake() {

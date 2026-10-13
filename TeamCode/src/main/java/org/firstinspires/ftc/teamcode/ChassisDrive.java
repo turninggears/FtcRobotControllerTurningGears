@@ -14,12 +14,10 @@ public class ChassisDrive extends OpMode {
 
     MecanumDrive drive;
 
-    //added 10-6-2026 not tested yet
     boolean fieldCentric = true;
     boolean previousTriangle = false;
     boolean previousSquare = false;
     double headingOffset = 0.0;
-    //end of added 10-6 not tested
 
     @Override
     public void init() {
@@ -41,7 +39,6 @@ public class ChassisDrive extends OpMode {
 
         drive.updatePoseEstimate();
 
-        //added 10-6-2026 not tested
         double currentHeading =
                 drive.localizer.getPose().heading.toDouble();
 
@@ -58,13 +55,11 @@ public class ChassisDrive extends OpMode {
         }
 
         previousSquare = gamepad1.square;
-        //end 10-6-2026 added not tested
 
         double forward = -gamepad1.left_stick_y;
         double strafe = -gamepad1.left_stick_x;
         double turn = -gamepad1.right_stick_x;
 
-        //10-6-26 not tested
         //R1:reduce drive speed to 50% while held
         double speedMultiplier = gamepad1.right_bumper ? .5 : 1.0;
 
@@ -80,30 +75,14 @@ public class ChassisDrive extends OpMode {
                     .fromDouble(-driveHeading)
                     .times(driveVector);
         }
-        //10-6-206 end changes not tested
 
-        /*
-        //this was in code that worked and was taken out 10-6-2026 not tested yet
-        drive.setDrivePowers(
-                new PoseVelocity2d(
-                        new Vector2d(
-                                forward,
-                                strafe
-                        ),
-                        turn
-                )
-        );
-        //end of not tested deletion 10/6/2026
-        */
 
-        //added10-6-2026 not tested
         drive.setDrivePowers(
                 new PoseVelocity2d(
                         driveVector.times(speedMultiplier), 
                         turn * speedMultiplier
                 )
-        );// end added 10-6-2026 not tested
-
+        );
 
         telemetry.addData(
                 "Drive Mode",
@@ -115,20 +94,6 @@ public class ChassisDrive extends OpMode {
         telemetry.addLine("Triangle = Field/Robot Centric");
         telemetry.addLine("Square = Reset Field Heading");
         telemetry.addLine("Hold R1 = 50% Speed");
-
-
-        /*telemetry.addData(
-                "Y",
-                drive.localizer.getPose().position.y
-        );*/
-
-       /* telemetry.addData(
-                "Heading",
-                Math.toDegrees(
-                        drive.localizer.getPose().heading.toDouble()
-                )
-        );*/
-
         telemetry.update();
     }
 }

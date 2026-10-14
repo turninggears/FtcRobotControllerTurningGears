@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.System;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -36,5 +37,71 @@ public class Launcher {
         nectarLauncher.setDirection(DcMotorSimple.Direction.FORWARD);
         nectarLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         nectarLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+    }
+
+    public void startPollenLauncher() {
+        pollenLauncher.setVelocity(LAUNCHER_VELOCITY);
+    }
+
+    public void stopPollenLauncher() {
+        pollenLauncher.setVelocity(0);
+    }
+
+    public void reversePollenLauncher() {
+        pollenLauncher.setVelocity(-LAUNCHER_VELOCITY);
+    }
+
+    public Action startPollenLauncherAction() {
+        return telemetryPacket -> {
+            startPollenLauncher();
+            return false;
+        };
+    }
+
+    public Action stopPollenLauncherAction() {
+        return telemetryPacket -> {
+            stopPollenLauncher();
+            return false;
+        };
+    }
+
+    public Action reversePollenLauncherAction() {
+        return telemetryPacket -> {
+            reversePollenLauncher();
+            return false;
+        };
+    }
+
+    public void startNectarLauncher() {
+        nectarLauncher.setVelocity(LAUNCHER_VELOCITY);
+    }
+
+    public void stopNectarLauncher() {
+        nectarLauncher.setVelocity(0);
+    }
+
+    public void reverseNectarLauncher() {
+        nectarLauncher.setVelocity(-LAUNCHER_VELOCITY);
+    }
+
+    public Action startNectarLauncherAction() {
+        return telemetryPacket -> {
+            startNectarLauncher();
+            return false;
+        };
+    }
+
+    public Action stopNectarLauncherAction() {
+        return telemetryPacket -> {
+            stopNectarLauncher();
+            return false;
+        };
+    }
+
+    public Action reverseNectarLauncherAction() {
+        return telemetryPacket -> {
+            reverseNectarLauncher();
+            return false;
+        };
     }
 }

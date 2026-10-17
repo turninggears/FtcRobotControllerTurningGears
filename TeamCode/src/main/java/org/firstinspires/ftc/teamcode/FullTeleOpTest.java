@@ -42,6 +42,11 @@ public class FullTeleOpTest extends OpMode {
     // ========================================
 
     DcMotorEx pollenLauncher;
+    DcMotorEx intakeMotor;
+
+    // Intake motor state
+// 0 = stopped, 1 = forward, -1 = reverse
+    int intakeDirection = 0;
 
     // Adjustable through FTC Dashboard
     public static double targetVelocity = 1100;
@@ -90,6 +95,21 @@ public class FullTeleOpTest extends OpMode {
         );
 
         pollenLauncher.setPower(0);
+
+        // intake motor setup
+
+        intakeMotor = hardwareMap.get(
+                DcMotorEx.class,
+                        "Intake Motor"
+        );
+
+        intakeMotor.setZeroPowerBehavior(
+                DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        intakeMotor.setPower(0);
+
+
 
 
         // -------- DASHBOARD TELEMETRY --------
@@ -250,6 +270,33 @@ public class FullTeleOpTest extends OpMode {
 
 
         // ====================================
+        // GAMEPAD 2 - INTAKE MOTOR
+        // ====================================
+
+        // R1: Toggle Intake Forward
+        if (gamepad2.rightBumperWasPressed()) {
+
+            if (intakeDirection == 1) {
+                intakeDirection = 0;  // Stop
+            } else {
+                intakeDirection = 1;  // Forward
+            }
+        }
+
+        // L1: Toggle Intake Reverse
+        else if (gamepad2.leftBumperWasPressed()) {
+
+            if (intakeDirection == -1) {
+                intakeDirection = 0;  // Stop
+            } else {
+                intakeDirection = -1; // Reverse
+            }
+        }
+
+        // Apply intake motor power
+        intakeMotor.setPower(intakeDirection);
+
+        // ====================================
         // TELEMETRY - DRIVING
         // ====================================
 
@@ -318,13 +365,6 @@ public class FullTeleOpTest extends OpMode {
         telemetry.addLine("Square = Reset Field Heading");
         telemetry.addLine("Hold R1 = 50% Speed");
 
-        telemetry.addLine("");
-        telemetry.addLine("GAMEPAD 2:");
-        telemetry.addLine("Square = Flywheel Forward");
-        telemetry.addLine("Circle = Flywheel Reverse");
-        telemetry.addLine("Cross = Stop Flywheel");
-        telemetry.addLine("D-Pad Up = Velocity +10");
-        telemetry.addLine("D-Pad Down = Velocity -10");
 
         telemetry.update();
     }
@@ -348,5 +388,8 @@ public class FullTeleOpTest extends OpMode {
                         0
                 )
         );
+        // Stop intake motor
+        intakeMotor.setPower(0);
+        intakeDirection = 0;
     }
 }

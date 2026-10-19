@@ -42,8 +42,7 @@ public class LauncherTesting extends OpMode{
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry()
-        );//this was end of addition from 10/1
-
+        );
 
     }
 
@@ -51,7 +50,6 @@ public class LauncherTesting extends OpMode{
     //This is the code that runs repeatedly once you press play. Put game play code in this section
     public void loop() {
 
-        //Start of what i added 10/1
         motor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(
@@ -61,7 +59,7 @@ public class LauncherTesting extends OpMode{
                         PIDF.F
                         )
         );
-       //End Of What I Added 10/1
+
 
         // servo.setPosition(0.444);
        // motor.setDirection(DcMotorSimple.Direction.FORWARD);

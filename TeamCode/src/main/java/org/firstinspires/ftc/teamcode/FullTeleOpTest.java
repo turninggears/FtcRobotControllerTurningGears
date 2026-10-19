@@ -273,7 +273,7 @@ public class FullTeleOpTest extends OpMode {
         // GAMEPAD 2 - INTAKE MOTOR
         // ====================================
 
-        // R1: Toggle Intake Forward
+        // R1: Toggle Intake eject
         if (gamepad2.rightBumperWasPressed()) {
 
             if (intakeDirection == 1) {
@@ -283,7 +283,7 @@ public class FullTeleOpTest extends OpMode {
             }
         }
 
-        // L1: Toggle Intake Reverse
+        // L1: Toggle Intake
         else if (gamepad2.leftBumperWasPressed()) {
 
             if (intakeDirection == -1) {
@@ -300,7 +300,7 @@ public class FullTeleOpTest extends OpMode {
         // TELEMETRY - DRIVING
         // ====================================
 
-        telemetry.addLine("=== DRIVING ===");
+
 
         telemetry.addData(
                 "Drive Mode",
@@ -309,28 +309,10 @@ public class FullTeleOpTest extends OpMode {
                         : "Robot Centric"
         );
 
-        telemetry.addData(
-                "Robot Heading",
-                Math.toDegrees(currentHeading)
-        );
-
-        telemetry.addData(
-                "Drive Speed",
-                speedMultiplier
-        );
-
-
-        // ====================================
+                // ====================================
         // TELEMETRY - POLLEN LAUNCHER
         // ====================================
 
-        telemetry.addLine("");
-        telemetry.addLine("=== POLLEN LAUNCHER ===");
-
-        telemetry.addData(
-                "Flywheel Status",
-                flywheelRunning ? "RUNNING" : "STOPPED"
-        );
 
         telemetry.addData(
                 "Target Velocity",
@@ -342,17 +324,6 @@ public class FullTeleOpTest extends OpMode {
                 pollenLauncher.getVelocity()
         );
 
-        telemetry.addData(
-                "Launcher Motor Power",
-                pollenLauncher.getPower()
-        );
-
-
-        // PIDF Telemetry
-        telemetry.addData("PIDF P", PIDF.P);
-        telemetry.addData("PIDF I", PIDF.I);
-        telemetry.addData("PIDF D", PIDF.D);
-        telemetry.addData("PIDF F", PIDF.F);
 
 
         // ====================================

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.System.NectarLauncherPIDF;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import java.security.PublicKey;
+
 
 @Config
 
@@ -61,8 +61,11 @@ public class Launcher {
 
         pollenLauncher.setVelocity(0);
 
+       /* save this for when pollne gate servo is set up
+
         pollenGate = hardwareMap.get(Servo.class, "Pollen Gate");
-        closePollenGate();
+
+        closePollenGate();*/
 
        /* nectarLauncher = hardwareMap.get(DcMotorEx.class, "Nectar Motor");
         nectarLauncher.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -82,7 +85,7 @@ public class Launcher {
         pollenLauncherDirection = 0;
         pollenLauncherIdle = false;
         pollenLauncher.setVelocity(0);
-        pollenLauncherIdle = false;
+       // closePollenGate();//save for when gate is active
     }
 
     public void reversePollenLauncher() {

@@ -175,6 +175,7 @@ public class BuildTeleOp extends OpMode {
 // GAMEPAD 2 - POLLEN LAUNCHER
 // ====================================
 
+        /*save this for when we add gate servo
         // Triangle: Hold to open pollen gate
 // Release Triangle to close pollen gate
         if (gamepad2.triangle) {
@@ -182,7 +183,9 @@ public class BuildTeleOp extends OpMode {
         } else {
             launcher.closePollenGate();
         }
+*/
 
+         */
 // Square: Start Pollen Launcher Forward
         if (gamepad2.squareWasPressed()) {
             launcher.startPollenLauncher();

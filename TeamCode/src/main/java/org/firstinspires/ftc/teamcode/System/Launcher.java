@@ -13,11 +13,14 @@ import org.firstinspires.ftc.teamcode.System.NectarLauncherPIDF;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.security.PublicKey;
+
 @Config
 
 public class Launcher {
 
     public static double LAUNCHER_VELOCITY = 1180;
+    public static double LAUNCHER_IDLE_VELOCITY = 800;
 
     DcMotorEx pollenLauncher;
     DcMotorEx nectarLauncher;
@@ -54,6 +57,7 @@ public class Launcher {
         nectarLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, nectarLauncherPidfCoefficients);*/
     }
 
+    //-----METHODS-----
     public void startPollenLauncher() {
         pollenLauncherDirection = 1;
         pollenLauncher.setVelocity(LAUNCHER_VELOCITY);
@@ -69,6 +73,10 @@ public class Launcher {
         pollenLauncher.setVelocity(-LAUNCHER_VELOCITY);
     }
 
+    public void idlePollenLauncher() {
+        pollenLauncherDirection = 1;
+        pollenLauncher.setVelocity(LAUNCHER_IDLE_VELOCITY);
+    }
     public Action startPollenLauncherAction() {
         return telemetryPacket -> {
             startPollenLauncher();

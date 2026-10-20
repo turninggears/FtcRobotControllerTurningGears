@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-
+import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.System.PollenLauncherPIDF;
 import org.firstinspires.ftc.teamcode.System.NectarLauncherPIDF;
 
@@ -22,11 +22,21 @@ public class Launcher {
     public static double LAUNCHER_VELOCITY = 1180;
     public static double LAUNCHER_IDLE_VELOCITY = 800;
 
+    // Gate Servo Setting - Adjust after testing
+    public static double GATE_CLOSED_POSITION = 0.0;
+    public static double GATE_OPEN_POSITION = .5;
+
+    // AUTONOMOUS GATE OPEN DURATION IN SECONDS
+    public static double AUTO_GATE_OPEN_TIME = 2.0;
+
+    Servo pollenGate;
+
     DcMotorEx pollenLauncher;
     DcMotorEx nectarLauncher;
 
     //0=stopped, 1=forward, -1 = reverse
     private int pollenLauncherDirection = 0;
+    private boolean pollenLauncherIdle = false;
     private  double lastP = Double.NaN;
     private double lastI = Double.NaN;
     private double lastD = Double.NaN;
@@ -50,6 +60,10 @@ public class Launcher {
         lastF = PollenLauncherPIDF.F;
 
         pollenLauncher.setVelocity(0);
+
+        pollenGate = hardwareMap.get(Servo.class, "Pollen Gate");
+        closePollenGate();
+
        /* nectarLauncher = hardwareMap.get(DcMotorEx.class, "Nectar Motor");
         nectarLauncher.setDirection(DcMotorSimple.Direction.FORWARD);
         nectarLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -61,22 +75,28 @@ public class Launcher {
     public void startPollenLauncher() {
         pollenLauncherDirection = 1;
         pollenLauncher.setVelocity(LAUNCHER_VELOCITY);
+        pollenLauncherIdle = false;
     }
 
     public void stopPollenLauncher() {
         pollenLauncherDirection = 0;
+        pollenLauncherIdle = false;
         pollenLauncher.setVelocity(0);
+        pollenLauncherIdle = false;
     }
 
     public void reversePollenLauncher() {
         pollenLauncherDirection = -1;
         pollenLauncher.setVelocity(-LAUNCHER_VELOCITY);
+        pollenLauncherIdle = false;
     }
 
     public void idlePollenLauncher() {
         pollenLauncherDirection = 1;
+        pollenLauncherIdle = true;
         pollenLauncher.setVelocity(LAUNCHER_IDLE_VELOCITY);
     }
+
     public Action startPollenLauncherAction() {
         return telemetryPacket -> {
             startPollenLauncher();
@@ -98,6 +118,14 @@ public class Launcher {
         };
     }
 
+    public void openPollenGate() {
+        pollenGate.setPosition(GATE_OPEN_POSITION);
+    }
+
+    public void closePollenGate() {
+        pollenGate.setPosition(GATE_CLOSED_POSITION);
+    }
+
     public void startNectarLauncher() {
         nectarLauncher.setVelocity(LAUNCHER_VELOCITY);
     }
@@ -114,7 +142,16 @@ public class Launcher {
         return pollenLauncher.getVelocity();
     }
     public double getPollenLauncherTargetVelocity() {
-            return pollenLauncherDirection * LAUNCHER_VELOCITY;
+
+        if (pollenLauncherDirection == 0) {
+            return 0;
+        }
+
+        if (pollenLauncherIdle) {
+            return LAUNCHER_IDLE_VELOCITY;
+        }
+
+        return pollenLauncherDirection * LAUNCHER_VELOCITY;
     }
     public void updatePollenLauncher() {
 
@@ -148,9 +185,17 @@ public class Launcher {
         }
 
         // Continue applying live target velocity
-        pollenLauncher.setVelocity(
-                pollenLauncherDirection * LAUNCHER_VELOCITY
-        );
+        double targetVelocity;
+
+        if (pollenLauncherDirection == 0) {
+            targetVelocity = 0;
+        } else if (pollenLauncherIdle) {
+            targetVelocity = LAUNCHER_IDLE_VELOCITY;
+        } else {
+            targetVelocity = pollenLauncherDirection * LAUNCHER_VELOCITY;
+        }
+
+        pollenLauncher.setVelocity(targetVelocity);
     }
     public Action startNectarLauncherAction() {
         return telemetryPacket -> {

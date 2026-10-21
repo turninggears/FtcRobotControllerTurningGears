@@ -10,7 +10,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.System.PollenLauncherPIDF;
 import org.firstinspires.ftc.teamcode.System.NectarLauncherPIDF;
-
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
@@ -221,5 +222,18 @@ public class Launcher {
         };
 
 
+    }
+    public Action LaunchFourPollenAction() {
+        return new SequentialAction(
+                packet -> {
+                    openPollenGate();
+                    return false;
+                },
+                new SleepAction(AUTO_GATE_OPEN_TIME),
+
+                packet -> {
+                    return false;
+                }
+        );
     }
 }

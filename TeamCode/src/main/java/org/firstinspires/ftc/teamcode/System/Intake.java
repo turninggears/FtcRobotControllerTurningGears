@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.System;
 
-import com.acmerobotics.dashboard.config.Config;
+
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,21 +18,21 @@ public class Intake {
     Telemetry telemetry;
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake Motor");
         intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void start() {
-        intakeMotor.setVelocity(INTAKE_POWER);
+        intakeMotor.setPower(INTAKE_POWER);
     }
 
     public void stop() {
-        intakeMotor.setVelocity(0);
+        intakeMotor.setPower(0);
     }
 
     public void reverse() {
-        intakeMotor.setVelocity(-INTAKE_POWER);
+        intakeMotor.setPower(-INTAKE_POWER);
     }
 
     public Action startIntakeAction() {

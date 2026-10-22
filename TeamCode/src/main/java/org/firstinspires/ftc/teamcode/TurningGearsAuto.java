@@ -25,48 +25,42 @@ import org.firstinspires.ftc.teamcode.System.Intake;
 public class TurningGearsAuto extends LinearOpMode {
 
     // ========================================
-    // STARTING / LAUNCH POSITION
+    // CONFIGURATION
     // ========================================
 
+    // Set TRUE after installing the gate servo.
+    public static boolean USE_POLLEN_GATE = false;
+
+    // Starting and launching position
     public static double START_X = 66;
     public static double START_Y = -15;
     public static double START_HEADING = 0;
 
-    // ========================================
-    // GARDEN COLLECTION
-    // ========================================
-
+    // Garden collection
     public static double GARDEN_X = 62.5;
     public static double GARDEN_START_Y = -48;
     public static double GARDEN_END_Y = -62;
     public static double GARDEN_HEADING = 270;
 
-    // ========================================
-    // PARKING WAYPOINT
-    // ========================================
-
+    // Parking waypoint
     public static double PARK_WAYPOINT_X = 66;
     public static double PARK_WAYPOINT_Y = -52;
     public static double PARK_WAYPOINT_HEADING = 0;
 
-    // ========================================
-    // FINAL PARKING POSITION
-    // ========================================
-
+    // Final parking position
     public static double PARK_X = -20;
     public static double PARK_Y = -52;
     public static double PARK_HEADING = 270;
 
-    // ========================================
-    // LAUNCHER / COLLECTION SETTINGS
-    // ========================================
-
+    // Launcher settings
     public static double VELOCITY_TOLERANCE = 40;
     public static double LAUNCHER_TIMEOUT = 4.0;
+
+    // Collection pause
     public static double GARDEN_WAIT_TIME = 1.0;
 
     // ========================================
-    // ROBOT HARDWARE
+    // ROBOT SYSTEMS
     // ========================================
 
     private MecanumDrive drive;
@@ -74,98 +68,100 @@ public class TurningGearsAuto extends LinearOpMode {
     private Intake intake;
 
     // ========================================
-    // AUTONOMOUS PROGRAM
+    // AUTONOMOUS
     // ========================================
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // Starting position
+        // ====================================
+        // STARTING POSE
+        // ====================================
+
         Pose2d startPose = new Pose2d(
                 START_X,
                 START_Y,
                 Math.toRadians(START_HEADING)
         );
 
-        // Garden entrance
         Pose2d gardenStartPose = new Pose2d(
                 GARDEN_X,
                 GARDEN_START_Y,
                 Math.toRadians(GARDEN_HEADING)
         );
 
-        // Garden collection endpoint
         Pose2d gardenEndPose = new Pose2d(
                 GARDEN_X,
                 GARDEN_END_Y,
                 Math.toRadians(GARDEN_HEADING)
         );
 
-        // Parking waypoint
-        Pose2d parkWaypointPose = new Pose2d(
+        Pose2d parkWayPointPose = new Pose2d(
                 PARK_WAYPOINT_X,
                 PARK_WAYPOINT_Y,
                 Math.toRadians(PARK_WAYPOINT_HEADING)
         );
 
-        // Final parking position
         Pose2d parkPose = new Pose2d(
                 PARK_X,
                 PARK_Y,
                 Math.toRadians(PARK_HEADING)
         );
 
-        // ========================================
-        // INITIALIZE ROBOT SYSTEMS
-        // ========================================
+        // ====================================
+        // INITIALIZE HARDWARE
+        // ====================================
 
         drive = new MecanumDrive(hardwareMap, startPose);
         launcher = new Launcher(hardwareMap, telemetry);
         intake = new Intake(hardwareMap, telemetry);
 
         launcher.stopPollenLauncher();
-        launcher.closePollenGate();
         intake.stop();
+
+        if (USE_POLLEN_GATE) {
+            launcher.closePollenGate();
+        }
+
 
         // ========================================
         // ROAD RUNNER TRAJECTORIES
         // ========================================
 
-        // Travel from launch to garden entrance.
-        // Rotate from 0 to 270 degrees.
+        // Travel from launch position to garden.
+        // Change heading from 0 to 270 degrees.
         Action driveToGarden =
                 drive.actionBuilder(startPose)
                         .strafeToLinearHeading(
-                                new Vector2d(
-                                        GARDEN_X,
-                                        GARDEN_START_Y
-                                ),
-                                Math.toRadians(GARDEN_HEADING)
+                                gardenStartPose.position,
+                                gardenStartPose.heading.toDouble()
                         )
                         .build();
 
-        // Collect pollen while moving along wall.
+        // ========================================
+        // COLLECT GARDEN POLLEN
+        // ========================================
+
+        // Drive along garden wall.
         // Maintain 270 degree heading.
         Action collectGardenPollen =
                 drive.actionBuilder(gardenStartPose)
                         .strafeTo(
-                                new Vector2d(
-                                        GARDEN_X,
-                                        GARDEN_END_Y
-                                )
+                                gardenEndPose.position
                         )
                         .build();
 
-        // Return to original launch position.
-        // Launcher accelerates during this movement.
+        // ========================================
+        // RETURN TO LAUNCH POSITION
+        // ========================================
+
+        // Return to original launching position.
+        // Change heading back to 0 degrees.
         Action returnToLaunch =
                 drive.actionBuilder(gardenEndPose)
                         .strafeToLinearHeading(
-                                new Vector2d(
-                                        START_X,
-                                        START_Y
-                                ),
-                                Math.toRadians(START_HEADING)
+                                startPose.position,
+                                startPose.heading.toDouble()
                         )
                         .build();
 
@@ -173,39 +169,32 @@ public class TurningGearsAuto extends LinearOpMode {
         // PARKING ROUTE WITH WAYPOINT
         // ========================================
 
-        // First move to (66, -52) at 0 degrees.
-        // Then move to (-20, -52) at 270 degrees.
+        // First travel to the parking waypoint
+        // at (66, -52, 0 degrees).
+        //
+        // Then travel to the final parking position
+        // at (-20, -52, 270 degrees).
         Action driveToPark =
                 drive.actionBuilder(startPose)
 
                         .strafeToLinearHeading(
-                                new Vector2d(
-                                        PARK_WAYPOINT_X,
-                                        PARK_WAYPOINT_Y
-                                ),
-                                Math.toRadians(
-                                        PARK_WAYPOINT_HEADING
-                                )
+                                parkWayPointPose.position,
+                                parkWayPointPose.heading.toDouble()
                         )
 
                         .strafeToLinearHeading(
-                                new Vector2d(
-                                        PARK_X,
-                                        PARK_Y
-                                ),
-                                Math.toRadians(PARK_HEADING)
+                                parkPose.position,
+                                parkPose.heading.toDouble()
                         )
 
                         .build();
 
-        // ========================================
-        // DRIVER STATION READY MESSAGE
-        // ========================================
+        // ====================================
+        // READY MESSAGE
+        // ====================================
 
-        telemetry.addLine("TURNING GEARS AUTONOMOUS");
-        telemetry.addLine("Alliance: RED");
-        telemetry.addLine("Starting Position: RIGHT");
-
+        telemetry.addLine("TURNING GEARS RED RIGHT");
+        telemetry.addData("Gate Installed", USE_POLLEN_GATE);
         telemetry.addData(
                 "Start",
                 "(%.1f, %.1f, %.0f)",
@@ -213,29 +202,13 @@ public class TurningGearsAuto extends LinearOpMode {
                 START_Y,
                 START_HEADING
         );
-
         telemetry.addData(
-                "Garden Start",
-                "(%.1f, %.1f)",
-                GARDEN_X,
-                GARDEN_START_Y
-        );
-
-        telemetry.addData(
-                "Garden End",
-                "(%.1f, %.1f)",
-                GARDEN_X,
-                GARDEN_END_Y
-        );
-
-        telemetry.addData(
-                "Park Waypoint",
+                "Parking Waypoint",
                 "(%.1f, %.1f, %.0f)",
                 PARK_WAYPOINT_X,
                 PARK_WAYPOINT_Y,
                 PARK_WAYPOINT_HEADING
         );
-
         telemetry.addData(
                 "Final Park",
                 "(%.1f, %.1f, %.0f)",
@@ -243,8 +216,7 @@ public class TurningGearsAuto extends LinearOpMode {
                 PARK_Y,
                 PARK_HEADING
         );
-
-        telemetry.addLine("READY TO START");
+        telemetry.addLine("READY");
         telemetry.update();
 
         waitForStart();
@@ -253,110 +225,98 @@ public class TurningGearsAuto extends LinearOpMode {
             return;
         }
 
+        // ====================================
+        // EXECUTE AUTONOMOUS
+        // ====================================
+
         try {
 
-            // ====================================
-            // START INTAKE
-            // ====================================
-
-            // Reverse direction is collection.
-            // Keep running through both launches.
+            // Intake reverse = collect pollen.
             intake.reverse();
 
+            Action autonomousRoutine =
+                    new SequentialAction(
+
+                            // ------------------------
+                            // FIRST LAUNCH
+                            // ------------------------
+
+                            launcher.startPollenLauncherAction(),
+
+                            waitForLauncherSpeed(),
+
+                            releaseFourPollenAction(),
+
+                            // ------------------------
+                            // LAUNCHER IDLE
+                            // ------------------------
+
+                            packet -> {
+                                launcher.idlePollenLauncher();
+                                return false;
+                            },
+
+                            // ------------------------
+                            // DRIVE TO GARDEN
+                            // ------------------------
+
+                            driveToGarden,
+
+                            // ------------------------
+                            // COLLECT POLLEN
+                            // ------------------------
+
+                            collectGardenPollen,
+
+                            new SleepAction(
+                                    GARDEN_WAIT_TIME
+                            ),
+
+                            // ------------------------
+                            // RETURN LAUNCHER TO 1180
+                            // ------------------------
+
+                            launcher.startPollenLauncherAction(),
+
+                            // ------------------------
+                            // RETURN TO LAUNCH
+                            // ------------------------
+
+                            returnToLaunch,
+
+                            // ------------------------
+                            // SECOND LAUNCH
+                            // ------------------------
+
+                            waitForLauncherSpeed(),
+
+                            releaseFourPollenAction(),
+
+                            // ------------------------
+                            // STOP LAUNCHER AND INTAKE
+                            // ------------------------
+
+                            launcher.stopPollenLauncherAction(),
+
+                            packet -> {
+                                intake.stop();
+                                return false;
+                            },
+
+                            // ------------------------
+                            // PARK
+                            // ------------------------
+
+                            driveToPark
+                    );
+
             // ====================================
-            // BUILD AUTONOMOUS SEQUENCE
+            // ROAD RUNNER ACTION LOOP
             // ====================================
 
-            Action autonomousRoutine = new SequentialAction(
-
-                    // ====================================
-                    // FIRST LAUNCH
-                    // ====================================
-
-                    // Start launcher at full velocity.
-                    launcher.startPollenLauncherAction(),
-
-                    // Wait for launcher to reach speed.
-                    waitForLauncherSpeed(),
-
-                    // Open gate, release four pollen,
-                    // and close gate automatically.
-                    launcher.launchFourPollenAction(),
-
-                    // ====================================
-                    // REDUCE LAUNCHER TO IDLE
-                    // ====================================
-
-                    packet -> {
-                        launcher.idlePollenLauncher();
-                        return false;
-                    },
-
-                    // ====================================
-                    // DRIVE TO GARDEN
-                    // ====================================
-
-                    driveToGarden,
-
-                    // ====================================
-                    // COLLECT FOUR POLLEN
-                    // ====================================
-
-                    // Drive from Y -48 to Y -62.
-                    collectGardenPollen,
-
-                    // Allow extra collection time.
-                    new SleepAction(GARDEN_WAIT_TIME),
-
-                    // ====================================
-                    // RESTORE LAUNCHER SPEED
-                    // ====================================
-
-                    // Start accelerating before return.
-                    launcher.startPollenLauncherAction(),
-
-                    // ====================================
-                    // RETURN TO LAUNCH
-                    // ====================================
-
-                    returnToLaunch,
-
-                    // ====================================
-                    // SECOND LAUNCH
-                    // ====================================
-
-                    // Wait until launcher reaches speed.
-                    waitForLauncherSpeed(),
-
-                    // Release collected pollen.
-                    launcher.launchFourPollenAction(),
-
-                    // ====================================
-                    // STOP LAUNCHER AND INTAKE
-                    // ====================================
-
-                    launcher.stopPollenLauncherAction(),
-
-                    packet -> {
-                        intake.stop();
-                        return false;
-                    },
-
-                    // ====================================
-                    // PARK THROUGH WAYPOINT
-                    // ====================================
-
-                    driveToPark
-            );
-
-            // ========================================
-            // EXECUTE AUTONOMOUS
-            // ========================================
-
-            // Run Road Runner actions while
-            // updating launcher velocity and PIDF.
             while (opModeIsActive()) {
 
+                // Maintain launcher velocity and PIDF
                 launcher.updatePollenLauncher();
 
                 TelemetryPacket packet =
@@ -372,10 +332,10 @@ public class TurningGearsAuto extends LinearOpMode {
                         launcher.getPollenLauncherVelocity()
                 );
 
-                boolean stillRunning =
+                boolean running =
                         autonomousRoutine.run(packet);
 
-                if (!stillRunning) {
+                if (!running) {
                     break;
                 }
 
@@ -384,11 +344,14 @@ public class TurningGearsAuto extends LinearOpMode {
 
         } finally {
 
-            // ========================================
-            // FINAL SHUTDOWN
-            // ========================================
+            // ====================================
+            // SHUTDOWN
+            // ====================================
 
-            launcher.closePollenGate();
+            if (USE_POLLEN_GATE) {
+                launcher.closePollenGate();
+            }
+
             launcher.stopPollenLauncher();
             intake.stop();
 
@@ -402,6 +365,41 @@ public class TurningGearsAuto extends LinearOpMode {
             telemetry.addLine("AUTONOMOUS ENDED");
             telemetry.update();
         }
+    }
+
+    // ========================================
+    // RELEASE FOUR POLLEN
+    // ========================================
+
+    private Action releaseFourPollenAction() {
+
+        if (USE_POLLEN_GATE) {
+
+            // Use the existing gate method
+            // from Launcher.java.
+            return new SequentialAction(
+
+                    packet -> {
+                        launcher.openPollenGate();
+                        return false;
+                    },
+
+                    new SleepAction(
+                            Launcher.AUTO_GATE_OPEN_TIME
+                    ),
+
+                    packet -> {
+                        launcher.closePollenGate();
+                        return false;
+                    }
+            );
+        }
+
+        // Gate not installed:
+        // simulate release time only.
+        return new SleepAction(
+                Launcher.AUTO_GATE_OPEN_TIME
+        );
     }
 
     // ========================================
@@ -430,19 +428,25 @@ public class TurningGearsAuto extends LinearOpMode {
                 double actual =
                         launcher.getPollenLauncherVelocity();
 
-                packet.put("Target Velocity", target);
-                packet.put("Actual Velocity", actual);
+                packet.put(
+                        "Target Velocity",
+                        target
+                );
+
+                packet.put(
+                        "Actual Velocity",
+                        actual
+                );
 
                 double difference =
                         Math.abs(target - actual);
 
-                // Continue when target speed is reached.
                 if (difference <= VELOCITY_TOLERANCE) {
                     return false;
                 }
 
-                // Abort if launcher cannot reach speed.
                 if (elapsed >= LAUNCHER_TIMEOUT) {
+
                     throw new IllegalStateException(
                             "Launcher failed to reach target velocity"
                     );

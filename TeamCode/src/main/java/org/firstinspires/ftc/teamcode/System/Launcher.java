@@ -27,12 +27,12 @@ public class Launcher {
         PIDFCoefficients nectarLauncherPidfCoefficients = new PIDFCoefficients(NectarLauncherPIDF.P, NectarLauncherPIDF.I, NectarLauncherPIDF.D, NectarLauncherPIDF.F);
 
 
-        pollenLauncher = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        pollenLauncher = hardwareMap.get(DcMotorEx.class, "pollenLauncher");
         pollenLauncher.setDirection(DcMotorSimple.Direction.FORWARD);
         pollenLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         pollenLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pollenLauncherPidfCoefficients);
 
-        nectarLauncher = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        nectarLauncher = hardwareMap.get(DcMotorEx.class, "nectarLauncher");
         nectarLauncher.setDirection(DcMotorSimple.Direction.FORWARD);
         nectarLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         nectarLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, nectarLauncherPidfCoefficients);
@@ -48,6 +48,10 @@ public class Launcher {
 
     public void reversePollenLauncher() {
         pollenLauncher.setVelocity(-LAUNCHER_VELOCITY);
+    }
+
+    public void increasePollenLauncherVelocity(double increment) {
+        pollenLauncher.setVelocity(pollenLauncher.getVelocity()+increment);
     }
 
     public Action startPollenLauncherAction() {

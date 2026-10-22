@@ -98,9 +98,12 @@ public class LauncherTesting extends OpMode{
 
         }
 
+
+
         //Velocity reduction
         else if (gamepad2.dpadDownWasPressed() /*&& motor.getPower()>0.0*/) {
             //motor.setPower(motor.getPower()-0.01);
+            // launcher.increasePollenLauncherVelocity(10);
             targetVelocity -= 10;
             motor.setVelocity(targetVelocity);
         }

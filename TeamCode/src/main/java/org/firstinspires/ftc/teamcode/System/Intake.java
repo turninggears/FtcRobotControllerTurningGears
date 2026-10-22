@@ -35,21 +35,21 @@ public class Intake {
         intakeMotor.setVelocity(-INTAKE_POWER);
     }
 
-    public Action startIntake() {
+    public Action startIntakeAction() {
         return telemetryPacket -> {
             start();
             return false;
         };
     }
 
-    public Action stopIntake() {
+    public Action stopIntakeAction() {
         return telemetryPacket -> {
             stop();
             return false;
         };
     }
 
-    public Action reverseIntake() {
+    public Action reverseIntakeAction() {
         return telemetryPacket -> {
             reverse();
             return false;

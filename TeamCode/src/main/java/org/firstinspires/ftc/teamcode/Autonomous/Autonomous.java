@@ -17,11 +17,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.System.Intake;
+import org.firstinspires.ftc.teamcode.System.Launcher;
+
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "AutonomousSuperclass", group = "Autonomous")
 public class Autonomous extends LinearOpMode {
+
+    Launcher launcher = new Launcher(hardwareMap, telemetry);
 
     public static class Pause implements Action {
 
@@ -45,33 +51,10 @@ public class Autonomous extends LinearOpMode {
 
     }
 
-    public Action Pause() {
+    public Action PauseAction() {
         return new Pause(0.5);
     }
 
-    public static class Launcher {
-        private Servo servo;
-        private DcMotorEx motor;
-
-
-        public Launcher (HardwareMap hardwareMap) {
-            motor = hardwareMap.get(DcMotorEx.class, "motor");
-            servo = hardwareMap.get(Servo.class, "servo");
-
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motor.setDirection(DcMotorSimple.Direction.FORWARD);
-            motor.setPIDFCoefficients(
-                    DcMotor.RunMode.RUN_USING_ENCODER,
-                    new PIDFCoefficients(
-                            50,
-                            .05,
-                            0,
-                            14)
-            );
-
-        }
-
-    }
     @Override
     public void runOpMode() {
 
@@ -88,9 +71,10 @@ public class Autonomous extends LinearOpMode {
 
         // actions that need to happen on init
 
-//        while (!isStopRequested() && !opModeIsActive()) {
-//            // any logic while the robot is running but OpMode ius not yet active
-//        }
+/*        while (!isStopRequested() && !opModeIsActive()) {
+// any logic while the robot is running but OpMode ius not yet active
+
+        }*/
 
         // any logic that we want to run once before the OpMode starts
         waitForStart();
@@ -101,6 +85,7 @@ public class Autonomous extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
+
                         firstLaunchPosition,
 
                         Pause.pause(0.905)

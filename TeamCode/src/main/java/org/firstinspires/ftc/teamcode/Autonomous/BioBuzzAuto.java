@@ -19,6 +19,6 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-public abstract class BioBuzzAuto extends LinearOpMode {
+public abstract class BioBuzzAuto extends Autonomous {
 
 }

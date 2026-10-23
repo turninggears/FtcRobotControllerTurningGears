@@ -24,8 +24,8 @@ public class Launcher {
     public static double LAUNCHER_IDLE_VELOCITY = 800;
 
     // Gate Servo Setting - Adjust after testing
-    public static double GATE_CLOSED_POSITION = 0.0;
-    public static double GATE_OPEN_POSITION = .5;
+    public static double GATE_OPEN_POSITION = 0.0;
+    public static double GATE_CLOSED_POSITION = .13;
 
     // AUTONOMOUS GATE OPEN DURATION IN SECONDS
     public static double AUTO_GATE_OPEN_TIME = 2.0;
@@ -62,11 +62,11 @@ public class Launcher {
 
         pollenLauncher.setVelocity(0);
 
-       /* save this for when pollne gate servo is set up
+       // INitialize Pollen Gate servo
 
         pollenGate = hardwareMap.get(Servo.class, "Pollen Gate");
 
-        closePollenGate();*/
+        closePollenGate();
 
        /* nectarLauncher = hardwareMap.get(DcMotorEx.class, "Nectar Motor");
         nectarLauncher.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -86,7 +86,7 @@ public class Launcher {
         pollenLauncherDirection = 0;
         pollenLauncherIdle = false;
         pollenLauncher.setVelocity(0);
-       // closePollenGate();//save for when gate is active
+       closePollenGate();//save for when gate is active
     }
 
     public void reversePollenLauncher() {
@@ -225,13 +225,18 @@ public class Launcher {
     }
     public Action LaunchFourPollenAction() {
         return new SequentialAction(
+                // Open pollen gate
                 packet -> {
                     openPollenGate();
                     return false;
                 },
+
+                // Keep gate open for configured duration-
                 new SleepAction(AUTO_GATE_OPEN_TIME),
 
+                // Close pollen gate
                 packet -> {
+                    closePollenGate();
                     return false;
                 }
         );

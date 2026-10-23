@@ -101,6 +101,10 @@ public class Launcher {
         pollenLauncher.setVelocity(LAUNCHER_IDLE_VELOCITY);
     }
 
+    public void increasePollenLauncherVelocity(double increment) {
+        pollenLauncher.setVelocity(pollenLauncher.getVelocity()+increment);
+    }
+
     public Action startPollenLauncherAction() {
         return telemetryPacket -> {
             startPollenLauncher();

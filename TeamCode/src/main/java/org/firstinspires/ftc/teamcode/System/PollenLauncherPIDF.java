@@ -1,9 +1,15 @@
+
 package org.firstinspires.ftc.teamcode.System;
 
-public final class PollenLauncherPIDF {
-    public static final double P = 50;
-    public static final double I = 0.05;
-    public static final double D = 0;
-    public static final double F = 14;
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
+public class PollenLauncherPIDF {
+
+    public static double P = 50;
+    public static double I = 0.05;
+    public static double D = 0;
+    public static double F = 14.3
+            ;
 
 }

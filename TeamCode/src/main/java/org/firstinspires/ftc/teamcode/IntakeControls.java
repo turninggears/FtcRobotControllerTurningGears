@@ -17,8 +17,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class IntakeControls extends OpMode{
 
     DcMotorEx intakeMotor;
-    //Servo rightFlowerWheel;
-    //Servo leftFlowerWheel;
+    Servo rightFlowerWheel;
+    Servo leftFlowerWheel;
 
 
 
@@ -26,8 +26,8 @@ public class IntakeControls extends OpMode{
     public void init(){
 
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
-        //rightFlowerWheel = hardwareMap.get(Servo.class, "rightFlowerWheel");
-       // leftFlowerWheel = hardwareMap.get(Servo.class, "leftFlowerWheel");
+        rightFlowerWheel = hardwareMap.get(Servo.class, "Right Ramp");
+        leftFlowerWheel = hardwareMap.get(Servo.class, "Left Ramp");
 
 
     }

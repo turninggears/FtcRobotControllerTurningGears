@@ -32,7 +32,7 @@ public class TurningGearsAuto extends LinearOpMode {
     public static boolean USE_POLLEN_GATE = false;
 
     // Starting and launching position
-    public static double START_X = 66;
+    public static double START_X = 63.5;
     public static double START_Y = -15;
     public static double START_HEADING = 0;
 
@@ -54,7 +54,7 @@ public class TurningGearsAuto extends LinearOpMode {
 
     // Launcher settings
     public static double VELOCITY_TOLERANCE = 40;
-    public static double LAUNCHER_TIMEOUT = 4.0;
+    public static double LAUNCHER_TIMEOUT = 8.0;
 
     // Collection pause
     public static double GARDEN_WAIT_TIME = 1.0;

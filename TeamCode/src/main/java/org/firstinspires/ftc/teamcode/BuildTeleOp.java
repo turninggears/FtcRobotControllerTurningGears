@@ -184,6 +184,14 @@ public class BuildTeleOp extends OpMode {
             launcher.closePollenGate();
         }
 
+        //Direction pad up or down
+        if (gamepad2.dpadLeftWasPressed()){
+            intake.rampsDown();
+        }
+
+        if (gamepad2.dpadRightWasPressed()){
+            intake.rampsUp();
+        }
 
 
 // Square: Start Pollen Launcher Forward

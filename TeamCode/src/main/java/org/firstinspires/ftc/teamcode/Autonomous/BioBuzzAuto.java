@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.System.Launcher;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Config
 public abstract class BioBuzzAuto extends LinearOpMode {
 
     Launcher launcher = new Launcher(hardwareMap, telemetry);

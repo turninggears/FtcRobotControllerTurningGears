@@ -26,32 +26,6 @@ import java.util.List;
 @Autonomous(name = "BioBuzz Auto", group = "Autonomous")
 public class BioBuzzAuto extends LinearOpMode {
 
-    public static class Pause implements Action {
-
-        public static Pause pause(double seconds) {
-            return new Pause(seconds);
-        }
-        double seconds;
-        long startTime = -1;
-        public Pause(double seconds) {
-            this.seconds = seconds;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (startTime < 0) {
-                startTime = System.currentTimeMillis();
-            }
-            return System.currentTimeMillis() < startTime + (seconds * 1000);
-        }
-
-
-    }
-
-    public Action PauseAction() {
-        return new Pause(1.0);
-    }
-
 
 
     public Action monitorHeadingContinuous(
@@ -138,7 +112,7 @@ public class BioBuzzAuto extends LinearOpMode {
         // any logic that we want to run once before the OpMode starts
         waitForStart();
 
-//        if (isStopRequested()) return;
+        if (isStopRequested()) return;
 
 
 

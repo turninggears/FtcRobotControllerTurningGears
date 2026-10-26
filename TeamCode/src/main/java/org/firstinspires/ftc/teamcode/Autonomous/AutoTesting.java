@@ -16,38 +16,13 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.SleepAction;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.System.Launcher;
+import org.firstinspires.ftc.teamcode.System.Intake;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous(name = "AutoTesting", group = "Autonomous")
 public class AutoTesting extends LinearOpMode {
-
-     public static class Pause implements Action {
-
-        public static Pause pause(double seconds) {
-            return new Pause(seconds);
-        }
-        double seconds;
-        long startTime = -1;
-        public Pause(double seconds) {
-            this.seconds = seconds;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (startTime < 0) {
-                startTime = System.currentTimeMillis();
-            }
-            return System.currentTimeMillis() < startTime + (seconds * 1000);
-        }
-
-
-    }
-
-    public Action PauseAction() {
-        return new Pause(1.0);
-    }
 
 
     public Action monitorHeading(
@@ -90,6 +65,7 @@ public class AutoTesting extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         Launcher launcher = new Launcher(hardwareMap, telemetry);
+        Intake intake = new Intake(hardwareMap, telemetry);
 
         telemetry = new MultipleTelemetry(
                 telemetry,
@@ -98,9 +74,9 @@ public class AutoTesting extends LinearOpMode {
 
         TrajectoryActionBuilder launchPosition = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(60, -10.5))
+                .strafeToLinearHeading(new Vector2d(60, -10.5),
+                        Math.toRadians(0))
                 .waitSeconds(2)
-                .turnTo(Math.toRadians(270))
                 .endTrajectory();
 
         TrajectoryActionBuilder backToWall = launchPosition.fresh()
@@ -117,7 +93,10 @@ public class AutoTesting extends LinearOpMode {
 
         List<Action> actions = new ArrayList<>();
 
-// Move to launch position and turn to 270
+        //Start Launcher
+        actions.add(launcher.startPollenLauncherAction());
+
+// Move to launch position
         actions.add(launchPosition.build());
 
 // Check heading after the turn
@@ -146,7 +125,7 @@ public class AutoTesting extends LinearOpMode {
         // any logic that we want to run once before the OpMode starts
         waitForStart();
 
-//        if (isStopRequested()) return;
+        if (isStopRequested()) return;
 
 
 

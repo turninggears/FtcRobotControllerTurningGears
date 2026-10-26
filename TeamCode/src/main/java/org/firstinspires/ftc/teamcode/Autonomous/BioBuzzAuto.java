@@ -12,8 +12,11 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import  com.acmerobotics.roadrunner.SleepAction;
 import org.firstinspires.ftc.teamcode.System.Launcher;
+import com.acmerobotics.roadrunner.ParallelAction;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
@@ -22,8 +25,6 @@ import java.util.List;
 
 @Autonomous(name = "BioBuzz Auto", group = "Autonomous")
 public class BioBuzzAuto extends LinearOpMode {
-
-    Launcher launcher = new Launcher(hardwareMap, telemetry);
 
     public static class Pause implements Action {
 
@@ -52,12 +53,59 @@ public class BioBuzzAuto extends LinearOpMode {
     }
 
 
+
+    public Action monitorHeadingContinuous(
+            MecanumDrive drive,
+            boolean[] driveFinished
+    ) {
+        return packet -> {
+
+            // Stop monitoring when trajectories finish
+            if (driveFinished[0]) {
+                return false;
+            }
+
+            // Read the latest Road Runner pose
+            Pose2d actualPose = drive.localizer.getPose();
+
+            double actualHeading = Math.toDegrees(
+                    actualPose.heading.toDouble()
+            );
+
+            // Normalize heading to 0-360 degrees
+            actualHeading = (actualHeading % 360 + 360) % 360;
+
+            // Display on Driver Station and Dashboard
+            telemetry.addData(
+                    "Actual Heading (deg)",
+                    "%.1f",
+                    actualHeading
+            );
+
+            telemetry.update();
+
+            // Add to Road Runner telemetry packet
+            packet.put("Actual Heading (deg)", actualHeading);
+
+            return true;
+        };
+    }
+
+
+
     @Override
     public void runOpMode() {
 
         Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+
+        Launcher launcher = new Launcher(hardwareMap, telemetry);
+
+        telemetry = new MultipleTelemetry(
+                telemetry,
+                FtcDashboard.getInstance().getTelemetry()
+        );
 
         TrajectoryActionBuilder launchPosition = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
@@ -94,9 +142,33 @@ public class BioBuzzAuto extends LinearOpMode {
 
 
 
-        Actions.runBlocking(
-                new SequentialAction(actions)
+
+        final boolean[] driveFinished = {false};
+
+// Run all three trajectories in sequence
+        Action driveSequence = new SequentialAction(
+                new SequentialAction(actions),
+
+                packet -> {
+                    driveFinished[0] = true;
+                    return false;
+                }
         );
+
+// Continuously monitor heading
+        Action headingMonitor = monitorHeadingContinuous(
+                drive,
+                driveFinished
+        );
+
+// Run driving and monitoring together
+        Actions.runBlocking(
+                new ParallelAction(
+                        driveSequence,
+                        headingMonitor
+                )
+        );
+
         Pose2d finalPose = drive.localizer.getPose();
 
         telemetry.addLine("=== AUTO COMPLETE ===");

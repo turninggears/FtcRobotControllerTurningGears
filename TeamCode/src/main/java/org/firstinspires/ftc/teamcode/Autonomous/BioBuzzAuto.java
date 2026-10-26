@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -16,7 +17,11 @@ import org.firstinspires.ftc.teamcode.System.Launcher;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-public abstract class BioBuzzAuto extends LinearOpMode {
+import java.util.ArrayList;
+import java.util.List;
+
+@Autonomous(name = "BioBuzz Auto", group = "Autonomous")
+public class BioBuzzAuto extends LinearOpMode {
 
     Launcher launcher = new Launcher(hardwareMap, telemetry);
 
@@ -43,22 +48,37 @@ public abstract class BioBuzzAuto extends LinearOpMode {
     }
 
     public Action PauseAction() {
-        return new Pause(0.5);
+        return new Pause(1.0);
     }
+
 
     @Override
     public void runOpMode() {
 
-        Pose2d startPose = new Pose2d(64, -15.84, Math.toRadians(270));//y was 15.84 and radian was 90
+        Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        Vector2d vector = new Vector2d(36, 15.84);
-        Pause pause = new Pause(0.5);
 
-        Action firstLaunchPosition = drive.actionBuilder(startPose)
+        TrajectoryActionBuilder launchPosition = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(54.38, -15.84))//launch spot//y was 15.84
-                .build();
+                .strafeTo(new Vector2d(60, -10.5))
+                .waitSeconds(2)
+                .turnTo(Math.toRadians(270))
+                .endTrajectory();
+
+        TrajectoryActionBuilder backToWall = launchPosition.fresh()
+                .strafeTo(new Vector2d(65, -10.5))
+                .endTrajectory();
+
+        TrajectoryActionBuilder parkPosition = backToWall.fresh()
+                .setTangent(Math.toRadians(270))
+                .strafeTo(new Vector2d(65, -60))
+                .endTrajectory();
+
+        List<Action> actions = new ArrayList<>();
+        actions.add(launchPosition.build());
+        actions.add(backToWall.build());
+        actions.add(parkPosition.build());
 
         // actions that need to happen on init
 
@@ -75,13 +95,7 @@ public abstract class BioBuzzAuto extends LinearOpMode {
 
 
         Actions.runBlocking(
-                new SequentialAction(
-
-                        firstLaunchPosition,
-
-                        Pause.pause(0.905)
-
-                )
+                new SequentialAction(actions)
         );
         Pose2d finalPose = drive.localizer.getPose();
 

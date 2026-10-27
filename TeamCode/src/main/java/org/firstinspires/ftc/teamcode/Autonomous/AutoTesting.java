@@ -1,151 +1,189 @@
+
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.SleepAction;
+
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.System.Launcher;
-import org.firstinspires.ftc.teamcode.System.Intake;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Autonomous(name = "AutoTesting", group = "Autonomous")
 public class AutoTesting extends LinearOpMode {
 
 
-    public Action monitorHeading(
+    private void updateRobotTelemetry(
             MecanumDrive drive,
+            Launcher launcher,
             double targetHeadingDegrees
     ) {
-        return packet -> {
+        double actualHeading = Math.toDegrees(
+                drive.localizer.getPose().heading.toDouble()
+        );
 
-            double actualHeading = Math.toDegrees(
-                    drive.localizer.getPose().heading.toDouble()
-            );
+        actualHeading = (actualHeading % 360 + 360) % 360;
 
-            double headingError = Math.toDegrees(
-                    Math.atan2(
-                            Math.sin(Math.toRadians(targetHeadingDegrees - actualHeading)),
-                            Math.cos(Math.toRadians(targetHeadingDegrees - actualHeading))
-                    )
-            );
+        telemetry.addData("Target Heading",
+                "%.1f", targetHeadingDegrees);
+        telemetry.addData("Actual Heading",
+                "%.1f", actualHeading);
+        telemetry.addData("Launcher Target Velocity",
+                "%.1f", launcher.getPollenLauncherTargetVelocity());
+        telemetry.addData("Launcher Actual Velocity",
+                "%.1f", launcher.getPollenLauncherVelocity());
 
-            telemetry.addData("Target Heading", "%.1f", targetHeadingDegrees);
-            telemetry.addData("Actual Heading", "%.1f", actualHeading);
-            telemetry.addData("Heading Error", "%.1f", headingError);
-            telemetry.update();
-
-            packet.put("Target Heading", targetHeadingDegrees);
-            packet.put("Actual Heading", actualHeading);
-            packet.put("Heading Error", headingError);
-
-            return false;
-        };
+        telemetry.update();
     }
-
-
 
     @Override
     public void runOpMode() {
 
-        Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
-//        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        Pose2d startPose = new Pose2d(
+                63.5, -10.5, Math.toRadians(0)
+        );
 
-        Launcher launcher = new Launcher(hardwareMap, telemetry);
-        Intake intake = new Intake(hardwareMap, telemetry);
+        MecanumDrive drive = new MecanumDrive(
+                hardwareMap, startPose
+        );
 
+        Launcher launcher = new Launcher(
+                hardwareMap, telemetry
+        );
+
+        // Send telemetry to both Driver Station and Dashboard
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry()
         );
 
-        TrajectoryActionBuilder launchPosition = drive.actionBuilder(startPose)
-                .setTangent(Math.toRadians(0))
-                .strafeToLinearHeading(new Vector2d(60, -10.5),
-                        Math.toRadians(0))
-                .waitSeconds(2)
-                .endTrajectory();
+        final double[] targetHeadingDegrees = {0};
+        final boolean[] driveFinished = {false};
 
-        TrajectoryActionBuilder backToWall = launchPosition.fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(65, -10.5),
-                Math.toRadians(270))
-                .endTrajectory();
+        // TRAJECTORY 1 - LAUNCH POSITION
+        TrajectoryActionBuilder launchPosition =
+                drive.actionBuilder(startPose)
+                        .setTangent(Math.toRadians(0))
+                        .strafeToLinearHeading(
+                                new Vector2d(60, -10.5),
+                                Math.toRadians(0)
+                        )
+                        .waitSeconds(2)
+                        .endTrajectory();
 
-        TrajectoryActionBuilder parkPosition = backToWall.fresh()
-                .setTangent(Math.toRadians(270))
-                .strafeTo(new Vector2d(65, -60))
-                .endTrajectory();
+        // TRAJECTORY 2 - BACK TO WALL
+        TrajectoryActionBuilder backToWall =
+                launchPosition.fresh()
+                        .strafeToLinearHeading(
+                                new Vector2d(65, -10.5),
+                                Math.toRadians(270)
+                        )
+                        .endTrajectory();
 
+        // TRAJECTORY 3 - PARK
+        TrajectoryActionBuilder parkPosition =
+                backToWall.fresh()
+                        .setTangent(Math.toRadians(270))
+                        .strafeTo(
+                                new Vector2d(65, -60)
+                        )
+                        .endTrajectory();
 
-        List<Action> actions = new ArrayList<>();
+        // INIT TELEMETRY - BEFORE START IS PRESSED
+        while (opModeInInit() && !isStopRequested()) {
+            drive.updatePoseEstimate();
 
-        //Start Launcher
-        actions.add(launcher.startPollenLauncherAction());
+            updateRobotTelemetry(
+                    drive, launcher, targetHeadingDegrees[0]
+            );
 
-// Move to launch position
-        actions.add(launchPosition.build());
+            sleep(50);
+        }
 
-// Check heading after the turn
-        actions.add(monitorHeading(drive, 270));
-
-// Move back to wall
-        actions.add(backToWall.build());
-
-// Check heading after moving back to wall
-        actions.add(monitorHeading(drive, 270));
-
-// Move to parking position
-        actions.add(parkPosition.build());
-
-// Check final heading
-        actions.add(monitorHeading(drive, 270));
-
-
-        // actions that need to happen on init
-
-/*        while (!isStopRequested() && !opModeIsActive()) {
-// any logic while the robot is running but OpMode ius not yet active
-
-        }*/
-
-        // any logic that we want to run once before the OpMode starts
         waitForStart();
 
         if (isStopRequested()) return;
 
+        // Preserve the original 3-second delay
+        long delayStart = System.currentTimeMillis();
 
+        while (opModeIsActive()
+                && System.currentTimeMillis() - delayStart < 3000) {
 
-        Actions.runBlocking(
-                new SequentialAction(actions)
+            drive.updatePoseEstimate();
+
+            updateRobotTelemetry(
+                    drive, launcher, targetHeadingDegrees[0]
+            );
+
+            sleep(50);
+        }
+
+        if (isStopRequested()) return;
+
+        // DRIVING AND LAUNCHER ACTIONS
+        Action driveSequence = new SequentialAction(
+
+                launcher.startPollenLauncherAction(),
+
+                launchPosition.build(),
+
+                packet -> {
+                    targetHeadingDegrees[0] = 270;
+                    return false;
+                },
+
+                backToWall.build(),
+
+                parkPosition.build(),
+
+                packet -> {
+                    driveFinished[0] = true;
+                    return false;
+                }
         );
-        Pose2d finalPose = drive.localizer.getPose();
 
-        telemetry.addLine("=== AUTO COMPLETE ===");
-        telemetry.addData("X", finalPose.position.x);
-        telemetry.addData("Y", finalPose.position.y);
-        telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
+        // CONTINUOUS TELEMETRY MONITOR
+        Action telemetryMonitor = packet -> {
 
-        telemetry.update();
+            if (driveFinished[0] || isStopRequested()) {
+                return false;
+            }
 
-        blackboard.put("x", finalPose.position.x);
-        blackboard.put("y", finalPose.position.y);
-        blackboard.put("heading", finalPose.heading.toDouble());
-        blackboard.put("team","blue");
+            // Apply live launcher velocity and PIDF changes
+            launcher.updatePollenLauncher();
+
+            updateRobotTelemetry(
+                    drive, launcher, targetHeadingDegrees[0]
+            );
+
+            return true;
+        };
+
+        // RUN TRAJECTORIES AND TELEMETRY TOGETHER
+        Actions.runBlocking(
+                new ParallelAction(
+                        driveSequence,
+                        telemetryMonitor
+                )
+        );
+
+        // Stop launcher after autonomous movement
+        launcher.stopPollenLauncher();
+
+        // Hold final telemetry on screen
+        updateRobotTelemetry(
+                drive, launcher, targetHeadingDegrees[0]
+        );
+
         sleep(5000);
-
     }
 }

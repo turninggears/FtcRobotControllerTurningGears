@@ -9,8 +9,6 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-
 @TeleOp(name = "Chassis Drive", group = "Test")
 public class ChassisDrive extends OpMode {
 

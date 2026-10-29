@@ -76,17 +76,12 @@ public class AutoTesting extends LinearOpMode {
                                 new Vector2d(60, -10.5),
                                 Math.toRadians(0)
                         )
-                        .waitSeconds(2)
-                        .endTrajectory();
+                        .waitSeconds(2);
 
         // TRAJECTORY 2 - BACK TO WALL
         TrajectoryActionBuilder backToWall =
                 launchPosition.fresh()
-                        .strafeToLinearHeading(
-                                new Vector2d(65, -10.5),
-                                Math.toRadians(270)
-                        )
-                        .endTrajectory();
+                        .turnTo(Math.toRadians(255));
 
         // TRAJECTORY 3 - PARK
         TrajectoryActionBuilder parkPosition =
@@ -94,8 +89,7 @@ public class AutoTesting extends LinearOpMode {
                         .setTangent(Math.toRadians(270))
                         .strafeTo(
                                 new Vector2d(65, -60)
-                        )
-                        .endTrajectory();
+                        );
 
         // INIT TELEMETRY - BEFORE START IS PRESSED
         while (opModeInInit() && !isStopRequested()) {

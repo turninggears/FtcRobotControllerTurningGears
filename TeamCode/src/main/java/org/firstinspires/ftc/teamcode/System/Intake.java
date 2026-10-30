@@ -18,7 +18,7 @@ public class Intake {
 
     public static double INTAKE_POWER = 1.0;
 
-    public static double RIGHT_RAMP_UP = .3;
+    public static double RIGHT_RAMP_UP = 1;
     public static double LEFT_RAMP_UP = 0;
 
     public static double RIGHT_RAMP_DOWN = 0;

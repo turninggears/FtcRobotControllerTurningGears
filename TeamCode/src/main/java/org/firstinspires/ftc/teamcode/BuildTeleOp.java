@@ -178,9 +178,9 @@ public class BuildTeleOp extends OpMode {
         //save this for when we add gate servo
         // Triangle: Hold to open pollen gate
 // Release Triangle to close pollen gate
-        if (gamepad2.triangle) {
+        if (gamepad2.triangleWasPressed()) {
             launcher.openPollenGate();
-        } else {
+        } else if (gamepad2.triangleWasReleased()) {
             launcher.closePollenGate();
         }
 
@@ -195,17 +195,17 @@ public class BuildTeleOp extends OpMode {
 
 
 // Square: Start Pollen Launcher Forward
-        if (gamepad2.squareWasPressed()) {
+        if (gamepad2.circleWasPressed()) {
             launcher.startPollenLauncher();
         }
 
 // Circle: Start Pollen Launcher Reverse
-        else if (gamepad2.circleWasPressed()) {
+        else if (gamepad2.crossWasPressed()) {
             launcher.reversePollenLauncher();
         }
 
 // Cross: Stop Pollen Launcher
-        else if (gamepad2.crossWasPressed()) {
+        else if (gamepad2.squareWasPressed()) {
             launcher.stopPollenLauncher();
         }
 
@@ -226,7 +226,7 @@ public class BuildTeleOp extends OpMode {
 // ====================================
 
 // R1: Toggle Intake REVERSE (collect elements)
-        if (gamepad2.rightBumperWasPressed()) {
+        if (gamepad2.right_trigger_pressed) {
 
             if (intakeDirection == -1) {
                 intakeDirection = 0;
@@ -238,7 +238,7 @@ public class BuildTeleOp extends OpMode {
         }
 
 // L1: Toggle Intake FORWARD (eject elements)
-        else if (gamepad2.leftBumperWasPressed()) {
+        else if (gamepad2.left_trigger_pressed) {
 
             if (intakeDirection == 1) {
                 intakeDirection = 0;

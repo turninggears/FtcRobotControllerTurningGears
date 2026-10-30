@@ -12,11 +12,11 @@ public enum Alliance {
     RED(pose ->
             new Pose2dDual<>(
                     new Vector2dDual<>(
-                            pose.position.x,
+                            pose.position.x.unaryMinus(),
                             pose.position.y.unaryMinus()),
                     pose.heading.inverse()),
             (Pose2d p) -> new Pose2d(
-                    p.position.x,
+                    -1 * p.position.x,
                     -1 * p.position.y,
                     p.heading.inverse().toDouble()),
             20,

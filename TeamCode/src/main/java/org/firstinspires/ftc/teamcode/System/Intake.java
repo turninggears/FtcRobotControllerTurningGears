@@ -35,6 +35,8 @@ public class Intake {
         intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        rightRamp = hardwareMap.get(Servo.class, "Right Ramp");
+        leftRamp = hardwareMap.get(Servo.class, "Left Ramp");
         rightRamp.setPosition(RIGHT_RAMP_UP);
         rightRamp.setDirection(Servo.Direction.REVERSE);
         leftRamp.setPosition(LEFT_RAMP_UP);

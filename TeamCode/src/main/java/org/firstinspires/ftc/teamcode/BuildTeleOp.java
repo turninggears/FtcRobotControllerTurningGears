@@ -13,6 +13,8 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Vision;
@@ -83,8 +85,6 @@ public class BuildTeleOp extends OpMode {
 
         //-----VISION SETUP------
         vision = new Vision(hardwareMap);
-
-
 
 
         // -------- DASHBOARD TELEMETRY --------

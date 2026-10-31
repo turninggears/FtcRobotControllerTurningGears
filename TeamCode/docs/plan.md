@@ -33,8 +33,8 @@ RED is mapped pose; returns transformed PoseMap
 ### Servos
 
 ### Autonomous
-
 - Launcher
+  - 
 - Intake
 
 ### Vision

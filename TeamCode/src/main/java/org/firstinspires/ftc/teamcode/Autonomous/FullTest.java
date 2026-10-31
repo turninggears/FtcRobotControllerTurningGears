@@ -105,7 +105,7 @@ public class FullTest extends LinearOpMode {
                 instant(() -> autoStage = stage + " - validating"),
                 waitForLaunchReady(launcher, requireTag),
                 instant(() -> autoStage = stage + " - launching"),
-                launcher.LaunchFourPollenAction()
+                launcher.launchFourPollenAction()
         );
     }
 

@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.System.Launcher;
+import org.firstinspires.ftc.teamcode.System.Pause;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,11 +80,10 @@ public class BioBuzzAutoV2 extends LinearOpMode {
         TrajectoryActionBuilder launchPositionA = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(60, -10.5))
-                .waitSeconds(1)
-                .turnTo(Math.toRadians(285))
                 .endTrajectory();
 
         TrajectoryActionBuilder backToWall = launchPositionA.fresh()
+                .turnTo(Math.toRadians(285))
                 .strafeTo(new Vector2d(65, -10.5))
                 .endTrajectory();
 
@@ -137,16 +137,9 @@ public class BioBuzzAutoV2 extends LinearOpMode {
                                 )
         .endTrajectory();
 
-
-
-
-
-
-
-
-
         List<Action> actions = new ArrayList<>();
         actions.add(launchPositionA.build());
+        actions.add(launcher.launchFourPollenAction());
         actions.add(backToWall.build());
         actions.add(gardenPosition.build());
         actions.add(gardenShiftPosition.build());
@@ -168,9 +161,6 @@ public class BioBuzzAutoV2 extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-
-
-
 
         final boolean[] driveFinished = {false};
 

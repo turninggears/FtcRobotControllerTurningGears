@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.System.NectarLauncherPIDF;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.acmerobotics.roadrunner.ftc.Actions;
+
 
 
 
@@ -21,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Launcher {
 
     public static double LAUNCHER_VELOCITY = 1180;
-    public static double LAUNCHER_IDLE_VELOCITY = 1180;
+    public static double LAUNCHER_IDLE_VELOCITY = 800;
 
     // Gate Servo Setting - Adjust after testing
     public static double GATE_OPEN_POSITION = 0.0;
@@ -132,6 +134,16 @@ public class Launcher {
         };
     }
 
+    public Action openPollenGateAction = telemetryPacket -> {
+            openPollenGate();
+            return false;
+        };
+
+    public Action closePollenGateAction = telemetryPacket -> {
+        closePollenGate();
+        return false;
+    };
+
     public void openPollenGate() {
         pollenGate.setPosition(GATE_OPEN_POSITION);
     }
@@ -235,7 +247,7 @@ public class Launcher {
 
 
     }
-    public Action LaunchFourPollenAction() {
+    public Action launchFourPollenAction() {
         return new SequentialAction(
                 // Open pollen gate
                 packet -> {

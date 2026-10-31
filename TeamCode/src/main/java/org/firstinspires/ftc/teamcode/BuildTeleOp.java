@@ -193,14 +193,13 @@ public class BuildTeleOp extends OpMode {
         }
 
         //Direction pad up or down
-        if (gamepad2.dpadLeftWasPressed()){
+        if (gamepad2.leftTriggerWasPressed()) {
             intake.rampsDown();
         }
 
-        if (gamepad2.dpadRightWasPressed()){
+        if (gamepad2.leftTriggerWasReleased()) {
             intake.rampsUp();
         }
-
 
 // Square: Start Pollen Launcher Forward
         if (gamepad2.circleWasPressed()) {

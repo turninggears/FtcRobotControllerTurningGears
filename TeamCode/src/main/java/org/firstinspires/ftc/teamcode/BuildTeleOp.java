@@ -39,7 +39,7 @@ public class BuildTeleOp extends OpMode {
     boolean previousSquare = false;
     double headingOffset = 0.0;
 
-
+    int firstLoop = 1;
     // ========================================
     // VARIABLES
     // ========================================
@@ -102,13 +102,20 @@ public class BuildTeleOp extends OpMode {
     // MAIN LOOP
     // ========================================
 
+
     @Override
     public void loop() {
+
+        if (firstLoop==1)  {
+            intakeDirection = 1;
+            launcher.startPollenLauncher();
+            firstLoop = 0;
+        }
 
         //update pollen launcher Pidf and Velocity from dashboard
         launcher.updatePollenLauncher();
 
-        // ====================================
+        // ===============================-====
         // GAMEPAD 1 - DRIVING
         // ====================================
 
@@ -226,16 +233,17 @@ public class BuildTeleOp extends OpMode {
 // ====================================
 
 // R1: Toggle Intake REVERSE (collect elements)
-        if (gamepad2.rightBumperWasPressed()) {
+        if (gamepad2.rightBumperWasPressed()) {   intakeDirection = -1;}
+        if (gamepad2.rightBumperWasReleased()) {  intakeDirection = 1;}
 
-            if (intakeDirection == -1) {
-                intakeDirection = 0;
-                intake.stop();
-            } else {
-                intakeDirection = -1;
-                intake.reverse();
-            }
-        }
+//        if (intakeDirection == -1) {
+//                intakeDirection = 0;
+//                intake.stop();
+//            } else {
+//                intakeDirection = -1;
+//                intake.reverse();
+//            }
+//        }
 
 // L1: Toggle Intake FORWARD (eject elements)
         else if (gamepad2.leftBumperWasPressed()) {

@@ -45,8 +45,8 @@ public class BuildTeleOpV3 extends OpMode {
     Vision vision;
 
     // TEST SETTINGS: configure these after V2 validates detection.
-    public static String TARGET_CLUSTER_NAME = "";
-    public static boolean AUTO_AIM_ENABLED = false;
+    public static String TARGET_CLUSTER_NAME = "BLUE AUDIENCE";
+    public static boolean AUTO_AIM_ENABLED = true;
     public static double AIM_KP = 0.018; // normalized turn command / degree
     public static double AIM_MAX_TURN = 0.25;
     public static double AIM_TRIGGER_THRESHOLD = 0.5;

@@ -85,7 +85,7 @@ public class BioBuzzAuto extends LinearOpMode {
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(60, -10.5))
                 .waitSeconds(2)
-                .turnTo(Math.toRadians(270))
+                .turnTo(Math.toRadians(285))
                 .endTrajectory();
 
         TrajectoryActionBuilder backToWall = launchPosition.fresh()

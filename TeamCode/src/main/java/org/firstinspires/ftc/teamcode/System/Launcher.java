@@ -21,7 +21,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Launcher {
 
     public static double LAUNCHER_VELOCITY = 1180;
-    public static double LAUNCHER_IDLE_VELOCITY = 800;
+    public static double LAUNCHER_IDLE_VELOCITY = 1180;
 
     // Gate Servo Setting - Adjust after testing
     public static double GATE_OPEN_POSITION = 0.0;

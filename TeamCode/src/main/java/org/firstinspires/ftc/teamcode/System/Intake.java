@@ -46,7 +46,7 @@ public class Intake {
 
 
     public void start() {
-        intakeMotor.setPower(INTAKE_POWER);
+        intakeMotor.setPower(-INTAKE_POWER);
     }
 
     public void stop() {
@@ -54,7 +54,7 @@ public class Intake {
     }
 
     public void reverse() {
-        intakeMotor.setPower(-INTAKE_POWER);
+        intakeMotor.setPower(INTAKE_POWER);
     }
 
 

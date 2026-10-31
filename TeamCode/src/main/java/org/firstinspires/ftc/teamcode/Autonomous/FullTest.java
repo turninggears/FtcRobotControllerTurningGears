@@ -132,8 +132,11 @@ public class FullTest extends LinearOpMode {
         telemetry.addData("Time Remaining", "%.1f", Math.max(0, AUTO_DURATION_SECONDS - clock.seconds()));
         telemetry.addData("Target Heading", "%.1f", targetHeadingDegrees);
         telemetry.addData("Actual Heading", "%.1f", heading);
-        telemetry.addData("Launcher Target Velocity", "%.1f", launcher.getPollenLauncherTargetVelocity());
-        telemetry.addData("Launcher Actual Velocity", "%.1f", launcher.getPollenLauncherVelocity());
+        double targetVelocity = launcher.getPollenLauncherTargetVelocity();
+        double actualVelocity = launcher.getPollenLauncherVelocity();
+
+        telemetry.addData("Launcher Target Velocity", targetVelocity);
+        telemetry.addData("Launcher Actual Velocity", actualVelocity);
         telemetry.addData("AprilTag Present (FAKE)", FAKE_APRIL_TAG_PRESENT);
         telemetry.update();
     }
@@ -176,6 +179,7 @@ public class FullTest extends LinearOpMode {
                         launcher.idlePollenLauncherAction(),
                         driveTo(drive, 63.5, -20.5, 270)
                 ),
+
                 instant(() -> autoStage = "Garden intake"),
                 driveTo(drive, 63.5, -63.5, 270),
                 new SleepAction(0.5),

@@ -234,8 +234,14 @@ public class BuildTeleOp extends OpMode {
 // ====================================
 
 // R1: Toggle Intake REVERSE (collect elements)
-        if (gamepad2.rightBumperWasPressed()) {   intakeDirection = -1;}
-        if (gamepad2.rightBumperWasReleased()) {  intakeDirection = 1;}
+        if (gamepad2.rightBumperWasPressed()) {
+            intakeDirection = -1;
+            intake.reverse();
+        }
+        if (gamepad2.rightBumperWasReleased()) {
+            intakeDirection = 1;
+            intake.start();
+        }
 
 //        if (intakeDirection == -1) {
 //                intakeDirection = 0;

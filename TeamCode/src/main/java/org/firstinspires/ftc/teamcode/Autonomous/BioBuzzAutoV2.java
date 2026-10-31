@@ -76,14 +76,14 @@ public class BioBuzzAutoV2 extends LinearOpMode {
                 FtcDashboard.getInstance().getTelemetry()
         );
 
-        TrajectoryActionBuilder launchPosition = drive.actionBuilder(startPose)
+        TrajectoryActionBuilder launchPositionA = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(60, -10.5))
                 .waitSeconds(1)
                 .turnTo(Math.toRadians(285))
                 .endTrajectory();
 
-        TrajectoryActionBuilder backToWall = launchPosition.fresh()
+        TrajectoryActionBuilder backToWall = launchPositionA.fresh()
                 .strafeTo(new Vector2d(65, -10.5))
                 .endTrajectory();
 
@@ -96,14 +96,14 @@ public class BioBuzzAutoV2 extends LinearOpMode {
                 //.turnTo(Math.toRadians(0))
                 .endTrajectory();
 
-        TrajectoryActionBuilder secondLaunch = gardenShiftPosition.fresh()
+        TrajectoryActionBuilder secondLaunchA = gardenShiftPosition.fresh()
                 .strafeToLinearHeading(
                         new Vector2d(60, -13.5),
                         Math.toRadians(0))
                 .waitSeconds(1)
                 .endTrajectory();
 
-        TrajectoryActionBuilder flowerALineUp = secondLaunch.fresh()
+        TrajectoryActionBuilder flowerALineUp = secondLaunchA.fresh()
                 .strafeToLinearHeading(
                         new Vector2d(32,-42),
                         Math.toRadians(270)
@@ -116,7 +116,7 @@ public class BioBuzzAutoV2 extends LinearOpMode {
                 .waitSeconds(2)
                 .endTrajectory();
 
-        TrajectoryActionBuilder thirdLaunch = flowerAPickup.fresh()
+        TrajectoryActionBuilder thirdLaunchA = flowerAPickup.fresh()
                 .strafeToLinearHeading(
                         new Vector2d(60,-10.5),
                         Math.toRadians(0)
@@ -124,13 +124,13 @@ public class BioBuzzAutoV2 extends LinearOpMode {
                 .waitSeconds(1)
                 .endTrajectory();
 
-        TrajectoryActionBuilder waypointA = thirdLaunch.fresh()
+        TrajectoryActionBuilder waypointA = thirdLaunchA.fresh()
                 .strafeTo(
                         new Vector2d(32,-42)
                 )
                 .endTrajectory();
 
-        TrajectoryActionBuilder parkPosition = waypointA.fresh()
+        TrajectoryActionBuilder parkPositionA = waypointA.fresh()
                 .strafeToLinearHeading(
                         new Vector2d(-23,-56),
                     Math.toRadians(90)
@@ -146,16 +146,16 @@ public class BioBuzzAutoV2 extends LinearOpMode {
 
 
         List<Action> actions = new ArrayList<>();
-        actions.add(launchPosition.build());
+        actions.add(launchPositionA.build());
         actions.add(backToWall.build());
         actions.add(gardenPosition.build());
         actions.add(gardenShiftPosition.build());
-        actions.add(secondLaunch.build());
+        actions.add(secondLaunchA.build());
         actions.add(flowerALineUp.build());
         actions.add(flowerAPickup.build());
-        actions.add(thirdLaunch.build());
+        actions.add(thirdLaunchA.build());
         actions.add(waypointA.build());
-        actions.add(parkPosition.build());
+        actions.add(parkPositionA.build());
 
         // actions that need to happen on init
 

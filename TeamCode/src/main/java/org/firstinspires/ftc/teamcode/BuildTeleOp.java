@@ -108,6 +108,7 @@ public class BuildTeleOp extends OpMode {
 
         if (firstLoop==1)  {
             intakeDirection = 1;
+            intake.start();
             launcher.startPollenLauncher();
             firstLoop = 0;
         }

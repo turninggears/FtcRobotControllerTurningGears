@@ -1,11 +1,17 @@
-# Robot Data Scratchpad #
+# Robot Data Scratchpad
 
-## Robot Dimensions ##
+## Robot Dimensions
 
 length: 17.098"
 width: 434mm
 
-## Odometry Pod Locations ##
+## Odometry Pod Locations
 
 x pod: left 56mm/2.20"/1117.119 ticks
 y pod: back 7.329"/3721.797 ticks
+
+## Servo parameters
+
+Right Ramp 0 position:
+
+Left Ramp 0 position:

@@ -30,15 +30,15 @@ public class Intake {
     DcMotorEx intakeMotor;
     Telemetry telemetry;
 
-
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake Motor");
         intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        rightRamp = hardwareMap.get(Servo.class, "Right Ramp");
-        leftRamp = hardwareMap.get(Servo.class, "Left Ramp");
-
+        rightRamp.setPosition(RIGHT_RAMP_UP);
+        rightRamp.setDirection(Servo.Direction.REVERSE);
+        leftRamp.setPosition(LEFT_RAMP_UP);
+        leftRamp.setDirection(Servo.Direction.FORWARD);
         //defaults both ramps up
         rampsUp();
     }

@@ -180,7 +180,7 @@ public class BuildTeleOp extends OpMode {
 // Release Triangle to close pollen gate
         if (gamepad2.crossWasPressed()) {
             launcher.openPollenGate();
-        } else if (gamepad2.crossWasPressed()) {
+        } else if (gamepad2.crossWasReleased()) {
             launcher.closePollenGate();
         }
 

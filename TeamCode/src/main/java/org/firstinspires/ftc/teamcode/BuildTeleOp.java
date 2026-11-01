@@ -13,7 +13,6 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.Intake;
@@ -32,7 +31,7 @@ public class BuildTeleOp extends OpMode {
     // DRIVING VARIABLES
     // ========================================
 
-    MecanumDrive drive;
+    MecanumDriveBiobuzz drive;
 
     boolean fieldCentric = true;
     boolean previousTriangle = false;
@@ -68,7 +67,7 @@ public class BuildTeleOp extends OpMode {
                 0
         );
 
-        drive = new MecanumDrive(
+        drive = new MecanumDriveBiobuzz(
                 hardwareMap,
                 startPose
         );
@@ -179,9 +178,17 @@ public class BuildTeleOp extends OpMode {
                 )
         );
 
+        if (gamepad1.leftBumperWasPressed()) {
+            intake.rampsDown();
+        }
+
+        if (gamepad1.leftBumperWasReleased()) {
+            intake.rampsUp();
+        }
+
         // ====================================
-// GAMEPAD 2 - POLLEN LAUNCHER
-// ====================================
+        // GAMEPAD 2 - POLLEN LAUNCHER
+        // ====================================
 
         //save this for when we add gate servo
         // Triangle: Hold to open pollen gate

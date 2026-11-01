@@ -1,35 +1,30 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import  com.acmerobotics.roadrunner.SleepAction;
-import org.firstinspires.ftc.teamcode.System.Launcher;
-import com.acmerobotics.roadrunner.ParallelAction;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
+import org.firstinspires.ftc.teamcode.System.Launcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "BioBuzz Auto", group = "Autonomous")
-public class BioBuzzAuto extends LinearOpMode {
+@Autonomous(name = "BioBuzz Auto V3", group = "Autonomous")
+public class BioBuzzAutoV3 extends LinearOpMode {
 
 
 
     public Action monitorHeadingContinuous(
-            MecanumDrive drive,
+            MecanumDriveBiobuzz drive,
             boolean[] driveFinished
     ) {
         return packet -> {
@@ -70,9 +65,9 @@ public class BioBuzzAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(-63.5, -10.5, Math.toRadians(180));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        MecanumDriveBiobuzz drive = new MecanumDriveBiobuzz(hardwareMap, startPose);
 
         Launcher launcher = new Launcher(hardwareMap, telemetry);
 
@@ -81,26 +76,47 @@ public class BioBuzzAuto extends LinearOpMode {
                 FtcDashboard.getInstance().getTelemetry()
         );
 
-        TrajectoryActionBuilder launchPosition = drive.actionBuilder(startPose)
+        TrajectoryActionBuilder launchPositionB = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
-                .strafeTo(new Vector2d(60, -10.5))
-                .waitSeconds(2)
-                .turnTo(Math.toRadians(285))
+                .strafeTo(new Vector2d(-60, -10.5))
+                .waitSeconds(1)
                 .endTrajectory();
 
-        TrajectoryActionBuilder backToWall = launchPosition.fresh()
-                .strafeTo(new Vector2d(65, -10.5))
+        TrajectoryActionBuilder flowerBLineUp = launchPositionB.fresh()
+                .strafeTo(new Vector2d(-55, -24))
                 .endTrajectory();
 
-        TrajectoryActionBuilder parkPosition = backToWall.fresh()
-                .setTangent(Math.toRadians(270))
-                .strafeTo(new Vector2d(65, -60))
+        TrajectoryActionBuilder flowerBPickup = flowerBLineUp.fresh()
+                .setTangent(Math.toRadians(180))
+                .strafeTo(new Vector2d(-58, -24))
                 .endTrajectory();
+
+        TrajectoryActionBuilder secondLaunchB = flowerBPickup.fresh()
+                .strafeTo(new Vector2d(-60, -13.5))
+                .waitSeconds(1)
+                .endTrajectory();
+
+        TrajectoryActionBuilder parkPositionB = secondLaunchB.fresh()
+                .strafeToLinearHeading(
+                        new Vector2d(-48,-56),
+                    Math.toRadians(90)
+                                )
+        .endTrajectory();
+
+
+
+
+
+
+
+
 
         List<Action> actions = new ArrayList<>();
-        actions.add(launchPosition.build());
-        actions.add(backToWall.build());
-        actions.add(parkPosition.build());
+        actions.add(launchPositionB.build());
+        actions.add(flowerBLineUp.build());
+        actions.add(flowerBPickup.build());
+        actions.add(secondLaunchB.build());
+        actions.add(parkPositionB.build());
 
         // actions that need to happen on init
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -12,9 +12,9 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
+import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
-import org.firstinspires.ftc.teamcode.System.Pause;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class BioBuzzAutoV2 extends LinearOpMode {
 
 
     public Action monitorHeadingContinuous(
-            MecanumDrive drive,
+            MecanumDriveBiobuzz drive,
             boolean[] driveFinished
     ) {
         return packet -> {
@@ -68,9 +68,10 @@ public class BioBuzzAutoV2 extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
 //        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        MecanumDriveBiobuzz drive = new MecanumDriveBiobuzz(hardwareMap, startPose);
 
         Launcher launcher = new Launcher(hardwareMap, telemetry);
+        Intake intake = new Intake(hardwareMap, telemetry);
 
         telemetry = new MultipleTelemetry(
                 telemetry,
@@ -80,6 +81,7 @@ public class BioBuzzAutoV2 extends LinearOpMode {
         TrajectoryActionBuilder launchPositionA = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(60, -10.5))
+                .waitSeconds(2)
                 .endTrajectory();
 
         TrajectoryActionBuilder backToWall = launchPositionA.fresh()
@@ -105,15 +107,15 @@ public class BioBuzzAutoV2 extends LinearOpMode {
 
         TrajectoryActionBuilder flowerALineUp = secondLaunchA.fresh()
                 .strafeToLinearHeading(
-                        new Vector2d(32,-42),
+                        new Vector2d(28,-42),
                         Math.toRadians(270)
                 )
                 .endTrajectory();
 
         TrajectoryActionBuilder flowerAPickup = flowerALineUp.fresh()
                 .setTangent(Math.toRadians(270))
-                .strafeTo(new Vector2d(32, -48))
-                .waitSeconds(2)
+                .strafeTo(new Vector2d(28, -52))
+                .waitSeconds(1)
                 .endTrajectory();
 
         TrajectoryActionBuilder thirdLaunchA = flowerAPickup.fresh()
@@ -137,16 +139,23 @@ public class BioBuzzAutoV2 extends LinearOpMode {
                                 )
         .endTrajectory();
 
+        ParallelAction driveAndRampDown = new ParallelAction(intake.rampsDownAction(), flowerALineUp.build());
+        ParallelAction driveAndRampUp = new ParallelAction(intake.rampsUpAction(), thirdLaunchA.build());
+
         List<Action> actions = new ArrayList<>();
+        actions.add(launcher.startPollenLauncherAction());
+        actions.add(intake.startIntakeAction());
         actions.add(launchPositionA.build());
         actions.add(launcher.launchFourPollenAction());
         actions.add(backToWall.build());
         actions.add(gardenPosition.build());
         actions.add(gardenShiftPosition.build());
         actions.add(secondLaunchA.build());
-        actions.add(flowerALineUp.build());
+        actions.add(launcher.launchFourPollenAction());
+        actions.add(driveAndRampDown);
         actions.add(flowerAPickup.build());
-        actions.add(thirdLaunchA.build());
+        actions.add(driveAndRampUp);
+        actions.add(launcher.launchFourPollenAction());
         actions.add(waypointA.build());
         actions.add(parkPositionA.build());
 

@@ -28,7 +28,7 @@ public class BuildTeleOpV3 extends OpMode {
     // DRIVING VARIABLES
     // ========================================
 
-    MecanumDrive drive;
+    MecanumDriveBiobuzz drive;
 
     boolean fieldCentric = true;
     boolean previousTriangle = false;
@@ -77,7 +77,7 @@ public class BuildTeleOpV3 extends OpMode {
                 0
         );
 
-        drive = new MecanumDrive(
+        drive = new MecanumDriveBiobuzz(
                 hardwareMap,
                 startPose
         );

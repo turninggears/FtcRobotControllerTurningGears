@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name = "Chassis Drive", group = "Test")
 public class ChassisDrive extends OpMode {
 
-    MecanumDrive drive;
+    MecanumDriveBiobuzz drive;
 
     boolean fieldCentric = true;
     boolean previousTriangle = false;
@@ -28,7 +28,7 @@ public class ChassisDrive extends OpMode {
                 0
         );
 
-        drive = new MecanumDrive(
+        drive = new MecanumDriveBiobuzz(
                 hardwareMap,
                 startPose
         );

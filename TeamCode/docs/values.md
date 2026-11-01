@@ -1,5 +1,16 @@
 # Robot Data Scratchpad
 
+## Field Data
+
+### Coordinates
+AUDIENCE: x+
+SCORING: x-
+BLUE: y+
+RED: y-
+
+### AprilTags
+RED SCORING: 30, 31, 32, 33
+
 ## Robot Dimensions
 
 length: 17.098"
@@ -15,3 +26,9 @@ y pod: back 7.329"/3721.797 ticks
 Right Ramp 0 position:
 
 Left Ramp 0 position:
+
+## Controls
+
+### Gamepad 1 (driver)
+
+left bumper: ramp down

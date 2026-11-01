@@ -18,12 +18,9 @@ public class Intake {
 
     public static double INTAKE_POWER = 1.0;
 
-    public static double RIGHT_RAMP_UP = 1;
-    public static double LEFT_RAMP_UP = 0;
+    public static double RAMP_UP = 0.71;
 
-    public static double RIGHT_RAMP_DOWN = 0;
-
-    public static double LEFT_RAMP_DOWN = .3;
+    public static double RAMP_DOWN = 0;
 
     Servo rightRamp;
     Servo leftRamp;
@@ -37,9 +34,7 @@ public class Intake {
 
         rightRamp = hardwareMap.get(Servo.class, "Right Ramp");
         leftRamp = hardwareMap.get(Servo.class, "Left Ramp");
-        rightRamp.setPosition(RIGHT_RAMP_UP);
         rightRamp.setDirection(Servo.Direction.REVERSE);
-        leftRamp.setPosition(LEFT_RAMP_UP);
         leftRamp.setDirection(Servo.Direction.FORWARD);
         //defaults both ramps up
         rampsUp();
@@ -101,13 +96,13 @@ public class Intake {
 
 
     public void rampsUp() {
-        rightRamp.setPosition(RIGHT_RAMP_UP);
-        leftRamp.setPosition(LEFT_RAMP_UP);
+        rightRamp.setPosition(RAMP_UP);
+        leftRamp.setPosition(RAMP_UP);
     }
 
     public void rampsDown() {
-        rightRamp.setPosition(RIGHT_RAMP_DOWN);
-        leftRamp.setPosition(LEFT_RAMP_DOWN);
+        rightRamp.setPosition(RAMP_DOWN);
+        leftRamp.setPosition(RAMP_DOWN);
     }
 
 

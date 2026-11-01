@@ -30,7 +30,7 @@ public class Launcher {
     public static double GATE_CLOSED_POSITION = .13;
 
     // AUTONOMOUS GATE OPEN DURATION IN SECONDS
-    public static double AUTO_GATE_OPEN_TIME = 1.0;
+    public static double AUTO_GATE_OPEN_TIME = 1.5;
 
     Servo pollenGate;
 

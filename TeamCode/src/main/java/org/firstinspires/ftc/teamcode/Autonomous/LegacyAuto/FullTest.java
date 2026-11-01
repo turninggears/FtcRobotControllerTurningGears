@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto;
 
 import androidx.annotation.NonNull;
 
@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 
@@ -45,7 +45,7 @@ public class FullTest extends LinearOpMode {
 
     // Create the trajectory only when this action is reached, so branching
     // and an interrupted path always start from the latest estimated pose.
-    private Action driveTo(MecanumDrive drive, double x, double y, double headingDegrees) {
+    private Action driveTo(MecanumDriveBiobuzz drive, double x, double y, double headingDegrees) {
         return new Action() {
             private Action trajectory;
 
@@ -109,7 +109,7 @@ public class FullTest extends LinearOpMode {
         );
     }
 
-    private Action park(MecanumDrive drive, Launcher launcher, Intake intake) {
+    private Action park(MecanumDriveBiobuzz drive, Launcher launcher, Intake intake) {
         return new SequentialAction(
                 instant(() -> {
                     autoStage = "Parking";
@@ -123,7 +123,7 @@ public class FullTest extends LinearOpMode {
         );
     }
 
-    private void showTelemetry(MecanumDrive drive, Launcher launcher,
+    private void showTelemetry(MecanumDriveBiobuzz drive, Launcher launcher,
                                ElapsedTime clock, boolean parking) {
         double heading = Math.toDegrees(drive.localizer.getPose().heading.toDouble());
         heading = (heading % 360 + 360) % 360;
@@ -146,7 +146,7 @@ public class FullTest extends LinearOpMode {
         // MecanumDrive constructs PinpointLocalizer; its constructor resets
         // Pinpoint and associates the given starting field pose.
         Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        MecanumDriveBiobuzz drive = new MecanumDriveBiobuzz(hardwareMap, startPose);
         Launcher launcher = new Launcher(hardwareMap, telemetry);
         Intake intake = new Intake(hardwareMap, telemetry);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());

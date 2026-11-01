@@ -1,5 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -15,7 +15,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 
 @Autonomous(name = "AutoTesting", group = "Autonomous")
@@ -23,7 +23,7 @@ public class AutoTesting extends LinearOpMode {
 
 
     private void updateRobotTelemetry(
-            MecanumDrive drive,
+            MecanumDriveBiobuzz drive,
             Launcher launcher,
             double targetHeadingDegrees
     ) {
@@ -52,7 +52,7 @@ public class AutoTesting extends LinearOpMode {
                 63.5, -10.5, Math.toRadians(0)
         );
 
-        MecanumDrive drive = new MecanumDrive(
+        MecanumDriveBiobuzz drive = new MecanumDriveBiobuzz(
                 hardwareMap, startPose
         );
 

@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.Vector2dDual;
 import java.util.function.Function;
 
 public enum Alliance {
-    RED(pose ->
+    BLUE(pose ->
             new Pose2dDual<>(
                     new Vector2dDual<>(
                             pose.position.x.unaryMinus(),
@@ -24,7 +24,7 @@ public enum Alliance {
             // the field.
             -90
     ),
-    BLUE(
+    RED(
             new IdentityPoseMap(),
             (Pose2d p) -> p,
             24,

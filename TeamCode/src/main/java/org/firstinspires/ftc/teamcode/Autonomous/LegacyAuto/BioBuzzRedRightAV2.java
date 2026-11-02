@@ -27,27 +27,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
-@Autonomous(name = "BioBuzz Red Left A V2", group = "Autonomous")
-public class BioBuzzRedLeftAV2 extends LinearOpMode {
-
-    // ========================================
-    // AUTONOMOUS SETTINGS
-    // ========================================
+@Autonomous(name = "BioBuzz Red Right A V2", group = "Autonomous")
+public class BioBuzzRedRightAV2 extends LinearOpMode {
 
     public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
-
-    // Require three consecutive AprilTag detections.
     public static int REQUIRED_TAG_DETECTIONS = 3;
 
     // ========================================
     // STOP MECHANISMS
     // ========================================
 
-    private void stopMechanisms(
-            Launcher launcher,
-            Intake intake
-    ) {
-
+    private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();
         intake.stop();
     }
@@ -61,6 +51,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
             Launcher launcher,
             Intake intake,
             Action normalSequence,
+            Vector2d waypointPosition,
             Vector2d parkingPosition,
             double parkingHeadingDegrees
     ) {
@@ -78,7 +69,6 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                 packet.put("Auto Elapsed", elapsed);
                 packet.put("Emergency Parking", parkingStarted);
 
-                // Interrupt normal autonomous at 25 seconds.
                 if (!parkingStarted
                         && elapsed >= AUTO_PARK_TRIGGER_SECONDS) {
 
@@ -87,16 +77,16 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                     // Stop launcher and intake before parking.
                     stopMechanisms(launcher, intake);
 
-                    // Update the robot's current position.
+                    // Update current robot position.
                     drive.updatePoseEstimate();
 
                     Pose2d currentPose =
                             drive.localizer.getPose();
 
-                    // Create a trajectory from the robot's
-                    // current position directly to Park B.
+                    // Current position -> Waypoint A -> Park A.
                     emergencyParking =
                             drive.actionBuilder(currentPose)
+                                    .strafeTo(waypointPosition)
                                     .strafeToLinearHeading(
                                             parkingPosition,
                                             Math.toRadians(
@@ -111,7 +101,6 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                     );
                 }
 
-                // Emergency parking replaces normal autonomous.
                 if (parkingStarted) {
 
                     packet.put(
@@ -122,7 +111,6 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                     return emergencyParking.run(packet);
                 }
 
-                // Continue normal autonomous before 25 seconds.
                 return normalSequence.run(packet);
             }
         };
@@ -141,7 +129,6 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
             @Override
             public boolean run(TelemetryPacket packet) {
 
-                // MatchSettings is set to RED.
                 boolean tagVisible =
                         vision.isAllianceClusterVisible();
 
@@ -152,31 +139,20 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                 }
 
                 packet.put("AprilTag Visible", tagVisible);
-
                 packet.put(
                         "Consecutive Detections",
                         consecutiveDetections
                 );
 
-                // Continue only after three consecutive
-                // successful AprilTag checks.
                 if (consecutiveDetections >= REQUIRED_TAG_DETECTIONS) {
 
-                    packet.put(
-                            "AprilTag Status",
-                            "DETECTED"
-                    );
-
+                    packet.put("AprilTag Status", "DETECTED");
                     return false;
                 }
 
-                packet.put(
-                        "AprilTag Status",
-                        "WAITING"
-                );
+                packet.put("AprilTag Status", "WAITING");
 
-                // No individual AprilTag timeout.
-                // Overall 25-second failsafe handles parking.
+                // Wait until detection or global failsafe.
                 return true;
             }
         };
@@ -197,15 +173,11 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                 return false;
             }
 
-            Pose2d actualPose =
-                    drive.localizer.getPose();
+            Pose2d actualPose = drive.localizer.getPose();
 
             double actualHeading =
-                    Math.toDegrees(
-                            actualPose.heading.toDouble()
-                    );
+                    Math.toDegrees(actualPose.heading.toDouble());
 
-            // Normalize heading to 0-360 degrees.
             actualHeading =
                     (actualHeading % 360 + 360) % 360;
 
@@ -217,10 +189,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
 
             telemetry.update();
 
-            packet.put(
-                    "Actual Heading (deg)",
-                    actualHeading
-            );
+            packet.put("Actual Heading (deg)", actualHeading);
 
             return true;
         };
@@ -233,21 +202,11 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        // ========================================
-        // INITIALIZE HARDWARE
-        // ========================================
-
-        Pose2d startPose = new Pose2d(
-                -63.5,
-                -10.5,
-                Math.toRadians(180)
-        );
+        Pose2d startPose =
+                new Pose2d(63.5, -10.5, Math.toRadians(0));
 
         MecanumDriveBiobuzz drive =
-                new MecanumDriveBiobuzz(
-                        hardwareMap,
-                        startPose
-                );
+                new MecanumDriveBiobuzz(hardwareMap, startPose);
 
         Launcher launcher =
                 new Launcher(hardwareMap, telemetry);
@@ -255,12 +214,9 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
         Intake intake =
                 new Intake(hardwareMap, telemetry);
 
-        // Default to RED alliance.
-        MatchSettings.setAlliance(
-                MatchSettings.Alliance.RED
-        );
+        // Select RED alliance before initializing Vision.
+        MatchSettings.setAlliance(MatchSettings.Alliance.RED);
 
-        // Initialize Vision after selecting alliance.
         Vision vision = new Vision(hardwareMap);
 
         telemetry = new MultipleTelemetry(
@@ -269,83 +225,98 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
         );
 
         telemetry.addData("Alliance", "RED");
-        telemetry.addData("Autonomous", "Red Left A V2");
+        telemetry.addData("Autonomous", "Red Right A V2");
         telemetry.addLine("Waiting for START");
         telemetry.update();
 
         // ========================================
-        // FIRST LAUNCH POSITION
+        // TRAJECTORIES
         // ========================================
 
-        TrajectoryActionBuilder launchPositionB =
+        TrajectoryActionBuilder launchPositionA =
                 drive.actionBuilder(startPose)
                         .setTangent(Math.toRadians(0))
-                        .strafeTo(
-                                new Vector2d(-60, -10.5)
-                        )
+                        .strafeTo(new Vector2d(60, -10.5))
+                        .waitSeconds(2)
                         .endTrajectory();
 
-        // ========================================
-        // FLOWER LINEUP
-        // ========================================
-
-        TrajectoryActionBuilder flowerBLineUp =
-                launchPositionB.fresh()
-                        .strafeTo(
-                                new Vector2d(-55, -24)
-                        )
+        TrajectoryActionBuilder backToWall =
+                launchPositionA.fresh()
+                        .turnTo(Math.toRadians(285))
+                        .strafeTo(new Vector2d(65, -10.5))
                         .endTrajectory();
 
-        // ========================================
-        // FLOWER PICKUP
-        // ========================================
-
-        TrajectoryActionBuilder flowerBPickup =
-                flowerBLineUp.fresh()
-                        .setTangent(Math.toRadians(180))
-                        .strafeTo(
-                                new Vector2d(-54, -24)
-                        )
+        TrajectoryActionBuilder gardenPosition =
+                backToWall.fresh()
+                        .setTangent(Math.toRadians(270))
+                        .strafeTo(new Vector2d(65, -55))
                         .endTrajectory();
 
-        // ========================================
-        // SECOND LAUNCH POSITION
-        // ========================================
+        TrajectoryActionBuilder gardenShiftPosition =
+                gardenPosition.fresh()
+                        .strafeTo(new Vector2d(60, -55))
+                        .endTrajectory();
 
-        TrajectoryActionBuilder secondLaunchB =
-                flowerBPickup.fresh()
-                        .strafeTo(
-                                new Vector2d(-60, -13.5)
+        TrajectoryActionBuilder secondLaunchA =
+                gardenShiftPosition.fresh()
+                        .strafeToLinearHeading(
+                                new Vector2d(60, -13.5),
+                                Math.toRadians(0)
                         )
                         .waitSeconds(1)
                         .endTrajectory();
 
-        // ========================================
-        // NORMAL PARKING
-        // ========================================
-
-        TrajectoryActionBuilder parkPositionB =
-                secondLaunchB.fresh()
+        TrajectoryActionBuilder flowerALineUp =
+                secondLaunchA.fresh()
                         .strafeToLinearHeading(
-                                new Vector2d(-48, -56),
+                                new Vector2d(28, -42),
+                                Math.toRadians(270)
+                        )
+                        .endTrajectory();
+
+        TrajectoryActionBuilder flowerAPickup =
+                flowerALineUp.fresh()
+                        .setTangent(Math.toRadians(270))
+                        .strafeTo(new Vector2d(28, -52))
+                        .waitSeconds(1)
+                        .endTrajectory();
+
+        TrajectoryActionBuilder thirdLaunchA =
+                flowerAPickup.fresh()
+                        .strafeToLinearHeading(
+                                new Vector2d(60, -10.5),
+                                Math.toRadians(0)
+                        )
+                        .waitSeconds(1)
+                        .endTrajectory();
+
+        TrajectoryActionBuilder waypointA =
+                thirdLaunchA.fresh()
+                        .strafeTo(new Vector2d(32, -42))
+                        .endTrajectory();
+
+        TrajectoryActionBuilder parkPositionA =
+                waypointA.fresh()
+                        .strafeToLinearHeading(
+                                new Vector2d(-23, -56),
                                 Math.toRadians(90)
                         )
                         .endTrajectory();
 
         // ========================================
-        // PARALLEL DRIVE / RAMP ACTIONS
+        // PARALLEL RAMP ACTIONS
         // ========================================
 
-        ParallelAction driveAndRampDownB =
+        ParallelAction driveAndRampDown =
                 new ParallelAction(
                         intake.rampsDownAction(),
-                        flowerBLineUp.build()
+                        flowerALineUp.build()
                 );
 
-        ParallelAction driveAndRampUpB =
+        ParallelAction driveAndRampUp =
                 new ParallelAction(
                         intake.rampsUpAction(),
-                        secondLaunchB.build()
+                        thirdLaunchA.build()
                 );
 
         // ========================================
@@ -354,48 +325,34 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
 
         List<Action> actions = new ArrayList<>();
 
-        // Start launcher and intake.
         actions.add(launcher.startPollenLauncherAction());
         actions.add(intake.startIntakeAction());
 
-        // ----------------------------------------
-        // FIRST LAUNCH
-        // ----------------------------------------
+        // Launch 1: No AprilTag check.
+        actions.add(launchPositionA.build());
+        actions.add(launcher.launchFourPollenAction());
 
-        // Move to first launch position.
-        actions.add(launchPositionB.build());
+        // Garden movement.
+        actions.add(backToWall.build());
+        actions.add(gardenPosition.build());
+        actions.add(gardenShiftPosition.build());
 
-        // Wait for RED alliance AprilTag.
+        // Launch 2: Wait for RED alliance AprilTag.
+        actions.add(secondLaunchA.build());
         actions.add(waitForAllianceAprilTag(vision));
-
-        // Fire four pollen after AprilTag detection.
         actions.add(launcher.launchFourPollenAction());
 
-        // ----------------------------------------
-        // FLOWER PICKUP
-        // ----------------------------------------
+        // Flower pickup.
+        actions.add(driveAndRampDown);
+        actions.add(flowerAPickup.build());
+        actions.add(driveAndRampUp);
 
-        // Lower ramps while moving to flower lineup.
-        actions.add(driveAndRampDownB);
-
-        // Move through flower pickup.
-        actions.add(flowerBPickup.build());
-
-        // Raise ramps while returning to Launch 2.
-        actions.add(driveAndRampUpB);
-
-        // ----------------------------------------
-        // SECOND LAUNCH
-        // ----------------------------------------
-
-        // No additional AprilTag check at Launch 2.
+        // Launch 3: No AprilTag check.
         actions.add(launcher.launchFourPollenAction());
 
-        // ----------------------------------------
-        // NORMAL PARKING
-        // ----------------------------------------
-
-        actions.add(parkPositionB.build());
+        // Normal parking through Waypoint A.
+        actions.add(waypointA.build());
+        actions.add(parkPositionA.build());
 
         // ========================================
         // WAIT FOR START
@@ -409,14 +366,9 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                 return;
             }
 
-            // Reset elapsed autonomous timer.
             resetRuntime();
 
             final boolean[] driveFinished = {false};
-
-            // ========================================
-            // NORMAL AUTONOMOUS SEQUENCE
-            // ========================================
 
             Action driveSequence =
                     new SequentialAction(
@@ -428,10 +380,6 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                             }
                     );
 
-            // ========================================
-            // CONTINUOUS HEADING MONITOR
-            // ========================================
-
             Action headingMonitor =
                     monitorHeadingContinuous(
                             drive,
@@ -439,7 +387,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                     );
 
             // ========================================
-            // APPLY 25-SECOND FAILSAFE
+            // 25-SECOND FAILSAFE
             // ========================================
 
             Action protectedSequence =
@@ -448,7 +396,8 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                             launcher,
                             intake,
                             driveSequence,
-                            new Vector2d(-48, -56),
+                            new Vector2d(32, -42),
+                            new Vector2d(-23, -56),
                             90.0
                     );
 
@@ -474,7 +423,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
             );
 
             // ========================================
-            // FINAL ROBOT POSITION
+            // FINAL TELEMETRY
             // ========================================
 
             drive.updatePoseEstimate();
@@ -496,27 +445,18 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
 
             telemetry.addData(
                     "Heading (deg)",
-                    Math.toDegrees(
-                            finalPose.heading.toDouble()
-                    )
+                    Math.toDegrees(finalPose.heading.toDouble())
             );
 
             telemetry.update();
 
         } finally {
 
-            // ========================================
-            // CLEANUP FOR TELEOP TRANSITION
-            // ========================================
-
+            // Stop mechanisms regardless of how
+            // autonomous finishes.
             try {
-
-                // Stop launcher and intake even if
-                // autonomous ends unexpectedly.
                 stopMechanisms(launcher, intake);
-
             } finally {
-
                 // Release webcam for TeleOp.
                 vision.close();
             }

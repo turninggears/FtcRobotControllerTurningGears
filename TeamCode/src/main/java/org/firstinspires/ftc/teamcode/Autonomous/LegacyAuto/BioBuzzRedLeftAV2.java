@@ -40,11 +40,26 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
     public static int REQUIRED_TAG_DETECTIONS = 3;
 
     // ========================================
+    // STOP MECHANISMS
+    // ========================================
+
+    private void stopMechanisms(
+            Launcher launcher,
+            Intake intake
+    ) {
+
+        launcher.stopPollenLauncher();
+        intake.stop();
+    }
+
+    // ========================================
     // 25-SECOND EMERGENCY PARKING
     // ========================================
 
     private Action parkAtTimeout(
             MecanumDriveBiobuzz drive,
+            Launcher launcher,
+            Intake intake,
             Action normalSequence,
             Vector2d parkingPosition,
             double parkingHeadingDegrees
@@ -69,14 +84,17 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
 
                     parkingStarted = true;
 
-                    // Update the current robot pose.
+                    // Stop launcher and intake before parking.
+                    stopMechanisms(launcher, intake);
+
+                    // Update the robot's current position.
                     drive.updatePoseEstimate();
 
                     Pose2d currentPose =
                             drive.localizer.getPose();
 
-                    // Create an emergency parking trajectory
-                    // from the robot's current position.
+                    // Create a trajectory from the robot's
+                    // current position directly to Park B.
                     emergencyParking =
                             drive.actionBuilder(currentPose)
                                     .strafeToLinearHeading(
@@ -93,8 +111,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                     );
                 }
 
-                // Once parking starts, do not resume
-                // the normal autonomous sequence.
+                // Emergency parking replaces normal autonomous.
                 if (parkingStarted) {
 
                     packet.put(
@@ -105,14 +122,14 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                     return emergencyParking.run(packet);
                 }
 
-                // Continue normal autonomous.
+                // Continue normal autonomous before 25 seconds.
                 return normalSequence.run(packet);
             }
         };
     }
 
     // ========================================
-    // WAIT FOR ALLIANCE APRILTAG
+    // WAIT FOR RED ALLIANCE APRILTAG
     // ========================================
 
     private Action waitForAllianceAprilTag(Vision vision) {
@@ -135,6 +152,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                 }
 
                 packet.put("AprilTag Visible", tagVisible);
+
                 packet.put(
                         "Consecutive Detections",
                         consecutiveDetections
@@ -157,9 +175,8 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                         "WAITING"
                 );
 
-                // No separate timeout.
-                // The 25-second emergency parking action
-                // will interrupt this wait if necessary.
+                // No individual AprilTag timeout.
+                // Overall 25-second failsafe handles parking.
                 return true;
             }
         };
@@ -361,7 +378,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
         // Lower ramps while moving to flower lineup.
         actions.add(driveAndRampDownB);
 
-        // Move through the flower pickup.
+        // Move through flower pickup.
         actions.add(flowerBPickup.build());
 
         // Raise ramps while returning to Launch 2.
@@ -371,7 +388,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
         // SECOND LAUNCH
         // ----------------------------------------
 
-        // No AprilTag wait at Launch 2.
+        // No additional AprilTag check at Launch 2.
         actions.add(launcher.launchFourPollenAction());
 
         // ----------------------------------------
@@ -384,69 +401,70 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
         // WAIT FOR START
         // ========================================
 
-        waitForStart();
-
-        if (isStopRequested()) {
-            vision.close();
-            return;
-        }
-
-        // Reset elapsed autonomous runtime.
-        resetRuntime();
-
-        final boolean[] driveFinished = {false};
-
-        // ========================================
-        // NORMAL AUTONOMOUS SEQUENCE
-        // ========================================
-
-        Action driveSequence =
-                new SequentialAction(
-                        new SequentialAction(actions),
-
-                        packet -> {
-                            driveFinished[0] = true;
-                            return false;
-                        }
-                );
-
-        // ========================================
-        // CONTINUOUS HEADING MONITOR
-        // ========================================
-
-        Action headingMonitor =
-                monitorHeadingContinuous(
-                        drive,
-                        driveFinished
-                );
-
-        // ========================================
-        // APPLY 25-SECOND FAILSAFE
-        // ========================================
-
-        Action protectedSequence =
-                parkAtTimeout(
-                        drive,
-                        driveSequence,
-                        new Vector2d(-48, -56),
-                        90.0
-                );
-
-        Action completedSequence =
-                new SequentialAction(
-                        protectedSequence,
-
-                        packet -> {
-                            driveFinished[0] = true;
-                            return false;
-                        }
-                );
-
-        // ========================================
-        // EXECUTE AUTONOMOUS
-        // ========================================
-
         try {
+
+            waitForStart();
+
+            if (isStopRequested()) {
+                return;
+            }
+
+            // Reset elapsed autonomous timer.
+            resetRuntime();
+
+            final boolean[] driveFinished = {false};
+
+            // ========================================
+            // NORMAL AUTONOMOUS SEQUENCE
+            // ========================================
+
+            Action driveSequence =
+                    new SequentialAction(
+                            new SequentialAction(actions),
+
+                            packet -> {
+                                driveFinished[0] = true;
+                                return false;
+                            }
+                    );
+
+            // ========================================
+            // CONTINUOUS HEADING MONITOR
+            // ========================================
+
+            Action headingMonitor =
+                    monitorHeadingContinuous(
+                            drive,
+                            driveFinished
+                    );
+
+            // ========================================
+            // APPLY 25-SECOND FAILSAFE
+            // ========================================
+
+            Action protectedSequence =
+                    parkAtTimeout(
+                            drive,
+                            launcher,
+                            intake,
+                            driveSequence,
+                            new Vector2d(-48, -56),
+                            90.0
+                    );
+
+            Action completedSequence =
+                    new SequentialAction(
+                            protectedSequence,
+
+                            packet -> {
+                                driveFinished[0] = true;
+                                return false;
+                            }
+                    );
+
+            // ========================================
+            // EXECUTE AUTONOMOUS
+            // ========================================
 
             Actions.runBlocking(
                     new ParallelAction(
@@ -487,8 +505,21 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
 
         } finally {
 
-            // Close camera when autonomous finishes.
-            vision.close();
+            // ========================================
+            // CLEANUP FOR TELEOP TRANSITION
+            // ========================================
+
+            try {
+
+                // Stop launcher and intake even if
+                // autonomous ends unexpectedly.
+                stopMechanisms(launcher, intake);
+
+            } finally {
+
+                // Release webcam for TeleOp.
+                vision.close();
+            }
         }
     }
 }

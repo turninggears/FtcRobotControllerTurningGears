@@ -1,0 +1,307 @@
+package org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
+import org.firstinspires.ftc.teamcode.System.Intake;
+import org.firstinspires.ftc.teamcode.System.Launcher;
+import org.firstinspires.ftc.teamcode.System.Vision;
+import org.firstinspires.ftc.teamcode.System.MatchSettings;
+import com.acmerobotics.dashboard.config.Config;
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Config
+@Autonomous(name = "BioBuzz Red Right A", group = "Autonomous")
+public class BioBuzzRedRightA extends LinearOpMode {
+
+    //Autonomous Failsafe Settings
+
+    public static double AUTO_PARK_TRIGGER_SECONDS = 25;
+
+    private Action parkAtTimeout(
+            MecanumDriveBiobuzz drive,
+            Action normalSequence,
+            Vector2d parkingPosition,
+            double parkingHeadingDegrees
+    ) {
+
+        return new Action() {
+
+            private double startTime = -1.0;
+
+            private Action emergencyParking = null;
+            private boolean parkingStarted = false;
+
+            @Override
+            public boolean run(
+                    com.acmerobotics.dashboard.telemetry.TelemetryPacket packet) {
+
+                if (startTime < 0.0) {
+                    startTime = getRuntime();
+                }
+
+                double elapsed = getRuntime() - startTime;
+
+                packet.put("Auto Elapsed", elapsed);
+                packet.put("Emergency Parking", parkingStarted);
+
+                // Trigger parking after 25 seconds.
+                if (!parkingStarted
+                        && elapsed >= AUTO_PARK_TRIGGER_SECONDS) {
+
+                    parkingStarted = true;
+
+                    // Read the robot's current pose.
+                    drive.updatePoseEstimate();
+
+                    Pose2d currentPose =
+                            drive.localizer.getPose();
+
+                    // Create parking trajectory from
+                    // wherever the robot is currently located.
+                    emergencyParking =
+                            drive.actionBuilder(currentPose)
+                                    .strafeToLinearHeading(
+                                            parkingPosition,
+                                            Math.toRadians(
+                                                    parkingHeadingDegrees
+                                            )
+                                    )
+                                    .build();
+
+                    packet.put(
+                            "Emergency Parking",
+                            "TRIGGERED"
+                    );
+                }
+
+                // Once triggered, only run parking.
+                if (parkingStarted) {
+                    return emergencyParking.run(packet);
+                }
+
+                // Otherwise continue normal autonomous.
+                return normalSequence.run(packet);
+            }
+        };
+    }
+
+
+    public Action monitorHeadingContinuous(
+            MecanumDriveBiobuzz drive,
+            boolean[] driveFinished
+    ) {
+        return packet -> {
+
+            // Stop monitoring when trajectories finish
+            if (driveFinished[0]) {
+                return false;
+            }
+
+            // Read the latest Road Runner pose
+            Pose2d actualPose = drive.localizer.getPose();
+
+            double actualHeading = Math.toDegrees(
+                    actualPose.heading.toDouble()
+            );
+
+            // Normalize heading to 0-360 degrees
+            actualHeading = (actualHeading % 360 + 360) % 360;
+
+            // Display on Driver Station and Dashboard
+            telemetry.addData(
+                    "Actual Heading (deg)",
+                    "%.1f",
+                    actualHeading
+            );
+
+            telemetry.update();
+
+            // Add to Road Runner telemetry packet
+            packet.put("Actual Heading (deg)", actualHeading);
+
+            return true;
+        };
+    }
+
+
+
+    @Override
+    public void runOpMode() {
+
+        Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
+//        Pose2d endPose = new Pose2d(0, 0, Math.toRadians(0));
+        MecanumDriveBiobuzz drive = new MecanumDriveBiobuzz(hardwareMap, startPose);
+
+        Launcher launcher = new Launcher(hardwareMap, telemetry);
+        Intake intake = new Intake(hardwareMap, telemetry);
+
+        telemetry = new MultipleTelemetry(
+                telemetry,
+                FtcDashboard.getInstance().getTelemetry()
+        );
+
+        TrajectoryActionBuilder launchPositionA = drive.actionBuilder(startPose)
+                .setTangent(Math.toRadians(0))
+                .strafeTo(new Vector2d(60, -10.5))
+                .waitSeconds(2)
+                .endTrajectory();
+
+        TrajectoryActionBuilder backToWall = launchPositionA.fresh()
+                .turnTo(Math.toRadians(285))
+                .strafeTo(new Vector2d(65, -10.5))
+                .endTrajectory();
+
+        TrajectoryActionBuilder gardenPosition = backToWall.fresh()
+                .setTangent(Math.toRadians(270))
+                .strafeTo(new Vector2d(65, -55))
+                .endTrajectory();
+        TrajectoryActionBuilder gardenShiftPosition = gardenPosition.fresh()
+                .strafeTo(new Vector2d(60, -55))
+                //.turnTo(Math.toRadians(0))
+                .endTrajectory();
+
+        TrajectoryActionBuilder secondLaunchA = gardenShiftPosition.fresh()
+                .strafeToLinearHeading(
+                        new Vector2d(60, -13.5),
+                        Math.toRadians(0))
+                .waitSeconds(1)
+                .endTrajectory();
+
+        TrajectoryActionBuilder flowerALineUp = secondLaunchA.fresh()
+                .strafeToLinearHeading(
+                        new Vector2d(28,-42),
+                        Math.toRadians(270)
+                )
+                .endTrajectory();
+
+        TrajectoryActionBuilder flowerAPickup = flowerALineUp.fresh()
+                .setTangent(Math.toRadians(270))
+                .strafeTo(new Vector2d(28, -52))
+                .waitSeconds(1)
+                .endTrajectory();
+
+        TrajectoryActionBuilder thirdLaunchA = flowerAPickup.fresh()
+                .strafeToLinearHeading(
+                        new Vector2d(60,-10.5),
+                        Math.toRadians(0)
+                )
+                .waitSeconds(1)
+                .endTrajectory();
+
+        TrajectoryActionBuilder waypointA = thirdLaunchA.fresh()
+                .strafeTo(
+                        new Vector2d(32,-42)
+                )
+                .endTrajectory();
+
+        TrajectoryActionBuilder parkPositionA = waypointA.fresh()
+                .strafeToLinearHeading(
+                        new Vector2d(-23,-56),
+                        Math.toRadians(90)
+                )
+                .endTrajectory();
+
+        ParallelAction driveAndRampDown = new ParallelAction(intake.rampsDownAction(), flowerALineUp.build());
+        ParallelAction driveAndRampUp = new ParallelAction(intake.rampsUpAction(), thirdLaunchA.build());
+
+        List<Action> actions = new ArrayList<>();
+        actions.add(launcher.startPollenLauncherAction());
+        actions.add(intake.startIntakeAction());
+        actions.add(launchPositionA.build());
+        actions.add(launcher.launchFourPollenAction());
+        actions.add(backToWall.build());
+        actions.add(gardenPosition.build());
+        actions.add(gardenShiftPosition.build());
+        actions.add(secondLaunchA.build());
+        actions.add(launcher.launchFourPollenAction());
+        actions.add(driveAndRampDown);
+        actions.add(flowerAPickup.build());
+        actions.add(driveAndRampUp);
+        actions.add(launcher.launchFourPollenAction());
+        actions.add(waypointA.build());
+        actions.add(parkPositionA.build());
+
+        // actions that need to happen on init
+
+/*        while (!isStopRequested() && !opModeIsActive()) {
+// any logic while the robot is running but OpMode ius not yet active
+
+        }*/
+
+        // any logic that we want to run once before the OpMode starts
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        final boolean[] driveFinished = {false};
+
+// Run all three trajectories in sequence
+        Action driveSequence = new SequentialAction(
+                new SequentialAction(actions),
+
+                packet -> {
+                    driveFinished[0] = true;
+                    return false;
+                }
+        );
+
+// Continuously monitor heading
+        Action headingMonitor = monitorHeadingContinuous(
+                drive,
+                driveFinished
+        );
+
+// Run normal autonomous with 25-second failsafe.
+        Action protectedSequence = parkAtTimeout(
+                drive,
+                driveSequence,
+                new Vector2d(-23, -56),
+                90.0
+        );
+
+        Action completedSequence = new SequentialAction(
+                protectedSequence,
+
+                packet -> {
+                    driveFinished[0] = true;
+                    return false;
+                }
+        );
+
+        Actions.runBlocking(
+                new ParallelAction(
+                        completedSequence,
+                        headingMonitor
+                )
+        );
+
+        Pose2d finalPose = drive.localizer.getPose();
+
+        telemetry.addLine("=== AUTO COMPLETE ===");
+        telemetry.addData("X", finalPose.position.x);
+        telemetry.addData("Y", finalPose.position.y);
+        telemetry.addData("Heading (deg)", Math.toDegrees(finalPose.heading.toDouble()));
+
+        telemetry.update();
+
+        blackboard.put("x", finalPose.position.x);
+        blackboard.put("y", finalPose.position.y);
+        blackboard.put("heading", finalPose.heading.toDouble());
+        blackboard.put("team","blue");
+        sleep(5000);
+
+    }
+}

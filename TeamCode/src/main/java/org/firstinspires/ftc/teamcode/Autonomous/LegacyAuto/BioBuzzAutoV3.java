@@ -15,12 +15,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
-
+import org.firstinspires.ftc.teamcode.System.Vision;
+import org.firstinspires.ftc.teamcode.System.MatchSettings;
+import com.acmerobotics.dashboard.config.Config;
 import java.util.ArrayList;
 import java.util.List;
 
+@Config
 @Autonomous(name = "BioBuzz Auto V3", group = "Autonomous")
 public class BioBuzzAutoV3 extends LinearOpMode {
+
+
 
 
 

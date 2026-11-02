@@ -154,7 +154,8 @@ public class BuildTeleOpV2 extends OpMode {
         velocityOffset= 0.0;
 
         //Set Initial taget to 1180 ticks/sec
-        launcher.LAUNCHER_VELOCITY = baseTargetVelocity;
+        // Set initial target to 1180 ticks/sec
+        Launcher.LAUNCHER_VELOCITY = baseTargetVelocity;
 
         firstLoop = true;
 
@@ -637,25 +638,19 @@ public class BuildTeleOpV2 extends OpMode {
                 aimStatus
         );
 
-        telemetry.addData(
-                "Aim Correction",
-                aimCorrection == null
-                        ? "N/A"
-                        : String.format(
-                        "%.2f degrees",
-                        aimCorrection
-                )
-        );
+        if (aimCorrection != null) {
+            telemetry.addData(
+                    "Aim Correction (deg)",
+                    aimCorrection
+            );
+        }
 
-        telemetry.addData(
-                "Target Distance",
-                targetDistance == null
-                        ? "N/A"
-                        : String.format(
-                        "%.1f inches",
-                        targetDistance
-                )
-        );
+        if (targetDistance != null) {
+            telemetry.addData(
+                    "Target Distance (in)",
+                    targetDistance
+            );
+        }
 
         telemetry.addLine("");
         telemetry.addLine("===== LAUNCHER =====");
@@ -690,6 +685,13 @@ public class BuildTeleOpV2 extends OpMode {
                 fieldCentric
                         ? "Field Centric"
                         : "Robot Centric"
+        );
+
+        telemetry.addData(
+                "Robot Heading (deg)",
+                Math.toDegrees(
+                        drive.localizer.getPose().heading.toDouble()
+                )
         );
 
         telemetry.addLine("");

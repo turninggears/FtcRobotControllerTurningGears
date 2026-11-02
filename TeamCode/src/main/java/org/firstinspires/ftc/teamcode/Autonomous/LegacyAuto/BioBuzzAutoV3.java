@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
+import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ public class BioBuzzAutoV3 extends LinearOpMode {
         MecanumDriveBiobuzz drive = new MecanumDriveBiobuzz(hardwareMap, startPose);
 
         Launcher launcher = new Launcher(hardwareMap, telemetry);
+        Intake intake = new Intake(hardwareMap, telemetry);
 
         telemetry = new MultipleTelemetry(
                 telemetry,
@@ -79,7 +81,7 @@ public class BioBuzzAutoV3 extends LinearOpMode {
         TrajectoryActionBuilder launchPositionB = drive.actionBuilder(startPose)
                 .setTangent(Math.toRadians(0))
                 .strafeTo(new Vector2d(-60, -10.5))
-                .waitSeconds(1)
+                .waitSeconds(10)
                 .endTrajectory();
 
         TrajectoryActionBuilder flowerBLineUp = launchPositionB.fresh()
@@ -88,7 +90,7 @@ public class BioBuzzAutoV3 extends LinearOpMode {
 
         TrajectoryActionBuilder flowerBPickup = flowerBLineUp.fresh()
                 .setTangent(Math.toRadians(180))
-                .strafeTo(new Vector2d(-58, -24))
+                .strafeTo(new Vector2d(-54, -24))
                 .endTrajectory();
 
         TrajectoryActionBuilder secondLaunchB = flowerBPickup.fresh()
@@ -105,6 +107,8 @@ public class BioBuzzAutoV3 extends LinearOpMode {
 
 
 
+ParallelAction driveAndRampDownB = new ParallelAction(intake.rampsDownAction(), flowerBLineUp.build());
+ParallelAction driveAndRampUpB = new ParallelAction(intake.rampsUpAction(),secondLaunchB.build());
 
 
 
@@ -112,10 +116,12 @@ public class BioBuzzAutoV3 extends LinearOpMode {
 
 
         List<Action> actions = new ArrayList<>();
+        actions.add(launcher.startPollenLauncherAction());
+        actions.add(intake.startIntakeAction());
         actions.add(launchPositionB.build());
-        actions.add(flowerBLineUp.build());
+        actions.add(driveAndRampDownB);
         actions.add(flowerBPickup.build());
-        actions.add(secondLaunchB.build());
+        actions.add(driveAndRampUpB);
         actions.add(parkPositionB.build());
 
         // actions that need to happen on init

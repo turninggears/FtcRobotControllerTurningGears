@@ -269,7 +269,7 @@ public class BioBuzzRedLeftA extends LinearOpMode {
         );
 
         telemetry.addData("Alliance", "RED");
-        telemetry.addData("Autonomous", "Red Left A V2");
+        telemetry.addData("Autonomous", "Red Left A");
         telemetry.addLine("Waiting for START");
         telemetry.update();
 

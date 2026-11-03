@@ -54,9 +54,7 @@ public class CompTeleOp extends OpMode {
     public static double DISTANCE_3 = 55.0;
     public static double DISTANCE_4 = 60.0;
 
-    // Initial placeholders, NOT calibrated.
-    // Set all to existing 1180 target until
-    // actual shooting tests establish values.
+    // Launcher Velocity Presets
     public static double VELOCITY_1 = 1180.0;
     public static double VELOCITY_2 = 1180.0;
     public static double VELOCITY_3 = 1220.0;
@@ -91,6 +89,13 @@ public class CompTeleOp extends OpMode {
     // 1 = forward
     // -1 = reverse
     private int intakeDirection = 0;
+
+    //front intake direction tracking
+    private boolean frontIntakeReversed = false;
+
+    //tracks L2 presses for toggling
+    private boolean previousFrontReverseTrigger = false;
+
 
     // ========================================
     // LAUNCHER VELOCITY VARIABLES
@@ -223,9 +228,11 @@ public class CompTeleOp extends OpMode {
         if (firstLoop) {
 
             intakeDirection = 1;
-            intake.start();
+            frontIntakeReversed = false;
+            previousFrontReverseTrigger = gamepad2.left_trigger> 0.5;
+            intake.start();//starts both intake motors forward
 
-            launcher.startPollenLauncher();
+            launcher.startPollenLauncher();//starts pollen launcher
 
             firstLoop = false;
         }
@@ -379,9 +386,16 @@ public class CompTeleOp extends OpMode {
         // ====================================
 
         // Circle - Forward
+        // resets front intake to in
         if (gamepad2.circleWasPressed()) {
 
             launcher.startPollenLauncher();
+
+            frontIntakeReversed = false;
+
+            if (intakeDirection == 1) {
+                intake.startFrontIntake();
+            }
         }
 
         // Square - Reverse

@@ -29,6 +29,11 @@ public class Intake {
     DcMotorEx intakeMotor;
     DcMotorEx frontIntakeMotor;
 
+    //new 11/3
+    private boolean frontIntakeReversed = false;
+    private boolean intakeRunning = false;
+    //end new 11/3
+
     Telemetry telemetry;
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -76,34 +81,55 @@ public class Intake {
     // =====================================
 
     public void start() {
+        intakeRunning = true;//added 11/3
+        frontIntakeReversed = false;//added 11/3
+
         intakeMotor.setPower(-INTAKE_POWER);
         frontIntakeMotor.setPower(FRONT_INTAKE_POWER);
     }
 
     public void stop() {
+        intakeRunning = true;//added 11/3
         intakeMotor.setPower(0);
         frontIntakeMotor.setPower(0);
     }
 
     public void reverse() {
+        intakeRunning = true;// 11/3
+        frontIntakeReversed = true;// 11/3
+
         intakeMotor.setPower(INTAKE_POWER);
         frontIntakeMotor.setPower(-FRONT_INTAKE_POWER);
     }
+
 
     // =====================================
     // FRONT INTAKE MOTOR
     // =====================================
 
     public void startFrontIntake() {
+
+        frontIntakeReversed = false;//  11/3
         frontIntakeMotor.setPower(FRONT_INTAKE_POWER);
     }
 
     public void reverseFrontIntake() {
+
+        frontIntakeReversed = true;//   11/3
         frontIntakeMotor.setPower(-FRONT_INTAKE_POWER);
     }
 
     public void stopFrontIntake() {
+
         frontIntakeMotor.setPower(0);
+    }
+
+    public void restoreFrontIntake(){
+        frontIntakeReversed = false;
+
+        if(intakeRunning){
+            frontIntakeMotor.setPower(FRONT_INTAKE_POWER);
+        }
     }
 
     // =====================================

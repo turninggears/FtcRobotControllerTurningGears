@@ -28,7 +28,7 @@ import java.util.List;
 
 @Config
 @Autonomous(name = "BioBuzz Blue Right A", group = "Autonomous")
-public class BioBuzzBlueRightA extends LinearOpMode {
+public class BioBuzzBlueRight_A extends LinearOpMode {
 
     public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
     public static int REQUIRED_TAG_DETECTIONS = 3;

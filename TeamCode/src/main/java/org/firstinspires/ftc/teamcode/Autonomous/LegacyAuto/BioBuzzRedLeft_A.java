@@ -28,7 +28,7 @@ import java.util.List;
 
 @Config
 @Autonomous(name = "BioBuzz Red Left A", group = "Autonomous")
-public class BioBuzzRedLeftA extends LinearOpMode {
+public class BioBuzzRedLeft_A extends LinearOpMode {
 
     // ========================================
     // AUTONOMOUS SETTINGS

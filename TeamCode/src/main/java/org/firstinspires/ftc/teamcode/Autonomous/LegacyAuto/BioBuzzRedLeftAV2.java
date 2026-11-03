@@ -283,6 +283,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                         .strafeTo(
                                 new Vector2d(-60, -10.5)
                         )
+                        .waitSeconds(.75)
                         .endTrajectory();
 
         // ========================================
@@ -292,7 +293,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
         TrajectoryActionBuilder flowerBLineUp =
                 launchPositionB.fresh()
                         .strafeTo(
-                                new Vector2d(-55, -24)
+                                new Vector2d(-50, -28)
                         )
                         .endTrajectory();
 
@@ -302,10 +303,12 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
 
         TrajectoryActionBuilder flowerBPickup =
                 flowerBLineUp.fresh()
+                        .waitSeconds(.75)
                         .setTangent(Math.toRadians(180))
                         .strafeTo(
-                                new Vector2d(-54, -24)
+                                new Vector2d(-59, -28)
                         )
+                        .waitSeconds(1)
                         .endTrajectory();
 
         // ========================================
@@ -317,7 +320,7 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                         .strafeTo(
                                 new Vector2d(-60, -13.5)
                         )
-                        .waitSeconds(1)
+                        //.waitSeconds(1)
                         .endTrajectory();
 
         // ========================================
@@ -331,6 +334,10 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
                                 Math.toRadians(90)
                         )
                         .endTrajectory();
+
+        TrajectoryActionBuilder backToFlowerLineupB = flowerBPickup.fresh()
+                .strafeTo(new Vector2d(-50,-28))
+                .endTrajectory();
 
         // ========================================
         // PARALLEL DRIVE / RAMP ACTIONS
@@ -357,38 +364,15 @@ public class BioBuzzRedLeftAV2 extends LinearOpMode {
         // Start launcher and intake.
         actions.add(launcher.startPollenLauncherAction());
         actions.add(intake.startIntakeAction());
-
-        // ----------------------------------------
-        // FIRST LAUNCH
-        // ----------------------------------------
-
-        // Move to first launch position.
         actions.add(launchPositionB.build());
-
-        // Wait for RED alliance AprilTag.
         actions.add(waitForAllianceAprilTag(vision));
-
-        // Fire four pollen after AprilTag detection.
         actions.add(launcher.launchFourPollenAction());
-
-        // ----------------------------------------
-        // FLOWER PICKUP
-        // ----------------------------------------
-
-        // Lower ramps while moving to flower lineup.
-        actions.add(driveAndRampDownB);
-
-        // Move through flower pickup.
+        actions.add(flowerBLineUp.build());
+        actions.add(intake.rampsDownAction());
         actions.add(flowerBPickup.build());
-
-        // Raise ramps while returning to Launch 2.
+        actions.add(backToFlowerLineupB.build());
         actions.add(driveAndRampUpB);
-
-        // ----------------------------------------
-        // SECOND LAUNCH
-        // ----------------------------------------
-
-        // No additional AprilTag check at Launch 2.
+        actions.add(waitForAllianceAprilTag(vision));
         actions.add(launcher.launchFourPollenAction());
 
         // ----------------------------------------

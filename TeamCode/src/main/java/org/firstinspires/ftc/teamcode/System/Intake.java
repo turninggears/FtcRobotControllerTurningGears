@@ -16,7 +16,7 @@ public class Intake {
     public static double INTAKE_POWER = 1.0;
     public static double FRONT_INTAKE_POWER = 1.0;
 
-    public static double RAMP_UP = 0.71;
+    public static double RAMP_UP = 0.73;
     public static double RAMP_DOWN = 0;
 
     Servo rightRamp;

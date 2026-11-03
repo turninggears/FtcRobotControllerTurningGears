@@ -30,17 +30,17 @@ public class Vision {
 
     // Camera is 4 inches behind the pollen
     // release point, toward the robot's rear.
-    public static double CAMERA_BEHIND_LAUNCHER_IN = 4.0;
+    public static double CAMERA_BEHIND_LAUNCHER_IN = 6.0;
 
     // Camera lens is 1 inch right of the
     // release point when facing the AprilTags.
-    public static double CAMERA_RIGHT_OFFSET_IN = 1.0;
+    public static double CAMERA_RIGHT_OFFSET_IN = .70;
 
     // Camera is 7 inches above release point.
     public static double CAMERA_ABOVE_LAUNCHER_IN = 7.0;
 
     // Release point is 7 inches above floor.
-    public static double LAUNCHER_HEIGHT_IN = 7.0;
+    public static double LAUNCHER_HEIGHT_IN = 5.813;
 
     // Hive pollen scoring area heights.
     public static double TARGET_BOTTOM_HEIGHT_IN = 53.5;

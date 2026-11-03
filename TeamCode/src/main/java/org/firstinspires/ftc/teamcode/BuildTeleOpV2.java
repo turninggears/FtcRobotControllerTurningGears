@@ -7,6 +7,9 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
+//James For Prez
+
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
@@ -46,18 +49,18 @@ public class BuildTeleOpV2 extends OpMode {
     public static boolean AUTO_VELOCITY_ENABLED = true;
 
     // Distance calibration points, inches.
-    public static double DISTANCE_1 = 24.0;
+    public static double DISTANCE_1 = 40;
     public static double DISTANCE_2 = 48.0;
-    public static double DISTANCE_3 = 72.0;
-    public static double DISTANCE_4 = 96.0;
+    public static double DISTANCE_3 = 55.0;
+    public static double DISTANCE_4 = 60.0;
 
     // Initial placeholders, NOT calibrated.
     // Set all to existing 1180 target until
     // actual shooting tests establish values.
     public static double VELOCITY_1 = 1180.0;
     public static double VELOCITY_2 = 1180.0;
-    public static double VELOCITY_3 = 1180.0;
-    public static double VELOCITY_4 = 1180.0;
+    public static double VELOCITY_3 = 1220.0;
+    public static double VELOCITY_4 = 1270.0;
 
 
     // ========================================
@@ -167,6 +170,42 @@ public class BuildTeleOpV2 extends OpMode {
         telemetry.addLine(
                 "Gamepad1 Cross = Hold to Auto Aim"
         );
+        telemetry.update();
+    }
+
+    // ========================================
+    // ALLIANCE SELECTION DURING INIT
+    // ========================================
+
+    @Override
+    public void init_loop() {
+
+        // D-pad LEFT selects RED
+        if (gamepad1.dpad_left) {
+            MatchSettings.setAlliance(
+                    MatchSettings.Alliance.RED
+            );
+        }
+
+        // D-pad RIGHT selects BLUE
+        if (gamepad1.dpad_right) {
+            MatchSettings.setAlliance(
+                    MatchSettings.Alliance.BLUE
+            );
+        }
+
+        telemetry.addLine("");
+        telemetry.addLine("===== ALLIANCE SELECTION =====");
+
+        telemetry.addData(
+                "Selected Alliance",
+                MatchSettings.getAlliance()
+        );
+
+        telemetry.addLine("D-Pad LEFT = RED");
+        telemetry.addLine("D-Pad RIGHT = BLUE");
+        telemetry.addLine("Press START when ready");
+
         telemetry.update();
     }
 

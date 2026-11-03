@@ -347,8 +347,10 @@ public class BioBuzzRedRightAV2 extends LinearOpMode {
         actions.add(flowerAPickup.build());
         actions.add(driveAndRampUp);
 
-        // Launch 3: No AprilTag check.
+        // Launch 3: april tag check
+        actions.add(waitForAllianceAprilTag(vision));
         actions.add(launcher.launchFourPollenAction());
+
 
         // Normal parking through Waypoint A.
         actions.add(waypointA.build());

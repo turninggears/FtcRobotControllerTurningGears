@@ -327,6 +327,10 @@ public final class MecanumDriveBiobuzz {
             double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
             double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
             double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
+            p.put("LF Motor Power", leftFrontPower);
+            p.put("BL Motor Power", leftBackPower);
+            p.put("BR Motor Power", rightBackPower);
+            p.put("FR Motor Power", rightFrontPower);
             mecanumCommandWriter.write(new MecanumCommandMessage(
                     voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
             ));

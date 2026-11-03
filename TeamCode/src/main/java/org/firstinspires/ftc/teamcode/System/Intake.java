@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.System;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,6 +20,8 @@ public class Intake {
 
     public static double RAMP_UP = 0.73;
     public static double RAMP_DOWN = 0;
+
+    public static double RAMP_SHAKE = .15;
 
     Servo rightRamp;
     Servo leftRamp;
@@ -182,5 +186,47 @@ public class Intake {
     public void rampsDown() {
         rightRamp.setPosition(RAMP_DOWN);
         leftRamp.setPosition(RAMP_DOWN);
+    }
+
+    public Action rampsShakeAction() {
+        return new SequentialAction(
+                packet -> {
+                    rightRamp.setPosition(RAMP_SHAKE);
+                    leftRamp.setPosition(RAMP_SHAKE);
+                    return false;
+                },
+                new SleepAction(0.15),
+
+                packet -> {
+                    rampsDown();
+                    return false;
+                },
+                new SleepAction(0.15),
+
+                packet -> {
+                    rightRamp.setPosition(RAMP_SHAKE);
+                    leftRamp.setPosition(RAMP_SHAKE);
+                    return false;
+                },
+                new SleepAction(0.15),
+
+                packet -> {
+                    rampsDown();
+                    return false;
+                },
+                new SleepAction(0.15),
+
+                packet -> {
+                    rightRamp.setPosition(RAMP_SHAKE);
+                    leftRamp.setPosition(RAMP_SHAKE);
+                    return false;
+                },
+                new SleepAction(0.15),
+
+                packet -> {
+                    rampsDown();
+                    return false;
+                }
+        );
     }
 }

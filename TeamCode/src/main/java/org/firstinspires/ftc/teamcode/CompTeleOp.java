@@ -25,8 +25,8 @@ import org.firstinspires.ftc.teamcode.System.Vision;
 
 @SuppressLint("DefaultLocale")
 @Config
-@TeleOp(name = "BuildTeleOpV2", group = "Test")
-public class BuildTeleOpV2 extends OpMode {
+@TeleOp(name = "CompTeleOp", group = "Test")
+public class CompTeleOp extends OpMode {
 
     // ========================================
     // DASHBOARD - AUTOMATIC AIM SETTINGS

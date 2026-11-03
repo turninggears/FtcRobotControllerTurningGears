@@ -21,7 +21,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "BuildTeleOp", group = "Test")
+@TeleOp(name = "MotorTest", group = "Test")
 @Config
 public class MotorTest extends OpMode {
 

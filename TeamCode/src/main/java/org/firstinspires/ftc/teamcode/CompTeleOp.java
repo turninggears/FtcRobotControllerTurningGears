@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.System.ColorSensors;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
@@ -526,7 +527,17 @@ public class CompTeleOp extends OpMode {
         for (int i = 1; i< 5; i++) {
             String colorSensor = "color sensor " + i;
             telemetry.addData(colorSensor, updateColorSensorData(i));
+            String hue = "color sensor " + i + " hue";
+            telemetry.addData(hue, normalizedColorSensors.getHue());
         }
+
+        telemetry.addData("Red", "%.3f", normalizedColorSensors.getNormalizedColors(3).red);
+        telemetry.addData("Green", "%.3f", normalizedColorSensors.getNormalizedColors(3).green);
+        telemetry.addData("Blue", "%.3f", normalizedColorSensors.getNormalizedColors(3).blue);
+        telemetry.addData("Hue", JavaUtil.colorToHue(normalizedColorSensors.getNormalizedColors(3).toColor()));
+        telemetry.addData("Saturation", "%.3f", JavaUtil.colorToSaturation(normalizedColorSensors.getNormalizedColors(3).toColor()));
+        telemetry.addData("Value", "%.3f", JavaUtil.colorToValue(normalizedColorSensors.getNormalizedColors(3).toColor()));
+        telemetry.addData("Alpha", "%.3f", normalizedColorSensors.getNormalizedColors(3).alpha);
 
         // ====================================
         // TELEMETRY
@@ -539,7 +550,7 @@ public class CompTeleOp extends OpMode {
 
     private String updateColorSensorData(int i) {
         NormalizedRGBA normalizedColors = normalizedColorSensors.getNormalizedColors(i);
-        double hue = normalizedColorSensors.getHue(normalizedColors);
+        double hue = normalizedColorSensors.calculateHue(normalizedColors);
         return normalizedColorSensors.getColor(hue);
     }
 

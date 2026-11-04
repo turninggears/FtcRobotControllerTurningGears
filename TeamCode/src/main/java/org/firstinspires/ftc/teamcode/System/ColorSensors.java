@@ -15,6 +15,8 @@ public class ColorSensors {
     private final NormalizedColorSensor sensor3;
     private final NormalizedColorSensor sensor4;
 
+    private double hue;
+
     public ColorSensors(HardwareMap hardwareMap) {
 
         sensor1 = hardwareMap.get(
@@ -50,8 +52,13 @@ public class ColorSensors {
         return getSensor(i).getNormalizedColors();
     }
 
-    public double getHue(NormalizedRGBA normalizedColors) {
-        return JavaUtil.colorToHue(normalizedColors.toColor());
+    public double calculateHue(NormalizedRGBA normalizedColors) {
+        hue = JavaUtil.colorToHue(normalizedColors.toColor());
+        return hue;
+    }
+
+    public double getHue() {
+        return hue;
     }
 
     public String getColor(double hue) {

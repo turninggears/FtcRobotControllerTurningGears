@@ -22,7 +22,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 public class Launcher {
 
-    public static double LAUNCHER_VELOCITY = 1180;
+    public static double LAUNCHER_VELOCITY = 1200;
     public static double LAUNCHER_IDLE_VELOCITY = 800;
 
     // Gate Servo Setting - Adjust after testing

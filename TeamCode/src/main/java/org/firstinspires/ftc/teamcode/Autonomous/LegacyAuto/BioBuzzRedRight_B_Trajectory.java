@@ -42,8 +42,8 @@ public class BioBuzzRedRight_B_Trajectory extends LinearOpMode {
     public static double PARTNER_PARK_X = -5, PARTNER_PARK_Y = -56;
     public static double PUSH_WAYPOINT_2_X = 4, PUSH_WAYPOINT_2_Y = -36;
     public static double B_WAYPOINT_X = -38, B_WAYPOINT_Y = -36;
-    public static double B_INTERMEDIATE_X = -50, B_INTERMEDIATE_Y = -40;
-    public static double LAUNCH_B_X = -60, LAUNCH_B_Y = -13.5;
+    public static double B_INTERMEDIATE_X = -30, B_INTERMEDIATE_Y = -36;
+    public static double LAUNCH_B_X = -56, LAUNCH_B_Y = -13.5;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -28;
     public static double FLOWER_B_PICK_X = -61.5, FLOWER_B_PICK_Y = -28;
     public static double PARK_B_X = -48, PARK_B_Y = -65;
@@ -94,39 +94,99 @@ public class BioBuzzRedRight_B_Trajectory extends LinearOpMode {
         };
     }
 
-    private Action parkAtTimeout(MecanumDriveBiobuzz drive, Launcher launcher,
-                                 Intake intake, Action normalSequence) {
+
+    private Action parkAtTimeout(
+            MecanumDriveBiobuzz drive,
+            Launcher launcher,
+            Intake intake,
+            Action normalSequence) {
+
         return new Action() {
-            Action emergencyParking;
+
+            Action emergencyParking = null;
             boolean triggered = false;
-            double parkStart = 0;
-            @Override public boolean run(TelemetryPacket packet) {
-                double elapsed = getRuntime();
+            long startNanos = -1;
+            long parkStartNanos = -1;
+
+            @Override
+            public boolean run(TelemetryPacket packet) {
+
+                if (startNanos < 0) {
+                    startNanos = System.nanoTime();
+                }
+
+                double elapsed =
+                        (System.nanoTime() - startNanos) / 1e9;
+
                 packet.put("Auto Elapsed", elapsed);
-                if (!triggered && elapsed >= AUTO_PARK_TRIGGER_SECONDS) {
+                packet.put("Emergency Triggered", triggered);
+
+                if (!triggered &&
+                        elapsed >= AUTO_PARK_TRIGGER_SECONDS) {
+
                     triggered = true;
-                    parkStart = elapsed;
+                    parkStartNanos = System.nanoTime();
+
                     stopMechanisms(launcher, intake);
                     stopDrive(drive);
+
                     drive.updatePoseEstimate();
-                    Pose2d currentPose = drive.localizer.getPose();
-                    emergencyParking = drive.actionBuilder(currentPose)
-                            .strafeToLinearHeading(new Vector2d(PARK_B_X, PARK_B_Y), Math.toRadians(90))
-                            .build();
+                    Pose2d currentPose =
+                            drive.localizer.getPose();
+
+                    packet.put("Emergency Start X",
+                            currentPose.position.x);
+                    packet.put("Emergency Start Y",
+                            currentPose.position.y);
+
+                    emergencyParking =
+                            drive.actionBuilder(currentPose)
+                                    .strafeToLinearHeading(
+                                            new Vector2d(
+                                                    PARK_B_X,
+                                                    PARK_B_Y),
+                                            Math.toRadians(90))
+                                    .build();
                 }
+
                 if (triggered) {
+
+                    double parkElapsed =
+                            (System.nanoTime() - parkStartNanos)
+                                    / 1e9;
+
                     packet.put("Auto Phase", "EMERGENCY PARK");
-                    if (elapsed - parkStart >= EMERGENCY_PARK_TIMEOUT_SECONDS) {
+                    packet.put("Park Elapsed", parkElapsed);
+
+                    if (parkElapsed >=
+                            EMERGENCY_PARK_TIMEOUT_SECONDS) {
+
                         stopDrive(drive);
-                        packet.put("Auto Phase", "PARK TIMEOUT / STOPPED");
+
+                        packet.put("Auto Phase",
+                                "PARK TIMEOUT - STOPPED");
+
                         return false;
                     }
-                    boolean running = emergencyParking.run(packet);
-                    if (!running) stopDrive(drive);
+
+                    boolean running =
+                            emergencyParking.run(packet);
+
+                    if (!running) {
+                        stopDrive(drive);
+                    }
+
                     return running;
                 }
+
+                packet.put("Auto Phase", "NORMAL AUTO");
+
                 boolean running = normalSequence.run(packet);
-                if (!running) stopDrive(drive);
+
+                if (!running) {
+                    stopDrive(drive);
+                }
+
                 return running;
             }
         };
@@ -242,8 +302,8 @@ public class BioBuzzRedRight_B_Trajectory extends LinearOpMode {
                 launcher.launchFourPollenAction(),
                 new ParallelAction(intake.rampsDownAction(), flowerALine.build()),
                 flowerAPick.build(),
-                new ParallelAction(intake.rampsUpAction(), flowerAReturn.build()),
-                pushFromAFlower.build()
+                flowerALine.build(),
+                new ParallelAction(intake.rampsUpAction(), pushFromAFlower.build())
         );
         Action skipA = pushFromALaunch.build();
 

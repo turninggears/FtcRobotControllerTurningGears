@@ -540,13 +540,13 @@ public class CompTeleOp extends OpMode {
             telemetry.addLine("");
             telemetry.addData("===== SENSOR " + i + " =====", "");
 
-            telemetry.addData("Detected Color", detectedColor);
-            telemetry.addData("Hue", "%.1f", hue);
+            telemetry.addData("Sensor " + i + " Color", detectedColor);
+            telemetry.addData("Sensor " + i + " Hue", "%.1f", hue);
 
-            telemetry.addData("Red", "%.3f", colors.red);
-            telemetry.addData("Green", "%.3f", colors.green);
-            telemetry.addData("Blue", "%.3f", colors.blue);
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
+            telemetry.addData("Sensor " + i + " Red", "%.3f", colors.red);
+            telemetry.addData("Sensor " + i + " Green", "%.3f", colors.green);
+            telemetry.addData("Sensor " + i + " Blue", "%.3f", colors.blue);
+            telemetry.addData("Sensor " + i + " Alpha", "%.3f", colors.alpha);
         }
         // ====================================
         // TELEMETRY

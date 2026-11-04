@@ -523,22 +523,31 @@ public class CompTeleOp extends OpMode {
         /* ========================================
      Update Color Sensor data
     ======================================== */
+        // ========================================
+// UPDATE ALL FOUR COLOR SENSORS
+// ========================================
 
-        for (int i = 1; i < 5; i++) {
-            String colorSensor = "color sensor " + i;
-            telemetry.addData(colorSensor, updateColorSensorData(i));
-            String hue = "color sensor " + i + " hue";
-            telemetry.addData(hue, normalizedColorSensors.getHue());
+        for (int i = 1; i <= 4; i++) {
+
+            NormalizedRGBA colors =
+                    normalizedColorSensors.getNormalizedColors(i);
+
+            double hue = JavaUtil.colorToHue(colors.toColor());
+
+            String detectedColor =
+                    normalizedColorSensors.getColor(hue);
+
+            telemetry.addLine("");
+            telemetry.addData("===== SENSOR " + i + " =====", "");
+
+            telemetry.addData("Detected Color", detectedColor);
+            telemetry.addData("Hue", "%.1f", hue);
+
+            telemetry.addData("Red", "%.3f", colors.red);
+            telemetry.addData("Green", "%.3f", colors.green);
+            telemetry.addData("Blue", "%.3f", colors.blue);
+            telemetry.addData("Alpha", "%.3f", colors.alpha);
         }
-
-        telemetry.addData("Red", "%.3f", normalizedColorSensors.getNormalizedColors(3).red);
-        telemetry.addData("Green", "%.3f", normalizedColorSensors.getNormalizedColors(3).green);
-        telemetry.addData("Blue", "%.3f", normalizedColorSensors.getNormalizedColors(3).blue);
-        telemetry.addData("Hue", JavaUtil.colorToHue(normalizedColorSensors.getNormalizedColors(3).toColor()));
-        telemetry.addData("Saturation", "%.3f", JavaUtil.colorToSaturation(normalizedColorSensors.getNormalizedColors(3).toColor()));
-        telemetry.addData("Value", "%.3f", JavaUtil.colorToValue(normalizedColorSensors.getNormalizedColors(3).toColor()));
-        telemetry.addData("Alpha", "%.3f", normalizedColorSensors.getNormalizedColors(3).alpha);
-
         // ====================================
         // TELEMETRY
         // ====================================

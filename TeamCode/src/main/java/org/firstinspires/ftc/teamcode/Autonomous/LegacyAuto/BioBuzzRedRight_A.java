@@ -225,10 +225,29 @@ public class BioBuzzRedRight_A extends LinearOpMode {
         );
 
         telemetry.addData("Alliance", "RED");
-        telemetry.addData("Autonomous", "Red Right A");
-        telemetry.addLine("Waiting for START");
-        telemetry.update();
+        telemetry.addData("Autonomous", "Red Right B");
 
+// Display current heading during INIT
+        while (opModeInInit()) {
+
+            drive.updatePoseEstimate();
+
+            Pose2d currentPose = drive.localizer.getPose();
+
+            double headingDegrees =
+                    Math.toDegrees(currentPose.heading.toDouble());
+
+            headingDegrees =
+                    (headingDegrees % 360 + 360) % 360;
+
+            telemetry.addData("Pinpoint Heading", "%.1f", headingDegrees);
+            telemetry.addData("Pinpoint X", "%.1f", currentPose.position.x);
+            telemetry.addData("Pinpoint Y", "%.1f", currentPose.position.y);
+            telemetry.addLine("Waiting for START");
+            telemetry.update();
+
+            sleep(50);
+        }
         // ========================================
         // TRAJECTORIES
         // ========================================

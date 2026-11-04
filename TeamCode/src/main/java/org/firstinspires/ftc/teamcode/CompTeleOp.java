@@ -17,11 +17,16 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.firstinspires.ftc.teamcode.System.ColorSensors;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
+
+import java.util.HashMap;
 
 @SuppressLint("DefaultLocale")
 @Config
@@ -69,6 +74,8 @@ public class CompTeleOp extends OpMode {
     private Launcher launcher;
     private Intake intake;
     private Vision vision;
+
+    private ColorSensors normalizedColorSensors;
 
     // ========================================
     // DRIVING VARIABLES
@@ -155,6 +162,8 @@ public class CompTeleOp extends OpMode {
         intake.rampsUp();
 
         vision = new Vision(hardwareMap);
+
+        normalizedColorSensors = new ColorSensors(hardwareMap);
 
        //Initial Launcher Velocity
 
@@ -510,11 +519,28 @@ public class CompTeleOp extends OpMode {
 // Remember trigger state for next loop
         previousFrontReverseTrigger = frontReverseTrigger;
 
+        /* ========================================
+     Update Color Sensor data
+    ======================================== */
+
+        for (int i = 1; i< 5; i++) {
+            String colorSensor = "color sensor " + i;
+            telemetry.addData(colorSensor, updateColorSensorData(i));
+        }
+
         // ====================================
         // TELEMETRY
         // ====================================
 
         updateTelemetry();
+    }
+
+
+
+    private String updateColorSensorData(int i) {
+        NormalizedRGBA normalizedColors = normalizedColorSensors.getNormalizedColors(i);
+        double hue = normalizedColorSensors.getHue(normalizedColors);
+        return normalizedColorSensors.getColor(hue);
     }
 
     // ========================================

@@ -55,8 +55,8 @@ public class CompTeleOp extends OpMode {
     public static double DISTANCE_4 = 60.0;
 
     // Launcher Velocity Presets
-    public static double VELOCITY_1 = 1180.0;
-    public static double VELOCITY_2 = 1180.0;
+    public static double VELOCITY_1 = 1190.0;
+    public static double VELOCITY_2 = 1190.0;
     public static double VELOCITY_3 = 1220.0;
     public static double VELOCITY_4 = 1270.0;
 
@@ -102,7 +102,7 @@ public class CompTeleOp extends OpMode {
     // ========================================
 
     // Last calculated velocity, initialized to 1180.
-    private double baseTargetVelocity = 1180.0;
+    private double baseTargetVelocity = 1190.0;
 
     // Driver adjustment applied to every calculation.
     private double velocityOffset = 0.0;

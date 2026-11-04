@@ -524,7 +524,7 @@ public class CompTeleOp extends OpMode {
      Update Color Sensor data
     ======================================== */
 
-        for (int i = 1; i< 5; i++) {
+        for (int i = 1; i < 5; i++) {
             String colorSensor = "color sensor " + i;
             telemetry.addData(colorSensor, updateColorSensorData(i));
             String hue = "color sensor " + i + " hue";

@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.System.Vision;
 public class BioBuzzRedRight_B extends LinearOpMode {
 
     public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
-    public static double SIDE_A_TAG_TIMEOUT_SECONDS = 2.0;
+    public static double SIDE_A_TAG_TIMEOUT_SECONDS = 1.0;
     public static int REQUIRED_TAG_DETECTIONS = 3;
     public static double GARDEN_WAIT_SECONDS = 0.5;
     public static double FLOWER_A_WAIT_SECONDS = 1.0;
@@ -40,8 +40,8 @@ public class BioBuzzRedRight_B extends LinearOpMode {
     public static double FLOWER_A_PICK_X = 28, FLOWER_A_PICK_Y = -52;
     public static double PUSH_WAYPOINT_1_X = 4, PUSH_WAYPOINT_1_Y = -56;
     public static double PARTNER_PARK_X = -5, PARTNER_PARK_Y = -56;
-    public static double PUSH_WAYPOINT_2_X = 4, PUSH_WAYPOINT_2_Y = -45;
-    public static double B_WAYPOINT_X = -48, B_WAYPOINT_Y = -45;
+    public static double PUSH_WAYPOINT_2_X = 4, PUSH_WAYPOINT_2_Y = -36;
+    public static double B_WAYPOINT_X = -38, B_WAYPOINT_Y = -36;
     public static double LAUNCH_B_X = -60, LAUNCH_B_Y = -13.5;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -28;
     public static double FLOWER_B_PICK_X = -61.5, FLOWER_B_PICK_Y = -28;
@@ -214,6 +214,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
                 driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 0),
+                waitSeconds(2.0),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, 65, -10.5, 285),
                 driveTo(drive, GARDEN_START_X, GARDEN_START_Y, 285),
@@ -223,15 +224,25 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 checkAprilTag(vision, "Side A", SIDE_A_TAG_TIMEOUT_SECONDS, sideATag)
         );
 
-        // Only execute this if Launch A sees its required tag.
+// Only execute this if Launch A sees its required tag.
         Action sideAOptional = new SequentialAction(
                 launcher.launchFourPollenAction(),
+
+                // Move to Flower A lineup while lowering ramps
                 new ParallelAction(
                         intake.rampsDownAction(),
                         driveTo(drive, FLOWER_A_LINE_X, FLOWER_A_LINE_Y, 270)),
+
+                // Move to Flower A pickup position
                 driveTo(drive, FLOWER_A_PICK_X, FLOWER_A_PICK_Y, 270),
+
+                // Wait at pickup position
                 waitSeconds(FLOWER_A_WAIT_SECONDS),
-                intake.rampsUpAction()
+
+                // Return to Flower A lineup while raising ramps
+                new ParallelAction(
+                        intake.rampsUpAction(),
+                        driveTo(drive, FLOWER_A_LINE_X, FLOWER_A_LINE_Y, 270))
         );
 
         // Push partner, retreat, then cross to the B side.
@@ -241,6 +252,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 driveTo(drive, PUSH_WAYPOINT_1_X, PUSH_WAYPOINT_1_Y, 0),
                 driveTo(drive, PUSH_WAYPOINT_2_X, PUSH_WAYPOINT_2_Y, 0),
                 driveTo(drive, B_WAYPOINT_X, B_WAYPOINT_Y, 180),
+                driveTo(drive, -50,-40,180),
                 driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y, 180),
                 checkAprilTag(vision, "Side B", 0, sideBTag)
         );

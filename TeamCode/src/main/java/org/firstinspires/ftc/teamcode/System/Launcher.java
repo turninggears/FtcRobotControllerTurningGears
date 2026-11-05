@@ -242,27 +242,18 @@ public class Launcher {
             reverseNectarLauncher();
             return false;
         };
-
-
-
-
     }
+
     public Action launchFourPollenAction() {
         return new SequentialAction(
                 // Open pollen gate
-                packet -> {
-                    openPollenGate();
-                    return false;
-                },
+                openPollenGateAction,
 
                 // Keep gate open for configured duration-
                 new SleepAction(AUTO_GATE_OPEN_TIME),
 
                 // Close pollen gate
-                packet -> {
-                    closePollenGate();
-                    return false;
-                }
+                closePollenGateAction
         );
     }
 }

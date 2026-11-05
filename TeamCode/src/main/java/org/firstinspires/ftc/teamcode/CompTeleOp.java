@@ -527,7 +527,7 @@ public class CompTeleOp extends OpMode {
 // UPDATE ALL FOUR COLOR SENSORS
 // ========================================
 
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 0; i <= 3; i++) {
 
             NormalizedRGBA colors =
                     normalizedColorSensors.getNormalizedColors(i);
@@ -535,7 +535,7 @@ public class CompTeleOp extends OpMode {
             double hue = JavaUtil.colorToHue(colors.toColor());
 
             String detectedColor =
-                    normalizedColorSensors.getColor(hue);
+                    ColorSensors.getColor(hue);
 
             telemetry.addLine("");
             telemetry.addData("===== SENSOR " + i + " =====", "");

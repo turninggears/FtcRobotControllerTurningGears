@@ -10,82 +10,62 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
 public class ColorSensors {
 
-    private final NormalizedColorSensor sensor1;
-    private final NormalizedColorSensor sensor2;
-    private final NormalizedColorSensor sensor3;
-    private final NormalizedColorSensor sensor4;
-
-    private double hue;
+    private final NormalizedColorSensor[] sensors =
+            new NormalizedColorSensor[4];
 
     public ColorSensors(HardwareMap hardwareMap) {
 
-        sensor1 = hardwareMap.get(
-                NormalizedColorSensor.class, "Color Sensor 1");
+        for (int i = 0; i < 4; i++) {
 
-        sensor2 = hardwareMap.get(
-                NormalizedColorSensor.class, "Color Sensor 2");
+            try {
+                String[] names = {
+                        "Color Sensor 0",
+                        "Color Sensor 1",
+                        "Color Sensor 2",
+                        "Color Sensor 3"
+                };
+                sensors[i] = hardwareMap.get(
+                        NormalizedColorSensor.class,
+                        names[i]
+                );
+            } catch (Exception e) {
 
-        sensor3 = hardwareMap.get(
-                NormalizedColorSensor.class, "Color Sensor 3");
-
-        sensor4 = hardwareMap.get(
-                NormalizedColorSensor.class, "Color Sensor 4");
-    }
-
-    private NormalizedColorSensor getSensor(int number) {
-        switch (number) {
-            case 1:
-                return sensor1;
-            case 2:
-                return sensor2;
-            case 3:
-                return sensor3;
-            case 4:
-                return sensor4;
-            default:
-                throw new IllegalArgumentException(
-                        "Invalid color sensor: " + number);
+                sensors[i] = null;
+            }
         }
     }
-
-    public NormalizedRGBA getNormalizedColors(int i) {
-        return getSensor(i).getNormalizedColors();
+    private NormalizedColorSensor getSensor(int number) {
+        return sensors[number];
+        }
+    public NormalizedRGBA getNormalizedColors(int sensor) {
+        return getSensor(sensor).getNormalizedColors();
     }
 
     public double calculateHue(NormalizedRGBA normalizedColors) {
-        hue = JavaUtil.colorToHue(normalizedColors.toColor());
-        return hue;
+        return JavaUtil.colorToHue(normalizedColors.toColor());
     }
 
-    public double getHue() {
-        return hue;
-    }
-
-    public String getColor(double hue) {
-        if(hue < 30){
+    public static String getColor(double hue) {
+        if(hue <= 40){
             return("red");
         }
-        else if (hue < 60) {
-            return("orange");
-        }
-        else if (hue < 90){
+        else if (hue >= 70 && hue <= 120){
             return("yellow");
         }
-        else if (hue < 150){
-            return("green");
-        }
-        else if (hue < 225){
+        else if (hue >= 180){
             return("blue");
         }
-        else if (hue < 350){
-            return("purple");
-        }
         else{
-            return("red");
+            return("no color detected");
         }
 
     }
+
+    public boolean hasBall(int sensor) {
+        return sensors[sensor].getNormalizedColors().alpha >= 0.800;
+    }
 }
+
 /*
     public int getRed(int number) {
         return getSensor(number).red();

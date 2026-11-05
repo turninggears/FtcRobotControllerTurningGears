@@ -15,10 +15,10 @@ public class ColorSensorTest extends OpMode {
             new NormalizedColorSensor[4];
 
     private final String[] names = {
+            "Color Sensor 0",
             "Color Sensor 1",
             "Color Sensor 2",
-            "Color Sensor 3",
-            "Color Sensor 4"
+            "Color Sensor 3"
     };
 
     @Override

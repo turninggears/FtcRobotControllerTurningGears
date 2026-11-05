@@ -133,6 +133,33 @@ public class Intake {
     }
 
     // =====================================
+// DIRECT MOTOR CONTROL FOR TELEOP
+// =====================================
+
+//  1 = Forward
+// -1 = Reverse
+//  0 = Stopped
+
+    public void setIntakeDirections(
+            int mainDirection,
+            int frontDirection) {
+
+        // Main intake motor
+        intakeMotor.setPower(
+                -INTAKE_POWER * mainDirection
+        );
+
+        // Front intake motor
+        frontIntakeMotor.setPower(
+                FRONT_INTAKE_POWER * frontDirection
+        );
+
+        // Update internal tracking
+        intakeRunning = mainDirection != 0;
+        frontIntakeReversed = frontDirection < 0;
+    }
+
+    // =====================================
     // MAIN INTAKE ACTIONS
     // =====================================
 

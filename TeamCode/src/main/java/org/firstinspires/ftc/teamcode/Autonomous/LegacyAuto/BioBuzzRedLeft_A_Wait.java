@@ -34,7 +34,7 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
     // AUTONOMOUS SETTINGS
     // ========================================
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 24.0;
 
     public static double HIVE_TIP_TIMEOUT = 10.0;
 

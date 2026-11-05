@@ -30,7 +30,7 @@ import java.util.List;
 @Autonomous(name = "BioBuzz Blue Right A", group = "Autonomous")
 public class BioBuzzBlueRight_A extends LinearOpMode {
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 24.0;
     public static int REQUIRED_TAG_DETECTIONS = 3;
 
     // ========================================
@@ -237,7 +237,7 @@ public class BioBuzzBlueRight_A extends LinearOpMode {
                 drive.actionBuilder(startPose)
                         .setTangent(Math.toRadians(0))
                         .strafeTo(new Vector2d(60, -10.5))
-                        .waitSeconds(2)
+                        .waitSeconds(2.5)
                         .endTrajectory();
 
         TrajectoryActionBuilder backToWall =
@@ -249,12 +249,12 @@ public class BioBuzzBlueRight_A extends LinearOpMode {
         TrajectoryActionBuilder gardenPosition =
                 backToWall.fresh()
                         .setTangent(Math.toRadians(270))
-                        .strafeTo(new Vector2d(65, -55))
+                        .strafeTo(new Vector2d(65, -53))
                         .endTrajectory();
 
         TrajectoryActionBuilder gardenShiftPosition =
                 gardenPosition.fresh()
-                        .strafeTo(new Vector2d(60, -55))
+                        .strafeTo(new Vector2d(60, -53))
                         .endTrajectory();
 
         TrajectoryActionBuilder secondLaunchA =

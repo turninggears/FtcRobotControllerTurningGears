@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.System.Vision;
 @Autonomous(name = "BioBuzz Red Right B - Trajectory", group = "Autonomous")
 public class BioBuzzRedRight_B_Trajectory extends LinearOpMode {
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 24.0;
     public static double EMERGENCY_PARK_TIMEOUT_SECONDS = 4.0;
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = 1.0;
     public static int REQUIRED_TAG_DETECTIONS = 3;

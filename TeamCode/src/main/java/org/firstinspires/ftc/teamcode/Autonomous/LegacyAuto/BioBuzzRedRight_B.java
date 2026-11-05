@@ -239,10 +239,10 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 // Wait at pickup position
                 waitSeconds(FLOWER_A_WAIT_SECONDS),
 
-                // Return to Flower A lineup while raising ramps
-                new ParallelAction(
-                        intake.rampsUpAction(),
-                        driveTo(drive, FLOWER_A_LINE_X, FLOWER_A_LINE_Y, 270))
+                // Return to Flower A lineup
+
+                driveTo(drive, FLOWER_A_LINE_X, FLOWER_A_LINE_Y, 270),
+                intake.rampsUpAction()
         );
 
         // Push partner, retreat, then cross to the B side.

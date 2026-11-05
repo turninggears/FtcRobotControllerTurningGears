@@ -300,8 +300,13 @@ public class BioBuzzRedRight_A extends LinearOpMode {
                         .waitSeconds(1)
                         .endTrajectory();
 
-        TrajectoryActionBuilder thirdLaunchA =
+        TrajectoryActionBuilder backToFlowerALineUp =
                 flowerAPickup.fresh()
+                        .strafeTo(new Vector2d(28,-42))
+                        .endTrajectory();
+
+        TrajectoryActionBuilder thirdLaunchA =
+                backToFlowerALineUp.fresh()
                         .strafeToLinearHeading(
                                 new Vector2d(60, -10.5),
                                 Math.toRadians(0)
@@ -364,6 +369,7 @@ public class BioBuzzRedRight_A extends LinearOpMode {
         // Flower pickup.
         actions.add(driveAndRampDown);
         actions.add(flowerAPickup.build());
+        actions.add(backToFlowerALineUp.build());
         actions.add(driveAndRampUp);
 
         // Launch 3: april tag check

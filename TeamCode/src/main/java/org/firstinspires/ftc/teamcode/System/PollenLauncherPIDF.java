@@ -6,10 +6,10 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class PollenLauncherPIDF {
 
-    public static double P = 50;
+    public static double P = 60;//was 50
     public static double I = 0.05;
     public static double D = 0;
-    public static double F = 15.0
+    public static double F = 16.2//was 15
             ;
 
 }

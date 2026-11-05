@@ -385,6 +385,8 @@ public class CompTeleOp extends OpMode {
         // Cross - Hold gate open
         if (gamepad2.crossWasPressed()) {
             launcher.openPollenGate();
+            frontIntakeReversed = false;
+            intake.startFrontIntake();
         }
 
         if (gamepad2.crossWasReleased()) {

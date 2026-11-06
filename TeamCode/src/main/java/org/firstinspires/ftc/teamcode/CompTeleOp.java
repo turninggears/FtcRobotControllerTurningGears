@@ -9,7 +9,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 //James For Prez
 
-
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
@@ -42,6 +41,8 @@ public class CompTeleOp extends OpMode {
     public static double AUTO_AIM_KP = 0.015;
     public static double AUTO_AIM_MAX_TURN = 0.35;
     public static double AUTO_AIM_MIN_TURN = 0.0;
+
+    public static double AUTO_AIM_OFFSET_DEGREES = 0.0;
 
     // Change to -1 if robot turns away
     // from the AprilTag instead of toward it.
@@ -345,13 +346,15 @@ public class CompTeleOp extends OpMode {
 
             if (aimCorrection != null) {
 
+                double adjustedAimCorrection = aimCorrection + AUTO_AIM_OFFSET_DEGREES;
+
                 turn = calculateAutoAimTurn(
-                        aimCorrection
+                        adjustedAimCorrection
                 );
 
                 aimingActive = true;
 
-                if (Math.abs(aimCorrection)
+                if (Math.abs(adjustedAimCorrection)
                         <= Vision.AIM_TOLERANCE_DEGREES) {
 
                     aimStatus = "ALIGNED";

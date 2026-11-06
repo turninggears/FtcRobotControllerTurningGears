@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
+import org.firstinspires.ftc.teamcode.System.Lights;
 
 @SuppressLint("DefaultLocale")
 @Config
@@ -57,7 +58,7 @@ public class ColorTeleTest extends OpMode {
     // DASHBOARD - COLOR SENSOR SETTINGS
     // ========================================
 
-    public static boolean AUTO_REJECT_ENABLED = true;
+    public static boolean AUTO_REJECT_ENABLED = false;
 
     // Reverse both motors until this much time
     // has passed since the LAST nectar detection.
@@ -68,7 +69,7 @@ public class ColorTeleTest extends OpMode {
     public static double OPEN_DEBOUNCE_SECONDS = 0.15;
 
     // Tune using actual sensor readings.
-    public static double BALL_ALPHA_THRESHOLD = 0.800;
+    public static double BALL_ALPHA_THRESHOLD = 0.600;
 
     public static double RED_HUE_MAX = 40.0;
     public static double RED_HUE_HIGH_MIN = 340.0;
@@ -88,6 +89,8 @@ public class ColorTeleTest extends OpMode {
     private Intake intake;
     private Vision vision;
     private ColorSensors normalizedColorSensors;
+
+    private Lights lights;
 
     // ========================================
     // DRIVING VARIABLES
@@ -187,7 +190,9 @@ public class ColorTeleTest extends OpMode {
 
         vision = new Vision(hardwareMap);
 
-        normalizedColorSensors = new ColorSensors(hardwareMap);
+        normalizedColorSensors = new ColorSensors(hardwareMap, BALL_ALPHA_THRESHOLD);
+
+        lights = new Lights(hardwareMap);
 
         baseTargetVelocity = 1180.0;
         velocityOffset = 0.0;
@@ -252,6 +257,12 @@ public class ColorTeleTest extends OpMode {
 
             firstLoop = false;
         }
+
+        /* ====================================
+           Ball detection to set light colors
+           ==================================== */
+
+
 
         // ====================================
         // UPDATE VISION
@@ -466,6 +477,44 @@ public class ColorTeleTest extends OpMode {
         if (automaticIntakeEnabled && AUTO_REJECT_ENABLED) {
 
             readColorSensors();
+            if (sensorAlphas[0] >= BALL_ALPHA_THRESHOLD
+                    && sensorAlphas[1] >= BALL_ALPHA_THRESHOLD
+                    && sensorAlphas[2] >= BALL_ALPHA_THRESHOLD
+                    && sensorAlphas[3] >= BALL_ALPHA_THRESHOLD) {
+                for (int i = 0; i < 3; i++) {
+                    lights.setColor(MatchSettings.getAlliance(), i);
+                }
+            } else {
+                if (sensorAlphas[0] <= BALL_ALPHA_THRESHOLD
+                        && sensorAlphas[1] <= BALL_ALPHA_THRESHOLD
+                        && sensorAlphas[2] <= BALL_ALPHA_THRESHOLD
+                        && sensorAlphas[3] <= BALL_ALPHA_THRESHOLD) {
+                    lights.setColor(MatchSettings.LightColors.LIGHT_YELLOW, 0);
+                    for (int i = 1; i <= 2; i++) {
+                        lights.lightOff(i);
+                    };
+                } else {
+                    if (sensorAlphas[0] >= BALL_ALPHA_THRESHOLD || sensorAlphas[1] >= BALL_ALPHA_THRESHOLD) {
+                        lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 0);
+                    } else {
+                        lights.lightOff(0);
+                    }
+
+                    if (sensorAlphas[2] >= BALL_ALPHA_THRESHOLD) {
+                        lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 1);
+                    } else {
+                        lights.lightOff(1);
+                    }
+
+                    if (sensorAlphas[3] >= BALL_ALPHA_THRESHOLD) {
+                        lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 2);
+                    } else {
+                        lights.lightOff(2);
+                    }
+
+                }
+
+            }
 
             if (sensorFault) {
 

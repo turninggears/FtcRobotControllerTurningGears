@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.System.ColorSensors;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
+import org.firstinspires.ftc.teamcode.System.Lights;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
@@ -66,6 +67,8 @@ public class CompTeleOp extends OpMode {
     public static double VELOCITY_3 = 1220.0;
     public static double VELOCITY_4 = 1270.0;
 
+    public static double BALL_ALPHA_THRESHOLD = 0.600;
+
 
     // ========================================
     // ROBOT SYSTEMS
@@ -77,6 +80,26 @@ public class CompTeleOp extends OpMode {
     private Vision vision;
 
     private ColorSensors normalizedColorSensors;
+
+    private Lights lights;
+
+    private final String[] sensorColors = new String[4];
+    private final double[] sensorHues = new double[4];
+    private final double[] sensorAlphas = new double[4];
+    private int pollenCount = 0;
+
+    private boolean sensorFault;
+
+    private String sensorFaultMessage;
+
+    public static double RED_HUE_MAX = 40.0;
+    public static double RED_HUE_HIGH_MIN = 340.0;
+
+    public static double YELLOW_HUE_MIN = 70.0;
+    public static double YELLOW_HUE_MAX = 120.0;
+
+    public static double BLUE_HUE_MIN = 180.0;
+    public static double BLUE_HUE_MAX = 260.0;
 
     // ========================================
     // DRIVING VARIABLES
@@ -164,7 +187,9 @@ public class CompTeleOp extends OpMode {
 
         vision = new Vision(hardwareMap);
 
-        normalizedColorSensors = new ColorSensors(hardwareMap);
+        normalizedColorSensors = new ColorSensors(hardwareMap, BALL_ALPHA_THRESHOLD);
+
+        lights = new Lights(hardwareMap);
 
        //Initial Launcher Velocity
 
@@ -550,6 +575,46 @@ public class CompTeleOp extends OpMode {
             telemetry.addData("Sensor " + i + " Blue", "%.3f", colors.blue);
             telemetry.addData("Sensor " + i + " Alpha", "%.3f", colors.alpha);
         }
+
+        readColorSensors();
+        if (sensorAlphas[0] >= BALL_ALPHA_THRESHOLD
+                && sensorAlphas[1] >= BALL_ALPHA_THRESHOLD
+                && sensorAlphas[2] >= BALL_ALPHA_THRESHOLD
+                && sensorAlphas[3] >= BALL_ALPHA_THRESHOLD) {
+            for (int i = 0; i < 3; i++) {
+                lights.setColor(MatchSettings.getAlliance(), i);
+            }
+        } else {
+            if (sensorAlphas[0] <= BALL_ALPHA_THRESHOLD
+                    && sensorAlphas[1] <= BALL_ALPHA_THRESHOLD
+                    && sensorAlphas[2] <= BALL_ALPHA_THRESHOLD
+                    && sensorAlphas[3] <= BALL_ALPHA_THRESHOLD) {
+                lights.setColor(MatchSettings.LightColors.LIGHT_YELLOW, 0);
+                for (int i = 1; i <= 2; i++) {
+                    lights.lightOff(i);
+                };
+            } else {
+                if (sensorAlphas[0] >= BALL_ALPHA_THRESHOLD || sensorAlphas[1] >= BALL_ALPHA_THRESHOLD) {
+                    lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 0);
+                } else {
+                    lights.lightOff(0);
+                }
+
+                if (sensorAlphas[2] >= BALL_ALPHA_THRESHOLD) {
+                    lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 1);
+                } else {
+                    lights.lightOff(1);
+                }
+
+                if (sensorAlphas[3] >= BALL_ALPHA_THRESHOLD) {
+                    lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 2);
+                } else {
+                    lights.lightOff(2);
+                }
+
+            }
+
+        }
         // ====================================
         // TELEMETRY
         // ====================================
@@ -882,5 +947,74 @@ public class CompTeleOp extends OpMode {
         }
 
         intakeDirection = 0;
+    }
+
+    private void readColorSensors() {
+
+        pollenCount = 0;
+        sensorFault = false;
+        sensorFaultMessage = "";
+
+        for (int i = 0; i < 4; i++) {
+
+            try {
+
+                NormalizedRGBA colors =
+                        normalizedColorSensors.getNormalizedColors(i);
+
+                double hue =
+                        normalizedColorSensors.calculateHue(colors);
+
+                sensorHues[i] = hue;
+                sensorAlphas[i] = colors.alpha;
+
+                if (!Double.isFinite(colors.alpha)
+                        || !Double.isFinite(hue)) {
+                    throw new IllegalStateException("invalid reading");
+                }
+
+                String color = "empty";
+
+                if (colors.alpha >= BALL_ALPHA_THRESHOLD) {
+
+                    if (hue <= RED_HUE_MAX
+                            || hue >= RED_HUE_HIGH_MIN) {
+
+                        color = "red";
+
+                    } else if (hue >= YELLOW_HUE_MIN
+                            && hue <= YELLOW_HUE_MAX) {
+
+                        color = "yellow";
+
+                    } else if (hue >= BLUE_HUE_MIN
+                            && hue <= BLUE_HUE_MAX) {
+
+                        color = "blue";
+
+                    } else {
+
+                        color = "unknown";
+                    }
+                }
+
+                sensorColors[i] = color;
+
+                if ("yellow".equals(color)) {
+                    pollenCount++;
+                }
+
+            } catch (Exception e) {
+
+                sensorColors[i] = "FAULT";
+                sensorHues[i] = Double.NaN;
+                sensorAlphas[i] = Double.NaN;
+
+                sensorFault = true;
+
+                sensorFaultMessage =
+                        "Sensor " + i + ": " + e.getMessage();
+            }
+        }
     }
 }

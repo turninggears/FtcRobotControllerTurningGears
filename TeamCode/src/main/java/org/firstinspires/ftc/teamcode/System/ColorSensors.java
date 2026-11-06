@@ -13,7 +13,11 @@ public class ColorSensors {
     private final NormalizedColorSensor[] sensors =
             new NormalizedColorSensor[4];
 
-    public ColorSensors(HardwareMap hardwareMap) {
+    private final double BALL_ALPHA_THRESHOLD;
+
+    public ColorSensors(HardwareMap hardwareMap, double BALL_ALPHA_THRESHOLD) {
+
+        this.BALL_ALPHA_THRESHOLD = BALL_ALPHA_THRESHOLD;
 
         for (int i = 0; i < 4; i++) {
 
@@ -62,7 +66,7 @@ public class ColorSensors {
     }
 
     public boolean hasBall(int sensor) {
-        return sensors[sensor].getNormalizedColors().alpha >= 0.800;
+        return sensors[sensor].getNormalizedColors().alpha >= BALL_ALPHA_THRESHOLD;
     }
 }
 

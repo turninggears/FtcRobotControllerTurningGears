@@ -12,6 +12,13 @@ public class MatchSettings {
         BLUE
     }
 
+    public enum LightColors {
+        LIGHT_YELLOW,
+        LIGHT_GREEN,
+        LIGHT_RED,
+        LIGHT_BLUE
+    }
+
     // Default alliance if none has been selected
     public static Alliance alliance = Alliance.RED;
 

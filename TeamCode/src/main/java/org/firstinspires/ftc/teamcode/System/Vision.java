@@ -77,6 +77,7 @@ public class Vision {
                 )
                 .addProcessor(aprilTag)
                 .build();
+        visionPortal.setProcessorEnabled(aprilTag, true);
 
         FtcDashboard.getInstance()
                 .startCameraStream(visionPortal, 30);

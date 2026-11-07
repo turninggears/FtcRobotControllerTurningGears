@@ -173,6 +173,8 @@ public class BioBuzzRedLeft_Wait extends LinearOpMode {
                 boolean visible =
                         vision.isAllianceClusterVisible();
 
+
+
                 if (visible) {
                     consecutiveDetections++;
                 } else {

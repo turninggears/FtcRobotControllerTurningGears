@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -370,6 +371,7 @@ public class BioBuzzRedLeft_A extends LinearOpMode {
         actions.add(intake.startIntakeAction());
         actions.add(launchPositionB.build());
         actions.add(waitForAllianceAprilTag(vision));
+        actions.add(new SleepAction(.5));
         actions.add(launcher.launchFourPollenAction());
         actions.add(flowerBLineUp.build());
         actions.add(intake.rampsDownAction());

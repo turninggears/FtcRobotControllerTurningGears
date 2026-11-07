@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -268,21 +269,22 @@ public class BioBuzzRedRight_A extends LinearOpMode {
         TrajectoryActionBuilder gardenPosition =
                 backToWall.fresh()
                         .setTangent(Math.toRadians(270))
-                        .strafeTo(new Vector2d(65, -55))
+                        .strafeTo(new Vector2d(65, -53))
                         .endTrajectory();
 
         TrajectoryActionBuilder gardenShiftPosition =
                 gardenPosition.fresh()
-                        .strafeTo(new Vector2d(60, -55))
+                        .strafeTo(new Vector2d(60, -53))
                         .endTrajectory();
 
         TrajectoryActionBuilder secondLaunchA =
                 gardenShiftPosition.fresh()
                         .strafeToLinearHeading(
-                                new Vector2d(60, -13.5),
+                                new Vector2d(60, -10.5),
                                 Math.toRadians(0)
                         )
-                        .waitSeconds(1)
+                        .turnTo(Math.toRadians(0))
+                        .waitSeconds(.25)
                         .endTrajectory();
 
         TrajectoryActionBuilder flowerALineUp =
@@ -308,7 +310,7 @@ public class BioBuzzRedRight_A extends LinearOpMode {
         TrajectoryActionBuilder thirdLaunchA =
                 backToFlowerALineUp.fresh()
                         .strafeToLinearHeading(
-                                new Vector2d(60, -10.5),
+                                new Vector2d(60, -6.5),
                                 Math.toRadians(0)
                         )
                         .waitSeconds(1)
@@ -322,7 +324,7 @@ public class BioBuzzRedRight_A extends LinearOpMode {
         TrajectoryActionBuilder parkPositionA =
                 waypointA.fresh()
                         .strafeToLinearHeading(
-                                new Vector2d(-23, -56),
+                                new Vector2d(-23, -54),
                                 Math.toRadians(90)
                         )
                         .endTrajectory();
@@ -364,6 +366,7 @@ public class BioBuzzRedRight_A extends LinearOpMode {
         // Launch 2: Wait for RED alliance AprilTag.
         actions.add(secondLaunchA.build());
         actions.add(waitForAllianceAprilTag(vision));
+        actions.add(new SleepAction(.4));
         actions.add(launcher.launchFourPollenAction());
 
         // Flower pickup.
@@ -374,6 +377,7 @@ public class BioBuzzRedRight_A extends LinearOpMode {
 
         // Launch 3: april tag check
         actions.add(waitForAllianceAprilTag(vision));
+        actions.add(new SleepAction(.4));
         actions.add(launcher.launchFourPollenAction());
 
 

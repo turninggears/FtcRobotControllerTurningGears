@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
 import org.firstinspires.ftc.teamcode.System.Intake;
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
 @Config
+@Disabled
 @Autonomous(name = "BioBuzz Red Right B - Trajectory", group = "Autonomous")
 public class BioBuzzRedRight_B_Trajectory extends LinearOpMode {
 

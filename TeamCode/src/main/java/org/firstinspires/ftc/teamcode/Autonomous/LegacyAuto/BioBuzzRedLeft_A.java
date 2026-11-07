@@ -333,7 +333,7 @@ public class BioBuzzRedLeft_A extends LinearOpMode {
         TrajectoryActionBuilder parkPositionB =
                 secondLaunchB.fresh()
                         .strafeToLinearHeading(
-                                new Vector2d(-48, -65),
+                                new Vector2d(-51, -65),
                                 Math.toRadians(90)
                         )
                         .endTrajectory();

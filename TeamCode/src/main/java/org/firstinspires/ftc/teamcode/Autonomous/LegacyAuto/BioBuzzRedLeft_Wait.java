@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
+@Disabled
 @Autonomous(name = "BioBuzz Red Left Wait", group = "Autonomous")
 public class BioBuzzRedLeft_Wait extends LinearOpMode {
 

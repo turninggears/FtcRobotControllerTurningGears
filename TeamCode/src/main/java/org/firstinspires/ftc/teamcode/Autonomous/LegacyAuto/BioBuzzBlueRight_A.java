@@ -304,7 +304,7 @@ public class BioBuzzBlueRight_A extends LinearOpMode {
         TrajectoryActionBuilder parkPositionA =
                 waypointA.fresh()
                         .strafeToLinearHeading(
-                                new Vector2d(-32, -56),
+                                new Vector2d(-35, -56),
                                 Math.toRadians(90)
                         )
                         .endTrajectory();

@@ -35,7 +35,7 @@ public class BioBuzzBlueLeft_A extends LinearOpMode {
     // AUTONOMOUS SETTINGS
     // ========================================
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 24.0;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 23.0;
 
     // Require three consecutive AprilTag detections.
     public static int REQUIRED_TAG_DETECTIONS = 3;

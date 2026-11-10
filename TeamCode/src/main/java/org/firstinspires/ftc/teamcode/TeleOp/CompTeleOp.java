@@ -17,6 +17,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDriveBiobuzz;
@@ -26,6 +27,9 @@ import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.Lights;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
+
+import java.io.FileWriter;
+import java.io.IOException;
 
 @SuppressLint("DefaultLocale")
 @Config
@@ -158,6 +162,20 @@ public class CompTeleOp extends OpMode {
 
     @Override
     public void init() {
+
+        /* ========================================
+           Initialize log output to /sdcard/.
+        ======================================== */
+
+        try {
+            FileWriter writer = new FileWriter("/sdcard/autonomous_log.csv");
+            writer.append("time,button\n");
+
+            ElapsedTime timer = new ElapsedTime();
+            double lastLogTime = 0;
+        } catch (IOException e) {
+            blackboard.put("IOException", e.getMessage());
+        }
 
         telemetry = new MultipleTelemetry(
                 telemetry,

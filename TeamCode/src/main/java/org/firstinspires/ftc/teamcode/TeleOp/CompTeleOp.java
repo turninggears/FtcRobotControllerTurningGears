@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDriveBiobuzz;
+import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.System.ColorSensors;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
@@ -73,7 +73,7 @@ public class CompTeleOp extends OpMode {
     // ROBOT SYSTEMS
     // ========================================
 
-    private MecanumDriveBiobuzz drive;
+    private MecanumDrive drive;
     private Launcher launcher;
     private Intake intake;
     private Vision vision;
@@ -164,7 +164,7 @@ public class CompTeleOp extends OpMode {
                 FtcDashboard.getInstance().getTelemetry()
         );
 
-        drive = new MecanumDriveBiobuzz(
+        drive = new MecanumDrive(
                 hardwareMap,
                 new Pose2d(0, 0, 0)
         );

@@ -18,7 +18,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDriveBiobuzz;
+import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
@@ -48,7 +48,7 @@ public class BioBuzzBlueRight_A extends LinearOpMode {
     // ========================================
 
     private Action parkAtTimeout(
-            MecanumDriveBiobuzz drive,
+            MecanumDrive drive,
             Launcher launcher,
             Intake intake,
             Action normalSequence,
@@ -164,7 +164,7 @@ public class BioBuzzBlueRight_A extends LinearOpMode {
     // ========================================
 
     public Action monitorHeadingContinuous(
-            MecanumDriveBiobuzz drive,
+            MecanumDrive drive,
             boolean[] driveFinished
     ) {
 
@@ -206,8 +206,8 @@ public class BioBuzzBlueRight_A extends LinearOpMode {
         Pose2d startPose =
                 new Pose2d(63.5, -10.5, Math.toRadians(0));
 
-        MecanumDriveBiobuzz drive =
-                new MecanumDriveBiobuzz(hardwareMap, startPose);
+        MecanumDrive drive =
+                new MecanumDrive(hardwareMap, startPose);
 
         Launcher launcher =
                 new Launcher(hardwareMap, telemetry);

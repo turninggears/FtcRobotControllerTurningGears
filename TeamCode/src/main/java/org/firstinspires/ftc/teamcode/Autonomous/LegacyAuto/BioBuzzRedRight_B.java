@@ -30,8 +30,8 @@ public class BioBuzzRedRight_B extends LinearOpMode {
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = 1.0;
     public static int REQUIRED_TAG_DETECTIONS = 3;
     public static double GARDEN_WAIT_SECONDS = 0.5;
-    public static double FLOWER_A_WAIT_SECONDS = 1.0;
-    public static double FLOWER_B_WAIT_SECONDS = 1.0;
+    public static double FLOWER_A_WAIT_SECONDS = .75;
+    public static double FLOWER_B_WAIT_SECONDS = .75;
 
     // Field coordinates, inches. Headings are degrees.
     public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -10.5;
@@ -44,7 +44,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
     public static double PARTNER_PARK_X = -5, PARTNER_PARK_Y = -56;
     public static double PUSH_WAYPOINT_2_X = 4, PUSH_WAYPOINT_2_Y = -36;
     public static double B_WAYPOINT_X = -38, B_WAYPOINT_Y = -36;
-    public static double LAUNCH_B_X = -60, LAUNCH_B_Y = -13.5;
+    public static double LAUNCH_B_X = -60, LAUNCH_B_Y = -28, LAUNCH_B_HEADING = 278;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -28;
     public static double FLOWER_B_PICK_X = -61.5, FLOWER_B_PICK_Y = -28;
     public static double PARK_B_X = -48, PARK_B_Y = -65;
@@ -261,8 +261,12 @@ public class BioBuzzRedRight_B extends LinearOpMode {
 
        */
 
+        // New go to left side option
+
         // Side B: launch, collect Flower B, return and launch again.
         Action sideBSequence = new SequentialAction(
+                driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y, LAUNCH_B_HEADING),
+                checkAprilTag(vision, "Side B Return" , 1, sideBReturnTag),
                 launcher.launchFourPollenAction(),
                 new ParallelAction(
                         intake.rampsDownAction(),
@@ -283,7 +287,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
         Action normalSequence = new SequentialAction(
                 opening,
                 ifDetected(sideATag, sideAOptional),
-                partnerPushAndCross,
+                //partnerPushAndCross,
                 ifDetected(sideBTag, sideBSequence),
                 driveTo(drive, PARK_B_X, PARK_B_Y, 90)
         );

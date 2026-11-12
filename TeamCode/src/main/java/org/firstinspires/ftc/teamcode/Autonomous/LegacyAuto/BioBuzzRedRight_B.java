@@ -35,7 +35,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
 
     // Field coordinates, inches. Headings are degrees.
     public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -10.5;
-    public static double LAUNCH_A_RETURN_X = 60, LAUNCH_A_RETURN_Y = -10.5;
+    public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -40;
     public static double GARDEN_START_X = 65, GARDEN_START_Y = -55;
     public static double GARDEN_END_X = 60, GARDEN_END_Y = -55;
     public static double FLOWER_A_LINE_X = 28, FLOWER_A_LINE_Y = -42;
@@ -216,13 +216,13 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
                 driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 0),
-                waitSeconds(2.0),
+                waitSeconds(1.0),
                 launcher.launchFourPollenAction(),
-                driveTo(drive, 65, -10.5, 285),
+                //driveTo(drive, 65, -10.5, 285),
                 driveTo(drive, GARDEN_START_X, GARDEN_START_Y, 285),
                 driveTo(drive, GARDEN_END_X, GARDEN_END_Y, 285),
                 waitSeconds(GARDEN_WAIT_SECONDS),
-                driveTo(drive, LAUNCH_A_RETURN_X, LAUNCH_A_RETURN_Y, 0),
+                driveTo(drive, LAUNCH_A_TAG_READ_X, LAUNCH_A_TAG_READ_Y, 278),
                 checkAprilTag(vision, "Side A", SIDE_A_TAG_TIMEOUT_SECONDS, sideATag)
         );
 
@@ -248,7 +248,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
         );
 
         // Push partner, retreat, then cross to the B side.
-        Action partnerPushAndCross = new SequentialAction(
+      /*  Action partnerPushAndCross = new SequentialAction(
                 driveTo(drive, PUSH_WAYPOINT_1_X, PUSH_WAYPOINT_1_Y, 0),
                 driveTo(drive, PARTNER_PARK_X, PARTNER_PARK_Y, 0),
                 driveTo(drive, PUSH_WAYPOINT_1_X, PUSH_WAYPOINT_1_Y, 0),
@@ -258,6 +258,8 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y, 180),
                 checkAprilTag(vision, "Side B", 0, sideBTag)
         );
+
+       */
 
         // Side B: launch, collect Flower B, return and launch again.
         Action sideBSequence = new SequentialAction(

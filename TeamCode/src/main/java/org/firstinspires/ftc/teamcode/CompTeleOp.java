@@ -57,16 +57,16 @@ public class CompTeleOp extends OpMode {
     public static boolean AUTO_VELOCITY_ENABLED = true;
 
     // Distance calibration points, inches.
-    public static double DISTANCE_1 = 40;
+    public static double DISTANCE_1 = 38;
     public static double DISTANCE_2 = 48.0;
     public static double DISTANCE_3 = 55.0;
     public static double DISTANCE_4 = 60.0;
 
     // Launcher Velocity Presets
-    public static double VELOCITY_1 = 1190.0;
-    public static double VELOCITY_2 = 1190.0;
-    public static double VELOCITY_3 = 1220.0;
-    public static double VELOCITY_4 = 1270.0;
+    public static double VELOCITY_1 = 1175.0;
+    public static double VELOCITY_2 = 1180.0;
+    public static double VELOCITY_3 = 1210.0;
+    public static double VELOCITY_4 = 1230.0;
 
     public static double BALL_ALPHA_THRESHOLD = 0.600;
 
@@ -134,7 +134,7 @@ public class CompTeleOp extends OpMode {
     // ========================================
 
     // Last calculated velocity, initialized to 1180.
-    private double baseTargetVelocity = 1190.0;
+    private double baseTargetVelocity = 1180.0;
 
     // Driver adjustment applied to every calculation.
     private double velocityOffset = 0.0;
@@ -567,7 +567,7 @@ public class CompTeleOp extends OpMode {
             String detectedColor =
                     ColorSensors.getColor(hue);
 
-            telemetry.addLine("");
+            /*telemetry.addLine("");
             telemetry.addData("===== SENSOR " + i + " =====", "");
 
             telemetry.addData("Sensor " + i + " Color", detectedColor);
@@ -576,7 +576,7 @@ public class CompTeleOp extends OpMode {
             telemetry.addData("Sensor " + i + " Red", "%.3f", colors.red);
             telemetry.addData("Sensor " + i + " Green", "%.3f", colors.green);
             telemetry.addData("Sensor " + i + " Blue", "%.3f", colors.blue);
-            telemetry.addData("Sensor " + i + " Alpha", "%.3f", colors.alpha);
+            telemetry.addData("Sensor " + i + " Alpha", "%.3f", colors.alpha);*/
         }
 
         readColorSensors();
@@ -818,12 +818,14 @@ public class CompTeleOp extends OpMode {
                 MatchSettings.getAlliance()
         );
 
-        telemetry.addData(
+        /*telemetry.addData(
                 "Camera",
                 vision.isCameraStreaming()
                         ? "Streaming"
                         : "Not Streaming"
         );
+
+         */
 
         telemetry.addData(
                 "Detected Cluster",
@@ -871,10 +873,12 @@ public class CompTeleOp extends OpMode {
         telemetry.addLine("===== LAUNCHER =====");
 
 
-        telemetry.addData(
+        /*telemetry.addData(
                 "Base Target Velocity",
                 baseTargetVelocity
         );
+
+         */
 
         telemetry.addData(
                 "Velocity Offset",
@@ -892,7 +896,7 @@ public class CompTeleOp extends OpMode {
                 launcher.getPollenLauncherVelocity()
         );
 
-        telemetry.addLine("");
+       /* telemetry.addLine("");
         telemetry.addLine("===== DRIVING =====");
 
         telemetry.addData(
@@ -902,6 +906,8 @@ public class CompTeleOp extends OpMode {
                         : "Robot Centric"
         );
 
+        */
+
         telemetry.addData(
                 "Robot Heading (deg)",
                 Math.toDegrees(
@@ -909,13 +915,15 @@ public class CompTeleOp extends OpMode {
                 )
         );
 
-        telemetry.addLine("");
+      /*  telemetry.addLine("");
         telemetry.addLine("GAMEPAD 1:");
         telemetry.addLine("Cross = Hold Auto Aim");
         telemetry.addLine("Triangle = Field/Robot Centric");
         telemetry.addLine("Square = Reset Heading");
         telemetry.addLine("R1 = 50% Speed");
         telemetry.addLine("L1 = Hold Ramps Down");
+
+       */
 
         telemetry.update();
     }

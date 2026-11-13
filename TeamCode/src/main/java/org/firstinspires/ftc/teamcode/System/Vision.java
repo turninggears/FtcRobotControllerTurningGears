@@ -5,6 +5,8 @@ import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -459,5 +461,15 @@ public class Vision {
         if (visionPortal != null) {
             visionPortal.close();
         }
+    }
+
+    public Action chooseAction(boolean condition, Action ifTrue, Action ifFalse) {
+        return new Action() {
+            Action selected;
+            @Override public boolean run(TelemetryPacket packet) {
+                if (selected == null) selected = condition ? ifTrue : ifFalse;
+                return selected.run(packet);
+            }
+        };
     }
 }

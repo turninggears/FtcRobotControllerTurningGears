@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
 @Config
-@Disabled
 @Autonomous(name = "BioBuzz Red Right B", group = "Autonomous")
 public class BioBuzzRedRight_B extends LinearOpMode {
 
@@ -35,16 +34,16 @@ public class BioBuzzRedRight_B extends LinearOpMode {
 
     // Field coordinates, inches. Headings are degrees.
     public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -10.5;
-    public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -40;
-    public static double GARDEN_START_X = 65, GARDEN_START_Y = -55;
-    public static double GARDEN_END_X = 60, GARDEN_END_Y = -55;
+    public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
+    public static double GARDEN_START_X = 70, GARDEN_START_Y = -55;
+    public static double GARDEN_END_X = 70, GARDEN_END_Y = -55;
     public static double FLOWER_A_LINE_X = 28, FLOWER_A_LINE_Y = -42;
     public static double FLOWER_A_PICK_X = 28, FLOWER_A_PICK_Y = -52;
     public static double PUSH_WAYPOINT_1_X = 4, PUSH_WAYPOINT_1_Y = -56;
     public static double PARTNER_PARK_X = -5, PARTNER_PARK_Y = -56;
     public static double PUSH_WAYPOINT_2_X = 4, PUSH_WAYPOINT_2_Y = -36;
-    public static double B_WAYPOINT_X = -38, B_WAYPOINT_Y = -36;
-    public static double LAUNCH_B_X = -60, LAUNCH_B_Y = -28, LAUNCH_B_HEADING = 278;
+    public static double B_WAYPOINT_X = 0, B_WAYPOINT_Y = -28;
+    public static double LAUNCH_B_X = -60, LAUNCH_B_Y = -28, LAUNCH_B_HEADING = 180;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -28;
     public static double FLOWER_B_PICK_X = -61.5, FLOWER_B_PICK_Y = -28;
     public static double PARK_B_X = -48, PARK_B_Y = -65;
@@ -190,6 +189,12 @@ public class BioBuzzRedRight_B extends LinearOpMode {
         };
     }
 
+    Action noAction = packet -> false;
+
+    private Action checkIfHiveUpAction (Vision vision, boolean[] tag, Action ifTrue, Action ifFalse) {
+        return vision.chooseAction(tag[0], ifTrue, ifFalse);
+    }
+
     @Override
     public void runOpMode() {
         Pose2d startPose = new Pose2d(63.5, -10.5, Math.toRadians(0));
@@ -216,13 +221,13 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
                 driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 0),
-                waitSeconds(1.0),
+                waitSeconds(1.5),
                 launcher.launchFourPollenAction(),
                 //driveTo(drive, 65, -10.5, 285),
                 driveTo(drive, GARDEN_START_X, GARDEN_START_Y, 285),
                 driveTo(drive, GARDEN_END_X, GARDEN_END_Y, 285),
                 waitSeconds(GARDEN_WAIT_SECONDS),
-                driveTo(drive, LAUNCH_A_TAG_READ_X, LAUNCH_A_TAG_READ_Y, 278),
+                driveTo(drive, LAUNCH_A_TAG_READ_X, LAUNCH_A_TAG_READ_Y, 315),
                 checkAprilTag(vision, "Side A", SIDE_A_TAG_TIMEOUT_SECONDS, sideATag)
         );
 
@@ -244,6 +249,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 // Return to Flower A lineup
 
                 driveTo(drive, FLOWER_A_LINE_X, FLOWER_A_LINE_Y, 270),
+                waitSeconds(1),
                 intake.rampsUpAction()
         );
 
@@ -265,6 +271,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
 
         // Side B: launch, collect Flower B, return and launch again.
         Action sideBSequence = new SequentialAction(
+                driveTo(drive, B_WAYPOINT_X, B_WAYPOINT_Y, LAUNCH_B_HEADING),
                 driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y, LAUNCH_B_HEADING),
                 checkAprilTag(vision, "Side B Return" , 1, sideBReturnTag),
                 launcher.launchFourPollenAction(),
@@ -288,7 +295,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 opening,
                 ifDetected(sideATag, sideAOptional),
                 //partnerPushAndCross,
-                ifDetected(sideBTag, sideBSequence),
+                sideBSequence,
                 driveTo(drive, PARK_B_X, PARK_B_Y, 90)
         );
 

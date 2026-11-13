@@ -40,7 +40,7 @@ public class CompTeleOp extends OpMode {
 
     public static double AUTO_AIM_KP = 0.025;
     public static double AUTO_AIM_MAX_TURN = 0.35;
-    public static double AUTO_AIM_MIN_TURN = 0.2;
+    public static double AUTO_AIM_MIN_TURN = 0.1;
 
     public static double AUTO_AIM_OFFSET_DEGREES = 0.75;
 
@@ -381,6 +381,31 @@ public class CompTeleOp extends OpMode {
             aimStatus = "MANUAL";
         }
 
+// ====================================
+// LIGHT 1 - APRILTAG AIM STATUS
+// ====================================
+
+        if (aimCorrection == null || !Double.isFinite(aimCorrection)) {
+
+            // No valid alliance AprilTag detected
+            lights.lightOff(0);
+
+        } else if (Math.abs(aimCorrection + AUTO_AIM_OFFSET_DEGREES)
+                <= Vision.AIM_TOLERANCE_DEGREES) {
+
+            // Correct alliance AprilTag detected and aligned
+            lights.setColor(
+                    MatchSettings.LightColors.LIGHT_GREEN, 0
+            );
+
+        } else {
+
+            // Correct alliance AprilTag detected but not aligned
+            lights.setColor(
+                    MatchSettings.LightColors.LIGHT_YELLOW, 0
+            );
+        }
+
         // ====================================
         // APPLY DRIVE POWERS
         // ====================================
@@ -580,43 +605,32 @@ public class CompTeleOp extends OpMode {
         }
 
         readColorSensors();
+
+// ====================================
+// LIGHTS 2 AND 3 - POLLEN STATUS
+// ====================================
+
+// LIGHT 2 - Alliance color when sensor 0 detects pollen
+        if (sensorAlphas[0] >= BALL_ALPHA_THRESHOLD) {
+
+            lights.setColor(MatchSettings.getAlliance(), 1);
+
+        } else {
+
+            lights.lightOff(1);
+        }
+
+// LIGHT 3 - Alliance color when all 4 sensors detect pollen
         if (sensorAlphas[0] >= BALL_ALPHA_THRESHOLD
                 && sensorAlphas[1] >= BALL_ALPHA_THRESHOLD
                 && sensorAlphas[2] >= BALL_ALPHA_THRESHOLD
                 && sensorAlphas[3] >= BALL_ALPHA_THRESHOLD) {
-            for (int i = 0; i < 3; i++) {
-                lights.setColor(MatchSettings.getAlliance(), i);
-            }
+
+            lights.setColor(MatchSettings.getAlliance(), 2);
+
         } else {
-            if (sensorAlphas[0] <= BALL_ALPHA_THRESHOLD
-                    && sensorAlphas[1] <= BALL_ALPHA_THRESHOLD
-                    && sensorAlphas[2] <= BALL_ALPHA_THRESHOLD
-                    && sensorAlphas[3] <= BALL_ALPHA_THRESHOLD) {
-                lights.setColor(MatchSettings.LightColors.LIGHT_YELLOW, 0);
-                for (int i = 1; i <= 2; i++) {
-                    lights.lightOff(i);
-                };
-            } else {
-                if (sensorAlphas[0] >= BALL_ALPHA_THRESHOLD || sensorAlphas[1] >= BALL_ALPHA_THRESHOLD) {
-                    lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 0);
-                } else {
-                    lights.lightOff(0);
-                }
 
-                if (sensorAlphas[2] >= BALL_ALPHA_THRESHOLD) {
-                    lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 1);
-                } else {
-                    lights.lightOff(1);
-                }
-
-                if (sensorAlphas[3] >= BALL_ALPHA_THRESHOLD) {
-                    lights.setColor(MatchSettings.LightColors.LIGHT_GREEN, 2);
-                } else {
-                    lights.lightOff(2);
-                }
-
-            }
-
+            lights.lightOff(2);
         }
         // ====================================
         // TELEMETRY
@@ -949,12 +963,15 @@ public class CompTeleOp extends OpMode {
             );
         }
 
-        if (intake != null) {
-            intake.stop();
-        }
-
         if (vision != null) {
             vision.close();
+        }
+
+// Turn off all lights when TeleOp stops
+        if (lights != null) {
+            lights.lightOff(0);
+            lights.lightOff(1);
+            lights.lightOff(2);
         }
 
         intakeDirection = 0;

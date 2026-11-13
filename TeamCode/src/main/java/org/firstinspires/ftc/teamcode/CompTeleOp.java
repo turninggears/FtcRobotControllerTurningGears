@@ -38,11 +38,11 @@ public class CompTeleOp extends OpMode {
     // DASHBOARD - AUTOMATIC AIM SETTINGS
     // ========================================
 
-    public static double AUTO_AIM_KP = 0.015;
+    public static double AUTO_AIM_KP = 0.025;
     public static double AUTO_AIM_MAX_TURN = 0.35;
-    public static double AUTO_AIM_MIN_TURN = 0.0;
+    public static double AUTO_AIM_MIN_TURN = 0.2;
 
-    public static double AUTO_AIM_OFFSET_DEGREES = 0.0;
+    public static double AUTO_AIM_OFFSET_DEGREES = 0.75;
 
     // Change to -1 if robot turns away
     // from the AprilTag instead of toward it.

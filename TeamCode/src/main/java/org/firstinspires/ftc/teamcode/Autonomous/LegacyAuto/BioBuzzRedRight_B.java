@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -36,13 +37,13 @@ public class BioBuzzRedRight_B extends LinearOpMode {
     public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -10.5;
     public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
-    public static double GARDEN_END_X = 70, GARDEN_END_Y = -60;
+    public static double GARDEN_END_X = 68, GARDEN_END_Y = -60;
     public static double FLOWER_A_LINE_X = 21, FLOWER_A_LINE_Y = -42;
     public static double FLOWER_A_PICK_X = 21, FLOWER_A_PICK_Y = -52;
      public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
-    public static double LAUNCH_B_X = -57, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
+    public static double LAUNCH_B_X = -52, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
-    public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -15;
+    public static double FLOWER_B_PICK_X = -57, FLOWER_B_PICK_Y = -20;
     public static double PARK_B_X = -35, PARK_B_Y = -60;
 
     private void stopMechanisms(Launcher launcher, Intake intake) {
@@ -84,6 +85,26 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                         Math.toDegrees(actualPose.heading.toDouble()));
 
                 return running;
+            }
+        };
+    }
+    private Action turnTo(MecanumDriveBiobuzz drive, double headingDegrees) {
+        return new Action() {
+            private Action turnAction;
+
+            @Override
+            public boolean run(TelemetryPacket packet) {
+                if (turnAction == null) {
+                    drive.updatePoseEstimate();
+
+                    Pose2d currentPose = drive.localizer.getPose();
+
+                    turnAction = drive.actionBuilder(currentPose)
+                            .turnTo(Math.toRadians(headingDegrees))
+                            .build();
+                }
+
+                return turnAction.run(packet);
             }
         };
     }
@@ -165,9 +186,18 @@ public class BioBuzzRedRight_B extends LinearOpMode {
 
             @Override
             public boolean run(TelemetryPacket packet) {
+                launcher.updatePollenLauncher();
                 double elapsed = getRuntime();
+
                 packet.put("Auto Elapsed Seconds", elapsed);
                 packet.put("Emergency Parking", parkingStarted);
+
+// Launcher telemetry
+                packet.put("Launcher Target Velocity", Launcher.LAUNCHER_VELOCITY);
+                packet.put("Launcher Actual Velocity", launcher.getPollenLauncherVelocity());
+
+                packet.put("Launcher Velocity Error",
+                        Launcher.LAUNCHER_VELOCITY - launcher.getPollenLauncherVelocity());
 
                 if (!parkingStarted && elapsed >= AUTO_PARK_TRIGGER_SECONDS) {
                     parkingStarted = true;
@@ -260,57 +290,39 @@ public class BioBuzzRedRight_B extends LinearOpMode {
         // Side B: launch, collect Flower B, return and launch again.
         Action sideBSequence = new SequentialAction(
                 driveTo(drive, B_WAYPOINT_X, B_WAYPOINT_Y,LAUNCH_B_HEADING),
-                driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y,LAUNCH_B_HEADING),
-                intake.rampsDownAction(),
+                new ParallelAction(
+                    driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y,LAUNCH_B_HEADING),
+                    intake.rampsDownAction(),
+                        packet -> {
+                            Launcher.LAUNCHER_VELOCITY = 1170;
+                            return false;
+                        }
+                ),
                 checkAprilTag(vision, "Side B Return" , 0, sideBReturnTag),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, FLOWER_B_PICK_X,FLOWER_B_PICK_Y, 180),
                intake.rampsShakeAction(),
+               turnTo(drive,190),
+               //driveTo(drive,LAUNCH_B_X,LAUNCH_B_Y,LAUNCH_B_HEADING),
                launcher.launchFourPollenAction(),
-
-
-               waitSeconds(5)
-               // driveTo(drive, FLOWER_B_LINE_X, FLOWER_B_LINE_Y, 180),
-                //waitSeconds(0.75),
-               // driveTo(drive, FLOWER_B_PICK_X, FLOWER_B_PICK_Y, 180),
-               // new ParallelAction(
-                    //    waitSeconds(FLOWER_B_WAIT_SECONDS),
-                      //  intake.rampsShakeAction()
-                //),
-                       // driveTo(drive, FLOWER_B_LINE_X, FLOWER_B_LINE_Y, 180),
-               // new ParallelAction(
-                       // intake.rampsUpAction(),
-                       // driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y, 180)),
-                /*checkAprilTag(vision, "Side B Return", 0, sideBReturnTag),
-                launcher.launchFourPollenAction(),
+               //launcher.launchFourPollenAction(),
                 driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270),
-                        new ParallelAction(
-                                intake.rampsDownAction(),
-                                driveTo(drive, FLOWER_A_LINE_X, FLOWER_A_LINE_Y, 270)),
-                        driveTo(drive, FLOWER_A_PICK_X, FLOWER_A_PICK_Y, 270),
-                        waitSeconds(FLOWER_A_WAIT_SECONDS),
-                        driveTo(drive, FLOWER_A_LINE_X, FLOWER_A_LINE_Y, 270),
-                new ParallelAction(
-                        intake.rampsUpAction(),
-                        driveTo(drive, LAUNCH_A_TAG_READ_X,LAUNCH_A_TAG_READ_Y,315)
-                ),
+               driveTo(drive,FLOWER_A_LINE_X,FLOWER_B_LINE_Y,270),
+               new ParallelAction(
+               driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y,270),
+                       checkAprilTag(vision,"Side A",SIDE_A_TAG_TIMEOUT_SECONDS,sideATag)
+               ));
 
-                        checkAprilTag(vision,"Side A Return", 0,sideATag),
-                        launcher.launchFourPollenAction()
-
-                 */
-
-
+        Action endOptionalSequence = new SequentialAction(
+                driveTo(drive,LAUNCH_A_TAG_READ_X,LAUNCH_A_TAG_READ_Y,315)
         );
-
-
 
         // Normal finish also uses measured position, not a .fresh() chain.
         Action normalSequence = new SequentialAction(
                 opening,
                 ifDetected(sideATag, sideAOptional),
-                //partnerPushAndCross,
                 sideBSequence,
+               // ifDetected(sideATag,endOptionalSequence)
                 driveTo(drive, PARK_B_X, PARK_B_Y, 90)
         );
 

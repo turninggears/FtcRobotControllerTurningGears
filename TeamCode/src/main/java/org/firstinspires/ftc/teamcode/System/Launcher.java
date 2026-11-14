@@ -256,4 +256,12 @@ public class Launcher {
                 closePollenGateAction
         );
     }
+    // Launch pollen with a custom gate-open duration
+    public Action launchFourPollenAction(double durationSeconds) {
+        return new SequentialAction(
+                openPollenGateAction,
+                new SleepAction(durationSeconds),
+                closePollenGateAction
+        );
+    }
 }

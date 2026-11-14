@@ -26,25 +26,25 @@ import org.firstinspires.ftc.teamcode.System.Vision;
 @Autonomous(name = "BioBuzz Red Right B", group = "Autonomous")
 public class BioBuzzRedRight_B extends LinearOpMode {
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 24.0;
-    public static double SIDE_A_TAG_TIMEOUT_SECONDS = .1;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 27.0;
+    public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
     public static int REQUIRED_TAG_DETECTIONS = 3;
-    public static double GARDEN_WAIT_SECONDS = 0.1;
-    public static double FLOWER_A_WAIT_SECONDS = .75;
+    public static double GARDEN_WAIT_SECONDS = 0.01;
+    public static double FLOWER_A_WAIT_SECONDS = .5;//was.75
     public static double FLOWER_B_WAIT_SECONDS = .75;
 
     // Field coordinates, inches. Headings are degrees.
-    public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -10.5;
+    public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -35;
     public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -60;
-    public static double FLOWER_A_LINE_X = 21, FLOWER_A_LINE_Y = -42;
-    public static double FLOWER_A_PICK_X = 21, FLOWER_A_PICK_Y = -52;
+    public static double FLOWER_A_LINE_X = 30, FLOWER_A_LINE_Y = -50;
+    public static double FLOWER_A_PICK_X = 30, FLOWER_A_PICK_Y = -61;
      public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
-    public static double LAUNCH_B_X = -52, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
+    public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
-    public static double FLOWER_B_PICK_X = -57, FLOWER_B_PICK_Y = -20;
-    public static double PARK_B_X = -35, PARK_B_Y = -60;
+    public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
+    public static double PARK_B_X = -24, PARK_B_Y = -56;
 
     private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();
@@ -201,16 +201,33 @@ public class BioBuzzRedRight_B extends LinearOpMode {
 
                 if (!parkingStarted && elapsed >= AUTO_PARK_TRIGGER_SECONDS) {
                     parkingStarted = true;
-                    stopMechanisms(launcher, intake);
+
+                    // Keep intake and launcher running during emergency parking.
+                    // Stop only the current driving movement.
                     stopDrive(drive);
-                    // Read Pinpoint again after interrupting the active path.
+
+                    // Read current Pinpoint position.
                     drive.updatePoseEstimate();
                     Pose2d currentPose = drive.localizer.getPose();
-                    emergencyPark = drive.actionBuilder(currentPose)
-                            .strafeToLinearHeading(
-                                    new Vector2d(PARK_B_X, PARK_B_Y),
-                                    Math.toRadians(90))
-                            .build();
+
+                    // Drive to park, then raise ramps and stop mechanisms.
+                    emergencyPark = new SequentialAction(
+
+                            drive.actionBuilder(currentPose)
+                                    .strafeToLinearHeading(
+                                            new Vector2d(PARK_B_X, PARK_B_Y),
+                                            Math.toRadians(90))
+                                    .build(),
+
+                            // Raise ramps only after reaching parking position
+                            intake.rampsUpAction(),
+
+                            // Stop intake and launcher after ramps are commanded UP
+                            packet2 -> {
+                                stopMechanisms(launcher, intake);
+                                return false;
+                            }
+                    );
                 }
 
                 if (parkingStarted) {
@@ -259,8 +276,8 @@ public class BioBuzzRedRight_B extends LinearOpMode {
         Action opening = new SequentialAction(
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
-                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 0),
-                waitSeconds(1.75),
+                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 330),
+                waitSeconds(1.6),
                 launcher.launchFourPollenAction(),
                 //driveTo(drive, 65, -10.5, 285),
                 //driveTo(drive, GARDEN_START_X, GARDEN_START_Y, 285),
@@ -294,7 +311,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                     driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y,LAUNCH_B_HEADING),
                     intake.rampsDownAction(),
                         packet -> {
-                            Launcher.LAUNCHER_VELOCITY = 1170;
+                            Launcher.LAUNCHER_VELOCITY = 1180;
                             return false;
                         }
                 ),
@@ -304,12 +321,12 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                intake.rampsShakeAction(),
                turnTo(drive,190),
                //driveTo(drive,LAUNCH_B_X,LAUNCH_B_Y,LAUNCH_B_HEADING),
-               launcher.launchFourPollenAction(),
-               //launcher.launchFourPollenAction(),
-                driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270),
-               driveTo(drive,FLOWER_A_LINE_X,FLOWER_B_LINE_Y,270),
+               launcher.launchFourPollenAction(2.5),
+               driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270),
+               driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
+               driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y, 270),
                new ParallelAction(
-               driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y,270),
+               driveTo(drive,FLOWER_A_LINE_X,-44,270),
                        checkAprilTag(vision,"Side A",SIDE_A_TAG_TIMEOUT_SECONDS,sideATag)
                ));
 

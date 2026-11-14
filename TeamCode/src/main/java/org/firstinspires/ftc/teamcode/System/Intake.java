@@ -21,7 +21,7 @@ public class Intake {
     public static double RAMP_UP = 0.50;
     public static double RAMP_DOWN = 0;
 
-    public static double RAMP_SHAKE = .15;
+    public static double RAMP_SHAKE = .3;
 
     Servo rightRamp;
     Servo leftRamp;
@@ -248,33 +248,33 @@ public class Intake {
                     leftRamp.setPosition(RAMP_SHAKE);
                     return false;
                 },
-                new SleepAction(0.15),
+                new SleepAction(0.05),
 
                 packet -> {
                     rampsDown();
                     return false;
                 },
-                new SleepAction(0.15),
+                new SleepAction(0.05),
 
                 packet -> {
                     rightRamp.setPosition(RAMP_SHAKE);
                     leftRamp.setPosition(RAMP_SHAKE);
                     return false;
                 },
-                new SleepAction(0.15),
+                new SleepAction(0.05),
 
                 packet -> {
                     rampsDown();
                     return false;
                 },
-                new SleepAction(0.15),
+                new SleepAction(0.05),
 
                 packet -> {
                     rightRamp.setPosition(RAMP_SHAKE);
                     leftRamp.setPosition(RAMP_SHAKE);
                     return false;
                 },
-                new SleepAction(0.15),
+                new SleepAction(0.05),
 
                 packet -> {
                     rampsDown();

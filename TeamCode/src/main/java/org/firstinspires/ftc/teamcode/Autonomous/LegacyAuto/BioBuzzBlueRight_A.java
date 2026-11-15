@@ -333,11 +333,9 @@ public class BioBuzzBlueRight_A extends LinearOpMode {
 
         actions.add(launcher.startPollenLauncherAction());
         actions.add(intake.startIntakeAction());
-
-        // Launch 1: No AprilTag check.
         actions.add(launchPositionA.build());
         actions.add(launcher.launchFourPollenAction());
-        actions.add(backToWall.build());
+       // actions.add(backToWall.build());
         actions.add(gardenPosition.build());
         actions.add(gardenShiftPosition.build());
         actions.add(secondLaunchA.build());

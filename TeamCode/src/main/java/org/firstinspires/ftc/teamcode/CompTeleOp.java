@@ -113,20 +113,17 @@ public class CompTeleOp extends OpMode {
 
     private boolean firstLoop = true;
 
-    // ========================================
-    // INTAKE VARIABLES
-    // ========================================
+// ========================================
+// INTAKE CONTROL VARIABLES
+// ========================================
 
-    // 0 = stopped
-    // 1 = forward
-    // -1 = reverse
-    private int intakeDirection = 0;
+    // True = intake motors enabled
+// False = intake motors stopped
+    private boolean intakeEnabled = true;
 
-    //front intake direction tracking
-    private boolean frontIntakeReversed = false;
-
-    //tracks L2 presses for toggling
-    private boolean previousFrontReverseTrigger = false;
+    // Tracks previous L2 trigger state
+// so it toggles only once per press
+    private boolean previousIntakeToggleTrigger = false;
 
 
     // ========================================
@@ -263,12 +260,16 @@ public class CompTeleOp extends OpMode {
 
         if (firstLoop) {
 
-            intakeDirection = 1;
-            frontIntakeReversed = false;
-            previousFrontReverseTrigger = gamepad2.left_trigger> 0.5;
-            intake.start();//starts both intake motors forward
+            intakeEnabled = true;
 
-            launcher.startPollenLauncher();//starts pollen launcher
+            previousIntakeToggleTrigger =
+                    gamepad2.left_trigger > 0.5;
+
+            // Start both intake motors forward
+            intake.start();
+
+            // Start pollen launcher
+            launcher.startPollenLauncher();
 
             firstLoop = false;
         }
@@ -435,11 +436,9 @@ public class CompTeleOp extends OpMode {
         // GAMEPAD 2 - POLLEN GATE
         // ====================================
 
-        // Cross - Hold gate open
+        // Cross - Hold pollen gate open
         if (gamepad2.crossWasPressed()) {
             launcher.openPollenGate();
-            frontIntakeReversed = false;
-            intake.startFrontIntake();
         }
 
         if (gamepad2.crossWasReleased()) {
@@ -450,17 +449,10 @@ public class CompTeleOp extends OpMode {
         // GAMEPAD 2 - LAUNCHER CONTROLS
         // ====================================
 
-        // Circle - Forward
-        // resets front intake to in
+        // Circle - Start launcher forward
         if (gamepad2.circleWasPressed()) {
 
             launcher.startPollenLauncher();
-
-            frontIntakeReversed = false;
-
-            if (intakeDirection == 1) {
-                intake.startFrontIntake();
-            }
         }
 
         // Square - Reverse
@@ -495,94 +487,62 @@ public class CompTeleOp extends OpMode {
 
         launcher.updatePollenLauncher();
 
-        // ====================================
+// ====================================
 // GAMEPAD 2 - INTAKE CONTROLS
 // ====================================
 
-// R1 - Temporarily reverse both intake motors
-        if (gamepad2.rightBumperWasPressed()) {
-
-            intakeDirection = -1;
-
-            // Do not change frontIntakeReversed.
-            // This preserves the direction selected by L2.
-            intake.reverse();
-        }
-
-// R1 released - Restore previous front intake direction
-        if (gamepad2.rightBumperWasReleased()) {
-
-            intakeDirection = 1;
-
-            // Return main intake forward
-            intake.start();
-
-            // Restore front intake to its previous L2 setting
-            if (frontIntakeReversed) {
-                intake.reverseFrontIntake();
-            }
-        }
-
-// L1 - Toggle both intakes forward/stopped
-        else if (gamepad2.leftBumperWasPressed()) {
-
-            if (intakeDirection == 1) {
-
-                intakeDirection = 0;
-                frontIntakeReversed = false;
-
-                intake.stop();
-
-            } else if (!gamepad2.right_bumper) {
-
-                intakeDirection = 1;
-                frontIntakeReversed = false;
-
-                intake.start();
-            }
-        }
-
-        // ====================================
-// GAMEPAD 2 L2 - FRONT INTAKE TOGGLE
+// ====================================
+// L2 - TOGGLE BOTH INTAKES ON/OFF
 // ====================================
 
-// Detect L2 press
-
-        if (gamepad2.left_trigger_pressed && intakeDirection == 1) {
-            intake.reverseFrontIntake();
-        } else {
-            intake.startFrontIntake();
-        }
-
-        /*
-        boolean frontReverseTrigger =
+        boolean intakeToggleTrigger =
                 gamepad2.left_trigger > 0.5;
 
-// Only toggle once per press
-        if (frontReverseTrigger && !previousFrontReverseTrigger) {
+// Toggle once each time L2 is pressed
+        if (intakeToggleTrigger && !previousIntakeToggleTrigger) {
 
-            // Only allow independent toggle
-            // when main intake is running forward
-            if (intakeDirection == 1) {
-
-                frontIntakeReversed = !frontIntakeReversed;
-
-                if (frontIntakeReversed) {
-
-                    // Reverse only front intake
-                    intake.reverseFrontIntake();
-
-                } else {
-
-                    // Return only front intake forward
-                    intake.startFrontIntake();
-                }
-            }
+            intakeEnabled = !intakeEnabled;
         }
 
-// Remember trigger state for next loop
-        previousFrontReverseTrigger = frontReverseTrigger;
-*/
+// Remember L2 state for next loop
+        previousIntakeToggleTrigger = intakeToggleTrigger;
+
+
+// ====================================
+// APPLY INTAKE MOTOR DIRECTIONS
+// ====================================
+
+// Intake disabled by L2
+        if (!intakeEnabled) {
+
+            intake.stop();
+
+        }
+
+// R1 - Reverse BOTH motors while held
+        else if (gamepad2.right_bumper) {
+
+            intake.reverse();
+
+        }
+
+// L1 - Reverse FRONT motor while held
+        else if (gamepad2.left_bumper) {
+
+            // Main intake forward
+            intake.start();
+
+            // Front intake reverse
+            intake.reverseFrontIntake();
+
+        }
+
+// Normal intake - BOTH motors forward
+        else {
+
+            intake.start();
+
+        }
         /* ========================================
      Update Color Sensor data
     ======================================== */
@@ -971,6 +931,10 @@ public class CompTeleOp extends OpMode {
             );
         }
 
+        if (intake != null) {
+            intake.stop();
+        }
+
         if (vision != null) {
             vision.close();
         }
@@ -982,7 +946,7 @@ public class CompTeleOp extends OpMode {
             lights.lightOff(2);
         }
 
-        intakeDirection = 0;
+
     }
 
     private void readColorSensors() {

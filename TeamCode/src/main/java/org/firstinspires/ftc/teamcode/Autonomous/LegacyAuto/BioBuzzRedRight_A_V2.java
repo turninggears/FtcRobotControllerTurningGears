@@ -350,8 +350,6 @@ public class BioBuzzRedRight_A_V2 extends LinearOpMode {
         // Normal finish also uses measured position, not a .fresh() chain.
         Action normalSequence = new SequentialAction(
                 opening,
-               // ifDetected(sideATag, sideAOptional),
-                //sideBSequence,
                 driveTo(drive, PARK_B_X, PARK_B_Y, 90),
                 intake.rampsUpAction(),
                 packet -> {

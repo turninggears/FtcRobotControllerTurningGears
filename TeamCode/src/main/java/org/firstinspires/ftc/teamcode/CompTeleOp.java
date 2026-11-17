@@ -547,6 +547,14 @@ public class CompTeleOp extends OpMode {
 // ====================================
 
 // Detect L2 press
+
+        if (gamepad2.left_trigger_pressed && intakeDirection == 1) {
+            intake.reverseFrontIntake();
+        } else {
+            intake.startFrontIntake();
+        }
+
+        /*
         boolean frontReverseTrigger =
                 gamepad2.left_trigger > 0.5;
 
@@ -574,7 +582,7 @@ public class CompTeleOp extends OpMode {
 
 // Remember trigger state for next loop
         previousFrontReverseTrigger = frontReverseTrigger;
-
+*/
         /* ========================================
      Update Color Sensor data
     ======================================== */

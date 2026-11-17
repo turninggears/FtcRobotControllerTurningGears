@@ -1,5 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto;
+package org.firstinspires.ftc.teamcode.Autonomous_Archive;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,12 +10,12 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
@@ -28,17 +28,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
-@Disabled
-@Autonomous(name = "BioBuzz Red Left A with Tip Timer", group = "Autonomous")
-public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
+@Autonomous(name = "BioBuzz Blue Left A", group = "Autonomous")
+public class BioBuzzBlueLeft_A extends LinearOpMode {
 
     // ========================================
     // AUTONOMOUS SETTINGS
     // ========================================
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 24.0;
-
-    public static double HIVE_TIP_TIMEOUT = 10.0;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 23.0;
 
     // Require three consecutive AprilTag detections.
     public static int REQUIRED_TAG_DETECTIONS = 3;
@@ -141,7 +138,6 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
         return new Action() {
 
             private int consecutiveDetections = 0;
-            private double tagVisibilityTimeout = System.nanoTime() / 1e9;
 
             @Override
             public boolean run(TelemetryPacket packet) {
@@ -180,10 +176,9 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
                         "WAITING"
                 );
 
-                return !(System.nanoTime() >= tagVisibilityTimeout);
-
                 // No individual AprilTag timeout.
                 // Overall 25-second failsafe handles parking.
+                return true;
             }
         };
     }
@@ -263,7 +258,7 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
 
         // Default to RED alliance.
         MatchSettings.setAlliance(
-                MatchSettings.Alliance.RED
+                MatchSettings.Alliance.BLUE
         );
 
         // Initialize Vision after selecting alliance.
@@ -274,8 +269,8 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
                 FtcDashboard.getInstance().getTelemetry()
         );
 
-        telemetry.addData("Alliance", "RED");
-        telemetry.addData("Autonomous", "Red Left A");
+        telemetry.addData("Alliance", "BLUE");
+        telemetry.addData("Autonomous", "BLUE Left A");
         telemetry.addLine("Waiting for START");
         telemetry.update();
 
@@ -338,7 +333,7 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
         TrajectoryActionBuilder parkPositionB =
                 secondLaunchB.fresh()
                         .strafeToLinearHeading(
-                                new Vector2d(-48, -65),
+                                new Vector2d(-48, -66),
                                 Math.toRadians(90)
                         )
                         .endTrajectory();
@@ -376,6 +371,7 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
         actions.add(intake.startIntakeAction());
         actions.add(launchPositionB.build());
         actions.add(waitForAllianceAprilTag(vision));
+        actions.add(new SleepAction(.5));
         actions.add(launcher.launchFourPollenAction());
         actions.add(flowerBLineUp.build());
         actions.add(intake.rampsDownAction());
@@ -516,15 +512,5 @@ public class BioBuzzRedLeft_A_Wait extends LinearOpMode {
                 vision.close();
             }
         }
-    }
-
-    private Action choose(boolean[] condition, Action ifTrue, Action ifFalse) {
-        return new Action() {
-            Action selected;
-            @Override public boolean run(TelemetryPacket packet) {
-                if (selected == null) selected = condition[0] ? ifTrue : ifFalse;
-                return selected.run(packet);
-            }
-        };
     }
 }

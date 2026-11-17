@@ -42,7 +42,7 @@ public class BioBuzzBlueRight_B extends LinearOpMode {
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
     public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
-    public static double PARK_B_X = -24, PARK_B_Y = -56;
+    public static double PARK_A_X = -20, PARK_A_Y = -52;
 
     private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();
@@ -213,7 +213,7 @@ public class BioBuzzBlueRight_B extends LinearOpMode {
 
                             drive.actionBuilder(currentPose)
                                     .strafeToLinearHeading(
-                                            new Vector2d(PARK_B_X, PARK_B_Y),
+                                            new Vector2d(PARK_A_X, PARK_A_Y),
                                             Math.toRadians(90))
                                     .build(),
 
@@ -337,7 +337,7 @@ public class BioBuzzBlueRight_B extends LinearOpMode {
                 opening,
                 ifDetected(sideATag, sideAOptional),
                 sideBSequence,
-                driveTo(drive, PARK_B_X, PARK_B_Y, 90),
+                driveTo(drive, PARK_A_X, PARK_A_Y, 90),
                 intake.rampsUpAction(),
                 packet -> {
                     stopMechanisms(launcher, intake);

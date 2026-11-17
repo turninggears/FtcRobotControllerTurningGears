@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous.NextGenAuto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-import org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto.BioBuzzAuto;
+import org.firstinspires.ftc.teamcode.Autonomous_Archive.BioBuzzAuto;
 
 public class Right extends BioBuzzAuto {
 

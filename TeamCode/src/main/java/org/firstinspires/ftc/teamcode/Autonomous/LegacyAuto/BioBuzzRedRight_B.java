@@ -44,7 +44,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
     public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
-    public static double PARK_B_X = -24, PARK_B_Y = -56;
+    public static double PARK_B_X = -20, PARK_B_Y = -52;
 
     private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();

@@ -19,12 +19,12 @@ import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
-
+import com.acmerobotics.roadrunner.InstantAction;
 @Config
 @Autonomous(name = "BioBuzz Blue Left A V2", group = "Autonomous")
 public class BioBuzzBlueLeft_A_V2 extends LinearOpMode {
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 27.0;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
     public static int REQUIRED_TAG_DETECTIONS = 3;
     public static double GARDEN_WAIT_SECONDS = 0.01;
@@ -32,10 +32,10 @@ public class BioBuzzBlueLeft_A_V2 extends LinearOpMode {
     public static double FLOWER_B_WAIT_SECONDS = .75;
 
     // Field coordinates, inches. Headings are degrees.
-    public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -35;
+    public static double LAUNCH_A_X = 54, LAUNCH_A_Y = -35;
     public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
-    public static double GARDEN_END_X = 68, GARDEN_END_Y = -61;
+    public static double GARDEN_END_X = 68, GARDEN_END_Y = -62;
     public static double FLOWER_A_LINE_X = 24, FLOWER_A_LINE_Y = -50;
     public static double FLOWER_A_PICK_X = 24, FLOWER_A_PICK_Y = -62;
     public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
@@ -48,8 +48,10 @@ public class BioBuzzBlueLeft_A_V2 extends LinearOpMode {
 
     public static double OPTION_2_X_WAY_POINT = 36, OPTION_2_Y_WAY_POINT = -8.5;
 
-    public static double FIELD_CROSS_POINT_X = 0, FIELD_CROSS_POINT_Y = -8.5;
-    public static double LAUNCH_C_X = -54, LAUNCH_C_Y = -6;
+    public static double FIELD_CROSS_POINT_X = 0, FIELD_CROSS_POINT_Y = -5.5;
+    public static double LAUNCH_C_X = -63.5, LAUNCH_C_Y = -6;
+
+    public static double LAUNCH_WAYPOINT_X = -54.5, LAUNCH_WAYPOINT_Y = -6;
 
      private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();
@@ -315,13 +317,19 @@ public class BioBuzzBlueLeft_A_V2 extends LinearOpMode {
         Action opening = new SequentialAction(
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
-                driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
-                checkAprilTag(vision,"Side B",3,sideBTag)
+                //driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
+                checkAprilTag(vision,"Side B",5,sideBTag)
         );
+
 
         // IF PARTNER TIPS HIVE WE EXECUTE THIS CODE
          Action Option1 = new SequentialAction(
+                 new InstantAction(() -> {
+                     Launcher.LAUNCHER_VELOCITY = 1197;
+                 }),
+                 waitSeconds(1),
                  launcher.launchFourPollenAction(),
+                driveTo(drive,LAUNCH_WAYPOINT_X,LAUNCH_WAYPOINT_Y,180),
                 new ParallelAction(
                          driveTo(drive, FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
                          intake.rampsDownAction()
@@ -330,28 +338,27 @@ public class BioBuzzBlueLeft_A_V2 extends LinearOpMode {
                 intake.rampsShakeAction(),
                 turnTo(drive,190),
                  packet -> {
-                     Launcher.LAUNCHER_VELOCITY = 1180;
+                     Launcher.LAUNCHER_VELOCITY = 1190;
                      return false;
                  },
                 launcher.launchFourPollenAction(2.5),
                 driveTo(drive,FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
-                new ParallelAction(
-                        driveTo(drive,PARK_B_X,PARK_B_Y,90),
-                        intake.rampsUpAction()
-                )
+                intake.rampsUpAction()
+                //)
 
 
         );
 
         // IF PARTNER DOESN'T TIP HIVE BY SET TIME WE EXECUTE THIS CODE. THEY MUST HAVE MOVED TO PARK THOUGH
         Action Option2 = new SequentialAction(
-                driveTo(drive,FIELD_CROSS_POINT_X,FIELD_CROSS_POINT_Y,0),
+                driveTo(drive,FIELD_CROSS_POINT_X,FIELD_CROSS_POINT_Y,180),
                 driveTo(drive,OPTION_2_X_WAY_POINT,OPTION_2_Y_WAY_POINT,0),
                 driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, GARDEN_END_X,GARDEN_END_Y,270),
                 waitSeconds(GARDEN_WAIT_SECONDS),
                 driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
+                checkAprilTag(vision,"Side A",0,sideBTag),
                 launcher.launchFourPollenAction(),
                 new ParallelAction(
                         driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
@@ -359,6 +366,7 @@ public class BioBuzzBlueLeft_A_V2 extends LinearOpMode {
                 driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y,270),
                 intake.rampsShakeAction(),
                 waitSeconds(.5),
+                checkAprilTag(vision,"Side A",0,sideBTag),
                 driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
                 launcher.launchFourPollenAction(),
                 driveTo(drive,PARK_B_WAYPOINT_X, PARK_B_WAYPOINT_Y,90)

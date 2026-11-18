@@ -11,7 +11,7 @@ public class Lights {
 
     private final Servo[] lights = new Servo[3];
 
-    private static final double YELLOW = 0.350;
+    private static final double YELLOW = 0.355;
     private static final double GREEN = 0.512;
 
     private static final double RED = 0.280;

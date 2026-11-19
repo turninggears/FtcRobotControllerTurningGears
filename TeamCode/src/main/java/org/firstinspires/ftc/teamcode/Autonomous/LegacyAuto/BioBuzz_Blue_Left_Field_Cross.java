@@ -44,7 +44,8 @@ public class BioBuzz_Blue_Left_Field_Cross extends LinearOpMode {
     public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
     public static double PARK_B_X = -48, PARK_B_Y = -52;
 
-    public static double PARK_B_WAYPOINT_X = -48, PARK_B_WAYPOINT_Y = -36;
+    public static double PARK_B_WAYPOINT_X = -48, PARK_B_WAYPOINT_Y = -36
+            ;
 
     public static double OPTION_2_X_WAY_POINT = 36, OPTION_2_Y_WAY_POINT = -8.5;
 
@@ -343,11 +344,14 @@ public class BioBuzz_Blue_Left_Field_Cross extends LinearOpMode {
                  },
                 launcher.launchFourPollenAction(2.5),
                 driveTo(drive,FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
-                intake.rampsUpAction()
-                //)
-
-
-        );
+                intake.rampsUpAction(),
+                 waitSeconds(.75),
+                 turnTo(drive,190),
+                 launcher.launchFourPollenAction(3.0),
+                 driveTo(drive,FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
+                 intake.rampsUpAction(),
+                 driveTo(drive,PARK_B_X,PARK_B_Y,90)
+         );
 
         // IF PARTNER DOESN'T TIP HIVE BY SET TIME WE EXECUTE THIS CODE. THEY MUST HAVE MOVED TO PARK THOUGH
         Action Option2 = new SequentialAction(
@@ -358,30 +362,22 @@ public class BioBuzz_Blue_Left_Field_Cross extends LinearOpMode {
                 driveTo(drive, GARDEN_END_X,GARDEN_END_Y,270),
                 waitSeconds(GARDEN_WAIT_SECONDS),
                 driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
-                checkAprilTag(vision,"Side A",0,sideBTag),
-                launcher.launchFourPollenAction(),
+                checkAprilTag(vision,"Side A",0,sideATag),
                 new ParallelAction(
-                        driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
-                        intake.rampsDownAction()),
-                driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y,270),
-                intake.rampsShakeAction(),
-                waitSeconds(.5),
-                checkAprilTag(vision,"Side A",0,sideBTag),
-                driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
-                launcher.launchFourPollenAction(),
-                driveTo(drive,PARK_B_WAYPOINT_X, PARK_B_WAYPOINT_Y,90)
+                        driveTo(drive,24,-32,90),
+                intake.rampsUpAction()
+                ),
+                driveTo(drive,-50,-30,90),
+                driveTo(drive,PARK_B_X,PARK_B_Y,90)
+
         );
 
-        Action endOptionalSequence = new SequentialAction(
-                driveTo(drive,LAUNCH_A_TAG_READ_X,LAUNCH_A_TAG_READ_Y,315)
-        );
+
 
         // Normal finish also uses measured position, not a .fresh() chain.
         Action normalSequence = new SequentialAction(
                 opening,
                 chooseOption(sideBTag,Option1,Option2),
-                driveTo(drive,PARK_B_WAYPOINT_X,PARK_B_WAYPOINT_Y,90),
-                driveTo(drive, PARK_B_X, PARK_B_Y, 90),
                 intake.rampsUpAction(),
                 packet -> {
                     stopMechanisms(launcher, intake);

@@ -314,6 +314,10 @@ public class BioBuzz_Blue_Left_Only extends LinearOpMode {
         // START OF PROGRAM TO READ TAG FOR TIP
         Action opening = new SequentialAction(
                 launcher.startPollenLauncherAction(),
+                packet -> {
+                    Launcher.LAUNCHER_VELOCITY = 1195;
+                    return false;
+                },
                 intake.startIntakeAction(),
                 driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
                 checkAprilTag(vision,"Side B",0,sideBFirstTag),

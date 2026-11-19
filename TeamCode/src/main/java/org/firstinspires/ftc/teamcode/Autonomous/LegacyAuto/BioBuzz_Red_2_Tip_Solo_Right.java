@@ -325,7 +325,11 @@ public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
                 //turnTo(drive,200),
                 //driveTo(drive,LAUNCH_B_X,LAUNCH_B_Y,LAUNCH_B_HEADING),
                 launcher.launchFourPollenAction(3.0),
-                driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270)/*,
+                new ParallelAction(
+                        driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270),
+                        intake.rampsUpAction()
+                        )
+                        /*,
                 driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
                 driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y, 270),
                 new ParallelAction(

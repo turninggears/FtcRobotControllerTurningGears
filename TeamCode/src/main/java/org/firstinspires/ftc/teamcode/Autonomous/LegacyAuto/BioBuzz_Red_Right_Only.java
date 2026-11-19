@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -13,7 +14,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.acmerobotics.roadrunner.InstantAction;
+
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
@@ -21,8 +22,8 @@ import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
 @Config
-@Autonomous(name = "BioBuzz Blue Right A V2", group = "Autonomous")
-public class BioBuzzBlueRight_A_V2 extends LinearOpMode {
+@Autonomous(group = "Autonomous")
+public class BioBuzz_Red_Right_Only extends LinearOpMode {
 
     public static double AUTO_PARK_TRIGGER_SECONDS = 27.0;
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
@@ -256,13 +257,13 @@ public class BioBuzzBlueRight_A_V2 extends LinearOpMode {
         Launcher launcher = new Launcher(hardwareMap, telemetry);
         Intake intake = new Intake(hardwareMap, telemetry);
 
-        MatchSettings.setAlliance(MatchSettings.Alliance.BLUE);
+        MatchSettings.setAlliance(MatchSettings.Alliance.RED);
         Vision vision = new Vision(hardwareMap);
 
         telemetry = new MultipleTelemetry(
                 telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addData("Autonomous", "BioBuzz Blue Right B");
-        telemetry.addData("Alliance", "BLUE");
+        telemetry.addData("Autonomous", getClass().getSimpleName());
+        telemetry.addData("Alliance", MatchSettings.getAlliance());
         telemetry.addLine("Waiting for START");
         telemetry.update();
 
@@ -278,31 +279,29 @@ public class BioBuzzBlueRight_A_V2 extends LinearOpMode {
                 }),
                 intake.startIntakeAction(),
                 driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 330),
-                waitSeconds(1.5),
+                waitSeconds(1),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, GARDEN_END_X, GARDEN_END_Y, 270
                 ),
                 waitSeconds(GARDEN_WAIT_SECONDS),
                 driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 320
                 ),
-                waitSeconds(.5),
-                checkAprilTag(vision, "Side A", 0.0, sideATag),
-                waitSeconds(.5),
                 new InstantAction(() -> {
-                    Launcher.LAUNCHER_VELOCITY = 1200;
-                }),
+            Launcher.LAUNCHER_VELOCITY = 1200;
+        }),
+                waitSeconds(1.0),
+                checkAprilTag(vision, "Side A", 0.0, sideATag),
                 launcher.launchFourPollenAction(),
                 new ParallelAction(
                         intake.rampsDownAction(),
                         driveTo(drive, FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270)),
                 driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y,270),
                 intake.rampsShakeAction(),
-                waitSeconds(1.25),
+                waitSeconds(1),
                 driveTo(drive, FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
                 new InstantAction(() -> {
                     Launcher.LAUNCHER_VELOCITY = 1195;
                 }),
-                waitSeconds(.5),
                 driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
                 checkAprilTag(vision, "Side A", 0.0, sideATag),
                 launcher.launchFourPollenAction(),

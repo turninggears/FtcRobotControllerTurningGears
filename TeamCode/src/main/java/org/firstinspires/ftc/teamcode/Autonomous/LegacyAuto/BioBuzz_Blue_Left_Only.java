@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
 @Config
-@Autonomous(name = "BioBuzz Red Left A V3", group = "Autonomous")
-public class BioBuzzRedLeft_A_V3 extends LinearOpMode {
+@Autonomous(group = "Autonomous")
+public class BioBuzz_Blue_Left_Only extends LinearOpMode {
 
     public static double AUTO_PARK_TRIGGER_SECONDS = 27.0;
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
@@ -297,13 +297,13 @@ public class BioBuzzRedLeft_A_V3 extends LinearOpMode {
         Launcher launcher = new Launcher(hardwareMap, telemetry);
         Intake intake = new Intake(hardwareMap, telemetry);
 
-        MatchSettings.setAlliance(MatchSettings.Alliance.RED);
+        MatchSettings.setAlliance(MatchSettings.Alliance.BLUE);
         Vision vision = new Vision(hardwareMap);
 
         telemetry = new MultipleTelemetry(
                 telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Autonomous", getClass().getSimpleName());
-        telemetry.addData("Alliance", "Red");
+        telemetry.addData("Alliance", MatchSettings.getAlliance());
         telemetry.addLine("Waiting for START");
         telemetry.update();
 
@@ -317,59 +317,29 @@ public class BioBuzzRedLeft_A_V3 extends LinearOpMode {
                 intake.startIntakeAction(),
                 driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
                 checkAprilTag(vision,"Side B",0,sideBFirstTag),
+                waitSeconds(1),
                 launcher.launchFourPollenAction(),
                 new ParallelAction(
                          driveTo(drive, FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
                          intake.rampsDownAction()
                  ),
+                packet -> {
+                    Launcher.LAUNCHER_VELOCITY = 1180;
+                    return false;
+                },
                 driveTo(drive, FLOWER_B_PICK_X, FLOWER_B_PICK_Y, 180),
                 intake.rampsShakeAction(),
+                waitSeconds(.75),
                 turnTo(drive,190),
-                 packet -> {
-                     Launcher.LAUNCHER_VELOCITY = 1180;
-                     return false;
-                 },
-                launcher.launchFourPollenAction(2.5),
+                launcher.launchFourPollenAction(3.0),
                 driveTo(drive,FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
                 intake.rampsUpAction(),
-                checkAprilTag(vision,"Side B",1.5,sideBSecondTag)
-
-                );
-
-          Action Option1 = new SequentialAction(
-                  driveTo(drive,PARK_B_X,PARK_B_Y,90)
-          );
-
-        Action Option2 = new SequentialAction(
-                driveTo(drive,FIELD_CROSS_POINT_X,FIELD_CROSS_POINT_Y,0),
-                driveTo(drive,OPTION_2_X_WAY_POINT,OPTION_2_Y_WAY_POINT,0),
-                driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
-               // launcher.launchFourPollenAction(),
-                //driveTo(drive, GARDEN_END_X,GARDEN_END_Y,270),
-                //waitSeconds(GARDEN_WAIT_SECONDS),
-                //driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
-                //launcher.launchFourPollenAction(),
-                new ParallelAction(
-                        driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
-                        intake.rampsDownAction()),
-                driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y,270),
-                intake.rampsShakeAction(),
-                waitSeconds(.5),
-                driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
-                launcher.launchFourPollenAction(),
-                driveTo(drive,PARK_B_WAYPOINT_X, PARK_B_WAYPOINT_Y,90),
                 driveTo(drive,PARK_B_X,PARK_B_Y,90)
-        );
-
-        Action endOptionalSequence = new SequentialAction(
-                driveTo(drive,LAUNCH_A_TAG_READ_X,LAUNCH_A_TAG_READ_Y,315)
-        );
+          );
 
         // Normal finish also uses measured position, not a .fresh() chain.
         Action normalSequence = new SequentialAction(
                 opening,
-                chooseOption(sideBSecondTag,Option1,Option2),
-               // driveTo(drive, PARK_B_X, PARK_B_Y, 90),
                 intake.rampsUpAction(),
                 packet -> {
                     stopMechanisms(launcher, intake);

@@ -8,12 +8,10 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
@@ -23,8 +21,8 @@ import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
 @Config
-@Autonomous(name = "BioBuzz Red Right B", group = "Autonomous")
-public class BioBuzzRedRight_B extends LinearOpMode {
+@Autonomous(group = "Autonomous")
+public class BioBuzz_Blue_2_Tip_Solo_Right extends LinearOpMode {
 
     public static double AUTO_PARK_TRIGGER_SECONDS = 27.0;
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
@@ -39,12 +37,12 @@ public class BioBuzzRedRight_B extends LinearOpMode {
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -60;
     public static double FLOWER_A_LINE_X = 30, FLOWER_A_LINE_Y = -50;
-    public static double FLOWER_A_PICK_X = 30, FLOWER_A_PICK_Y = -61;
+    public static double FLOWER_A_PICK_X = 30, FLOWER_A_PICK_Y = -62;
      public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
     public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
-    public static double PARK_B_X = -20, PARK_B_Y = -52;
+    public static double PARK_A_X = -23, PARK_A_Y = -54;
 
     private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();
@@ -215,7 +213,7 @@ public class BioBuzzRedRight_B extends LinearOpMode {
 
                             drive.actionBuilder(currentPose)
                                     .strafeToLinearHeading(
-                                            new Vector2d(PARK_B_X, PARK_B_Y),
+                                            new Vector2d(PARK_A_X, PARK_A_Y),
                                             Math.toRadians(90))
                                     .build(),
 
@@ -258,13 +256,13 @@ public class BioBuzzRedRight_B extends LinearOpMode {
         Launcher launcher = new Launcher(hardwareMap, telemetry);
         Intake intake = new Intake(hardwareMap, telemetry);
 
-        MatchSettings.setAlliance(MatchSettings.Alliance.RED);
+        MatchSettings.setAlliance(MatchSettings.Alliance.BLUE);
         Vision vision = new Vision(hardwareMap);
 
         telemetry = new MultipleTelemetry(
                 telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addData("Autonomous", "BioBuzz Red Right B");
-        telemetry.addData("Alliance", "RED");
+        telemetry.addData("Autonomous", getClass().getSimpleName());
+        telemetry.addData("Alliance", MatchSettings.getAlliance());
         telemetry.addLine("Waiting for START");
         telemetry.update();
 
@@ -277,10 +275,8 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
                 driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 330),
-                waitSeconds(1.6),
+                waitSeconds(1),
                 launcher.launchFourPollenAction(),
-                //driveTo(drive, 65, -10.5, 285),
-                //driveTo(drive, GARDEN_START_X, GARDEN_START_Y, 285),
                 driveTo(drive, GARDEN_END_X, GARDEN_END_Y, 270
                 ),
                 waitSeconds(GARDEN_WAIT_SECONDS),
@@ -339,8 +335,12 @@ public class BioBuzzRedRight_B extends LinearOpMode {
                 opening,
                 ifDetected(sideATag, sideAOptional),
                 sideBSequence,
-               // ifDetected(sideATag,endOptionalSequence)
-                driveTo(drive, PARK_B_X, PARK_B_Y, 90)
+                driveTo(drive, PARK_A_X, PARK_A_Y, 90),
+                intake.rampsUpAction(),
+                packet -> {
+                    stopMechanisms(launcher, intake);
+                    return false;
+                }
         );
 
         try {

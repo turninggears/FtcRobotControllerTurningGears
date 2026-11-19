@@ -316,7 +316,7 @@ public class BioBuzzRedLeft_A_V2 extends LinearOpMode {
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
                 driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
-                checkAprilTag(vision,"Side B",3,sideBTag)
+                checkAprilTag(vision,"Side B",5,sideBTag)
         );
 
         // IF PARTNER TIPS HIVE WE EXECUTE THIS CODE

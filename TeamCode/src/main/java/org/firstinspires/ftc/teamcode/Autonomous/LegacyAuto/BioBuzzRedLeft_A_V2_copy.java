@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
 @Config
+@Disabled
 @Autonomous(name = "BioBuzz Red Left A V2 copy", group = "Autonomous")
 public class BioBuzzRedLeft_A_V2_copy extends LinearOpMode {
 

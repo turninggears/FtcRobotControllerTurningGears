@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.System.Vision;
 @Autonomous(group = "Autonomous")
 public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 27.0;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 26.5;
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
     public static int REQUIRED_TAG_DETECTIONS = 3;
     public static double GARDEN_WAIT_SECONDS = 0.01;
@@ -38,11 +38,11 @@ public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -60;
     public static double FLOWER_A_LINE_X = 30, FLOWER_A_LINE_Y = -50;
     public static double FLOWER_A_PICK_X = 30, FLOWER_A_PICK_Y = -62;
-    public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
+    public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -40;
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
     public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
-    public static double PARK_A_X = -23, PARK_A_Y = -54;
+    public static double PARK_A_X = -23, PARK_A_Y = -51;
 
     private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();
@@ -317,7 +317,7 @@ public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
                 intake.rampsShakeAction(),
                 turnTo(drive,190),
                 //driveTo(drive,LAUNCH_B_X,LAUNCH_B_Y,LAUNCH_B_HEADING),
-                launcher.launchFourPollenAction(2.5),
+                launcher.launchFourPollenAction(3.0),
                 driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270),
                 driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
                 driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y, 270),

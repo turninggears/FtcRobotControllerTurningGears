@@ -317,7 +317,7 @@ public class CompTeleOp extends OpMode {
 
         // R1 - Half speed
         double speedMultiplier =
-                gamepad1.right_bumper ? 0.5 : 1.0;
+                gamepad1.right_bumper ? 0.3 : 1.0;
 
         Vector2d driveVector =
                 new Vector2d(forward, strafe);

@@ -289,8 +289,8 @@ public class BioBuzz_Red_Right_Only extends LinearOpMode {
                 new InstantAction(() -> {
             Launcher.LAUNCHER_VELOCITY = 1200;
         }),
-                waitSeconds(1.0),
                 checkAprilTag(vision, "Side A", 0.0, sideATag),
+                waitSeconds(1.0),
                 launcher.launchFourPollenAction(),
                 new ParallelAction(
                         intake.rampsDownAction(),

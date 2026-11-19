@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
+import com.acmerobotics.roadrunner.InstantAction;
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
 import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
@@ -314,11 +314,15 @@ public class BioBuzz_Red_Left_Only extends LinearOpMode {
         // START OF PROGRAM TO READ TAG FOR TIP
         Action opening = new SequentialAction(
                 launcher.startPollenLauncherAction(),
+                new InstantAction(() -> {
+                    Launcher.LAUNCHER_VELOCITY = 1190;
+                }),
                 intake.startIntakeAction(),
-                driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
                 checkAprilTag(vision,"Side B",0,sideBFirstTag),
                 waitSeconds(1),
                 launcher.launchFourPollenAction(),
+                driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
+
                 new ParallelAction(
                          driveTo(drive, FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
                          intake.rampsDownAction()

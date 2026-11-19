@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -24,7 +25,7 @@ import org.firstinspires.ftc.teamcode.System.Vision;
 @Autonomous(group = "Autonomous")
 public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
 
-    public static double AUTO_PARK_TRIGGER_SECONDS = 26.5;
+    public static double AUTO_PARK_TRIGGER_SECONDS = 27;
     public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
     public static int REQUIRED_TAG_DETECTIONS = 3;
     public static double GARDEN_WAIT_SECONDS = 0.01;
@@ -37,12 +38,12 @@ public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -60;
     public static double FLOWER_A_LINE_X = 30, FLOWER_A_LINE_Y = -50;
-    public static double FLOWER_A_PICK_X = 30, FLOWER_A_PICK_Y = -62;
+    public static double FLOWER_A_PICK_X = 30, FLOWER_A_PICK_Y = -57;
     public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -40;
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
-    public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
-    public static double PARK_A_X = -23, PARK_A_Y = -51;
+    public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -21;
+    public static double PARK_A_X = -23, PARK_A_Y = -56.5;
 
     private void stopMechanisms(Launcher launcher, Intake intake) {
         launcher.stopPollenLauncher();
@@ -274,8 +275,11 @@ public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
         Action opening = new SequentialAction(
                 launcher.startPollenLauncherAction(),
                 intake.startIntakeAction(),
-                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 330),
-                waitSeconds(1),
+                new InstantAction(() -> {
+                    Launcher.LAUNCHER_VELOCITY = 1185;
+                }),
+                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 335),
+                waitSeconds(.25),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, GARDEN_END_X, GARDEN_END_Y, 270
                 ),
@@ -302,6 +306,7 @@ public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
 
         // Side B: launch, collect Flower B, return and launch again.
         Action sideBSequence = new SequentialAction(
+                driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,180),
                 driveTo(drive, B_WAYPOINT_X, B_WAYPOINT_Y,LAUNCH_B_HEADING),
                 new ParallelAction(
                         driveTo(drive, LAUNCH_B_X, LAUNCH_B_Y,LAUNCH_B_HEADING),
@@ -315,20 +320,22 @@ public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
                 launcher.launchFourPollenAction(),
                 driveTo(drive, FLOWER_B_PICK_X,FLOWER_B_PICK_Y, 180),
                 intake.rampsShakeAction(),
-                turnTo(drive,190),
+                waitSeconds(.5),
+                driveTo(drive,-56,-21,190),
+                //turnTo(drive,200),
                 //driveTo(drive,LAUNCH_B_X,LAUNCH_B_Y,LAUNCH_B_HEADING),
                 launcher.launchFourPollenAction(3.0),
-                driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270),
+                driveTo(drive,B_WAYPOINT_X,B_WAYPOINT_Y,270)/*,
                 driveTo(drive,FLOWER_A_LINE_X,FLOWER_A_LINE_Y,270),
                 driveTo(drive,FLOWER_A_PICK_X,FLOWER_A_PICK_Y, 270),
                 new ParallelAction(
                         driveTo(drive,FLOWER_A_LINE_X,-44,270),
                         checkAprilTag(vision,"Side A",SIDE_A_TAG_TIMEOUT_SECONDS,sideATag)
-                ));
+                )*/);
 
-        Action endOptionalSequence = new SequentialAction(
+        /*Action endOptionalSequence = new SequentialAction(
                 driveTo(drive,LAUNCH_A_TAG_READ_X,LAUNCH_A_TAG_READ_Y,315)
-        );
+        );*/
 
         // Normal finish also uses measured position, not a .fresh() chain.
         Action normalSequence = new SequentialAction(

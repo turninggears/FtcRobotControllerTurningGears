@@ -38,7 +38,7 @@ public class BioBuzz_Red_Right_Only extends LinearOpMode {
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -61;
     public static double FLOWER_A_LINE_X = 24, FLOWER_A_LINE_Y = -48;
-    public static double FLOWER_A_PICK_X = 24, FLOWER_A_PICK_Y = -58;
+    public static double FLOWER_A_PICK_X = 24, FLOWER_A_PICK_Y = -53.5;
      public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
@@ -275,19 +275,19 @@ public class BioBuzz_Red_Right_Only extends LinearOpMode {
         Action opening = new SequentialAction(
                 launcher.startPollenLauncherAction(),
                 new InstantAction(() -> {
-                    Launcher.LAUNCHER_VELOCITY = 1197;
+                    Launcher.LAUNCHER_VELOCITY = 1190;
                 }),
                 intake.startIntakeAction(),
-                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 330),
+                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 340),
                 waitSeconds(1),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, GARDEN_END_X, GARDEN_END_Y, 270
                 ),
                 waitSeconds(GARDEN_WAIT_SECONDS),
-                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 320
+                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 330
                 ),
                 new InstantAction(() -> {
-            Launcher.LAUNCHER_VELOCITY = 1200;
+            Launcher.LAUNCHER_VELOCITY = 1190;
         }),
                 checkAprilTag(vision, "Side A", 0.0, sideATag),
                 waitSeconds(1.0),

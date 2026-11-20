@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.LegacyAuto;
+package org.firstinspires.ftc.teamcode.Autonomous_Archive;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
@@ -21,7 +22,9 @@ import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
 
+@Disabled
 @Config
+
 @Autonomous(group = "Autonomous")
 public class BioBuzz_Red_2_Tip_Solo_Right extends LinearOpMode {
 

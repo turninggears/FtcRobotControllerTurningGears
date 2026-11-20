@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDriveBiobuzz;
@@ -20,20 +21,28 @@ import org.firstinspires.ftc.teamcode.System.Intake;
 import org.firstinspires.ftc.teamcode.System.Launcher;
 import org.firstinspires.ftc.teamcode.System.MatchSettings;
 import org.firstinspires.ftc.teamcode.System.Vision;
+//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+//import com.qualcomm.robotcore.hardware.Servo;
 
+@Disabled
 @Config
 @Autonomous(group = "Autonomous")
 public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
 
+   // private Servo light1;
+
+    public static double LIGHT_1_YELLOW = 0.388;
+    public static double LIGHT_1_OFF = 0.0;
+
     public static double AUTO_PARK_TRIGGER_SECONDS = 25.0;
-    public static double SIDE_A_TAG_TIMEOUT_SECONDS = .01;
+    public static double SIDE_A_TAG_TIMEOUT_SECONDS = .5;
     public static int REQUIRED_TAG_DETECTIONS = 3;
     public static double GARDEN_WAIT_SECONDS = 0.01;
     public static double FLOWER_A_WAIT_SECONDS = .5;//was.75
     public static double FLOWER_B_WAIT_SECONDS = .75;
 
     // Field coordinates, inches. Headings are degrees.
-    public static double LAUNCH_A_X = 54, LAUNCH_A_Y = -35;
+    public static double LAUNCH_A_X = 54, LAUNCH_A_Y = -38;
     public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -62;
@@ -43,9 +52,9 @@ public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
     public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
-    public static double PARK_B_X = -48, PARK_B_Y = -52;
+    public static double PARK_B_X = -48, PARK_B_Y = -54;
 
-    public static double PARK_B_WAYPOINT_X = -48, PARK_B_WAYPOINT_Y = -36
+    public static double PARK_B_WAYPOINT_X = -48, PARK_B_WAYPOINT_Y = -40
             ;
 
     public static double OPTION_2_X_WAY_POINT = 36, OPTION_2_Y_WAY_POINT = -8.5;
@@ -218,6 +227,7 @@ public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
     //Always monitors the PARKING TIME limit, even during AprilTag waits.
     private Action parkAtTimeout(MecanumDriveBiobuzz drive,
                                  Launcher launcher, Intake intake,
+                                 Vision vision,
                                  Action normalSequence) {
         return new Action() {
             private Action emergencyPark;
@@ -226,6 +236,14 @@ public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
             @Override
             public boolean run(TelemetryPacket packet) {
                 launcher.updatePollenLauncher();
+
+// LIGHT 1 APRILTAG INDICATOR
+                /*if (vision.isAllianceClusterVisible()) {
+                    //light1.setPosition(LIGHT_1_YELLOW);
+                } else {
+                    //light1.setPosition(LIGHT_1_OFF);
+                }*/
+
                 double elapsed = getRuntime();
 
                 packet.put("Auto Elapsed Seconds", elapsed);
@@ -304,6 +322,9 @@ public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
         MatchSettings.setAlliance(MatchSettings.Alliance.RED);
         Vision vision = new Vision(hardwareMap);
 
+        //light1 = hardwareMap.get(Servo.class, "Light 1");
+        //light1.setPosition(LIGHT_1_OFF);
+
         telemetry = new MultipleTelemetry(
                 telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Autonomous", getClass().getSimpleName());
@@ -348,37 +369,54 @@ public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
                 intake.rampsUpAction(),
                  waitSeconds(.75),
                  turnTo(drive,190),
-                 launcher.launchFourPollenAction(3.0),
-                 driveTo(drive,FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
-                 intake.rampsUpAction(),
+                 //launcher.launchFourPollenAction(3.0),
+                // driveTo(drive,FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
+                 //intake.rampsUpAction(),
                  driveTo(drive,PARK_B_X,PARK_B_Y,90)
          );
 
         // IF PARTNER DOESN'T TIP HIVE BY SET TIME WE EXECUTE THIS CODE. THEY MUST HAVE MOVED TO PARK THOUGH
         Action Option2 = new SequentialAction(
                 driveTo(drive,FIELD_CROSS_POINT_X,FIELD_CROSS_POINT_Y,180),
-                driveTo(drive,OPTION_2_X_WAY_POINT,OPTION_2_Y_WAY_POINT,0),
+                driveTo(drive,OPTION_2_X_WAY_POINT,OPTION_2_Y_WAY_POINT,90),
                 driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,340),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, GARDEN_END_X,GARDEN_END_Y,270),
                 waitSeconds(GARDEN_WAIT_SECONDS),
                 driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
-                checkAprilTag(vision,"Side A",0,sideATag),
+                checkAprilTag(vision,"Side A",SIDE_A_TAG_TIMEOUT_SECONDS,sideATag)
+        );
+
+        //after garden if hive still up
+         Action Option3 =  new SequentialAction(
+                 launcher.launchFourPollenAction(),
                 new ParallelAction(
-                        driveTo(drive,24,-36,90),
-                intake.rampsUpAction()
+                        driveTo(drive,0,-38,90),
+                        intake.rampsUpAction()
                 ),
-                driveTo(drive,-50,-30,90),
+                driveTo(drive,PARK_B_X,PARK_B_Y,90)
+        );
+
+        //if after garden hive is tipped
+        Action Option4 = new SequentialAction(
+                new ParallelAction(
+                        driveTo(drive,0,-38,90),
+                        intake.rampsUpAction()
+                ),
                 driveTo(drive,PARK_B_X,PARK_B_Y,90)
 
         );
 
 
-
         // Normal finish also uses measured position, not a .fresh() chain.
         Action normalSequence = new SequentialAction(
                 opening,
-                chooseOption(sideBTag,Option1,Option2),
+                chooseOption(sideBTag, Option1,
+                        new SequentialAction(
+                                Option2,
+                                chooseOption(sideATag, Option3, Option4)
+                        )
+                ),
                 intake.rampsUpAction(),
                 packet -> {
                     stopMechanisms(launcher, intake);
@@ -391,7 +429,7 @@ public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
             if (isStopRequested()) return;
             resetRuntime();
 
-            Actions.runBlocking(parkAtTimeout(drive, launcher, intake, normalSequence));
+            Actions.runBlocking(parkAtTimeout(drive, launcher, intake, vision, normalSequence));
 
             drive.updatePoseEstimate();
             Pose2d finalPose = drive.localizer.getPose();
@@ -402,6 +440,7 @@ public class BioBuzz_Red_Left_Field_Cross extends LinearOpMode {
             try {
                 stopMechanisms(launcher, intake);
             } finally {
+                //light1.setPosition(LIGHT_1_OFF);
                 vision.close();
             }
         }

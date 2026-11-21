@@ -41,8 +41,8 @@ public class Blue_Left_Only extends LinearOpMode {
     public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;
-    public static double FLOWER_B_PICK_X = -58, FLOWER_B_PICK_Y = -20;
-    public static double PARK_B_X = -48, PARK_B_Y = -52;
+    public static double FLOWER_B_PICK_X = -57.75, FLOWER_B_PICK_Y = -20;
+    public static double PARK_B_X = -50, PARK_B_Y = -54;
 
     public static double PARK_B_WAYPOINT_X = -48, PARK_B_WAYPOINT_Y = -36;
 
@@ -319,10 +319,10 @@ public class Blue_Left_Only extends LinearOpMode {
                     return false;
                 },
                 intake.startIntakeAction(),
-                driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
                 checkAprilTag(vision,"Side B",0,sideBFirstTag),
                 waitSeconds(1),
                 launcher.launchFourPollenAction(),
+                driveTo(drive,LAUNCH_C_X,LAUNCH_C_Y,180),
                 new ParallelAction(
                          driveTo(drive, FLOWER_B_LINE_X,FLOWER_B_LINE_Y,180),
                          intake.rampsDownAction()

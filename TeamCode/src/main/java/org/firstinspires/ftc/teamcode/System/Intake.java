@@ -23,7 +23,7 @@ public class Intake {
 
     public static double RAMP_SHAKE = .3;
 
-    //Servo rightRamp;
+    Servo rightRamp;
     Servo leftRamp;
 
     DcMotorEx intakeMotor;
@@ -69,7 +69,7 @@ public class Intake {
         leftRamp = hardwareMap.get(
                 Servo.class, "Left Ramp");
 
-       /* rightRamp.setDirection(Servo.Direction.REVERSE);*/
+        rightRamp.setDirection(Servo.Direction.REVERSE);
         leftRamp.setDirection(Servo.Direction.FORWARD);
 
         // Default both ramps up
@@ -232,19 +232,19 @@ public class Intake {
     // =====================================
 
     public void rampsUp() {
-        //rightRamp.setPosition(RAMP_UP);
+        rightRamp.setPosition(RAMP_UP);
         leftRamp.setPosition(RAMP_UP);
     }
 
     public void rampsDown() {
-        //rightRamp.setPosition(RAMP_DOWN);
+        rightRamp.setPosition(RAMP_DOWN);
         leftRamp.setPosition(RAMP_DOWN);
     }
 
     public Action rampsShakeAction() {
         return new SequentialAction(
                 packet -> {
-                    //rightRamp.setPosition(RAMP_SHAKE);
+                    rightRamp.setPosition(RAMP_SHAKE);
                     leftRamp.setPosition(RAMP_SHAKE);
                     return false;
                 },
@@ -257,7 +257,7 @@ public class Intake {
                 new SleepAction(0.05),
 
                 packet -> {
-                    //rightRamp.setPosition(RAMP_SHAKE);
+                    rightRamp.setPosition(RAMP_SHAKE);
                     leftRamp.setPosition(RAMP_SHAKE);
                     return false;
                 },
@@ -270,7 +270,7 @@ public class Intake {
                 new SleepAction(0.05),
 
                 packet -> {
-                   // rightRamp.setPosition(RAMP_SHAKE);
+                    rightRamp.setPosition(RAMP_SHAKE);
                     leftRamp.setPosition(RAMP_SHAKE);
                     return false;
                 },

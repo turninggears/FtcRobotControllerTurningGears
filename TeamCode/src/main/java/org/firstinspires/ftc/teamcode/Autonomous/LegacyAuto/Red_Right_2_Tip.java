@@ -35,9 +35,9 @@ public class Red_Right_2_Tip extends LinearOpMode {
     public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -37;
     public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
-    public static double GARDEN_END_X = 68, GARDEN_END_Y = -60;
-    public static double FLOWER_A_LINE_X = 30, FLOWER_A_LINE_Y = -40;
-    public static double FLOWER_A_PICK_X = 30, FLOWER_A_PICK_Y = -58;
+    public static double GARDEN_END_X = 68, GARDEN_END_Y = -63.5;
+    public static double FLOWER_A_LINE_X = 25, FLOWER_A_LINE_Y = -40;
+    public static double FLOWER_A_PICK_X = 25, FLOWER_A_PICK_Y = -57;
      public static double B_WAYPOINT_X = -10, B_WAYPOINT_Y = -43;
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;

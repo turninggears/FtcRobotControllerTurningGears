@@ -38,7 +38,7 @@ public class Red_Right_Only extends LinearOpMode {
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -63.5;
     public static double FLOWER_A_LINE_X = 24, FLOWER_A_LINE_Y = -48;
-    public static double FLOWER_A_PICK_X = 24, FLOWER_A_PICK_Y = -53.5;
+    public static double FLOWER_A_PICK_X = 24, FLOWER_A_PICK_Y = -53;
      public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;
     public static double LAUNCH_B_X = -54, LAUNCH_B_Y = -12, LAUNCH_B_HEADING = 185;
     public static double FLOWER_B_LINE_X = -50, FLOWER_B_LINE_Y = -25;

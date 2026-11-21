@@ -303,10 +303,12 @@ public class Red_Right_Only extends LinearOpMode {
                 new InstantAction(() -> {
                     Launcher.LAUNCHER_VELOCITY = 1195;
                 }),
-                driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
+                new ParallelAction(
+                        driveTo(drive,LAUNCH_A_X,LAUNCH_A_Y,330),
+                        intake.rampsUpAction()
+                ),
                 checkAprilTag(vision, "Side A", 0.0, sideATag),
-                launcher.launchFourPollenAction(),
-                intake.rampsUpAction()
+                launcher.launchFourPollenAction()
 
 
         );

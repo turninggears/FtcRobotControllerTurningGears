@@ -35,8 +35,8 @@ public class Red_Right_Only extends LinearOpMode {
     // Field coordinates, inches. Headings are degrees.
     public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -35;
     public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
-    public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
-    public static double GARDEN_END_X = 68, GARDEN_END_Y = -61;
+    public static double GARDEN_START_X = 68, GARDEN_START_Y = -50;
+    public static double GARDEN_END_X = 67, GARDEN_END_Y = -61;
     public static double FLOWER_A_LINE_X = 24, FLOWER_A_LINE_Y = -48;
     public static double FLOWER_A_PICK_X = 24, FLOWER_A_PICK_Y = -53.5;
      public static double B_WAYPOINT_X = -15, B_WAYPOINT_Y = -35;

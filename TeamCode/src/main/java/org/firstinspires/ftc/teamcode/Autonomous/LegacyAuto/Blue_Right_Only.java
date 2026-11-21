@@ -32,7 +32,7 @@ public class Blue_Right_Only extends LinearOpMode {
     public static double FLOWER_B_WAIT_SECONDS = .75;
 
     // Field coordinates, inches. Headings are degrees.
-    public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -35;
+    public static double LAUNCH_A_X = 60, LAUNCH_A_Y = -35, LAUNCH_A_HEADING = 325;
     public static double LAUNCH_A_TAG_READ_X = 60, LAUNCH_A_TAG_READ_Y = -35;
     public static double GARDEN_START_X = 70, GARDEN_START_Y = -50;
     public static double GARDEN_END_X = 68, GARDEN_END_Y = -61;
@@ -277,13 +277,13 @@ public class Blue_Right_Only extends LinearOpMode {
                     Launcher.LAUNCHER_VELOCITY = 1197;
                 }),
                 intake.startIntakeAction(),
-                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 330),
+                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, LAUNCH_A_HEADING),
                 waitSeconds(1),
                 launcher.launchFourPollenAction(),
                 driveTo(drive, GARDEN_END_X, GARDEN_END_Y, 270
                 ),
                 waitSeconds(GARDEN_WAIT_SECONDS),
-                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, 320
+                driveTo(drive, LAUNCH_A_X, LAUNCH_A_Y, LAUNCH_A_HEADING
                 ),
                 new InstantAction(() -> {
             Launcher.LAUNCHER_VELOCITY = 1200;

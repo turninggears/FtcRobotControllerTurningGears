@@ -63,8 +63,8 @@ public class Intake {
         frontIntakeMotor.setPower(0);
 
         // Ramp servos
-       /* rightRamp = hardwareMap.get(
-                Servo.class, "Right Ramp");*/
+        rightRamp = hardwareMap.get(
+                Servo.class, "Right Ramp");
 
         leftRamp = hardwareMap.get(
                 Servo.class, "Left Ramp");

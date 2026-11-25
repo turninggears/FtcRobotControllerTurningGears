@@ -322,6 +322,20 @@ public class CompTeleOp extends OpMode {
         Vector2d driveVector =
                 new Vector2d(forward, strafe);
 
+        // D-pad LEFT selects RED
+        if (gamepad1.dpad_left) {
+            MatchSettings.setAlliance(
+                    MatchSettings.Alliance.RED
+            );
+        }
+
+        // D-pad RIGHT selects BLUE
+        if (gamepad1.dpad_right) {
+            MatchSettings.setAlliance(
+                    MatchSettings.Alliance.BLUE
+            );
+        }
+
         // ====================================
         // FIELD-CENTRIC CONVERSION
         // ====================================
